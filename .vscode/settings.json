@@ -1,0 +1,6 @@
+{
+    "editor.defaultFoldingRangeProvider": "Continue.continue",
+    "editor.inlineSuggest.triggerCommandOnProviderChange": true,
+    "mrMultiCoder.provider": "qwen",
+    "mrMultiCoder.permissionMode": "default"
+}

@@ -1,0 +1,20 @@
+[2026-05-15T05:46:10.753Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T05:46:10.842Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T05:57:44.196Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T05:57:55.530Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T05:57:56.148Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T05:57:56.223Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T06:09:20.099Z] WARN [tool:Read] execution failed EntryNotFound (FileSystemError): Error: ENOENT: no such file or directory, open 'c:\Users\trendaryo\Desktop\beginner drop\src\app\automation\page.tsx'
+[2026-05-15T06:11:21.351Z] WARN [tool:Read] execution failed EntryNotFound (FileSystemError): Error: ENOENT: no such file or directory, open 'c:\Users\trendaryo\Desktop\beginner drop\.mpcoder\pasted-images\pasted-2026-05-15_06-10-31.png'
+[2026-05-15T06:18:32.244Z] WARN [tool:Read] execution failed EntryNotFound (FileSystemError): Error: ENOENT: no such file or directory, open 'c:\Users\trendaryo\Desktop\beginner drop\dropease\src\components\automation\page.tsx'
+[2026-05-15T07:26:06.391Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24400 chars, sessionId=(new))
+[2026-05-15T07:28:41.844Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-15T07:28:48.038Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-15T08:25:10.041Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-15T15:09:34.078Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-15T15:22:15.373Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24451 chars, sessionId=s-7ebbdadd-13ed-4a3c-bdc9-51e0b8835fd3)
+[2026-05-15T15:36:26.022Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-16T07:57:07.351Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24451 chars, sessionId=s-acd9be8a-576f-4987-91ba-ee7d61259e48)
+[2026-05-16T07:57:46.096Z] WARN [chat-panel] Panel created/revived — setting webview HTML (24398 chars, sessionId=(new))
+[2026-05-16T07:58:27.513Z] WARN [kilo stderr] 'kilo' is not recognized as an internal or external command,
+operable program or batch file.
