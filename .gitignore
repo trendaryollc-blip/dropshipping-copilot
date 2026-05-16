@@ -1,0 +1,36 @@
+# Root gitignore to avoid committing local artifacts and secrets
+
+# Editor/project files
+.vscode/
+.idea/
+
+# Local tooling / sessions
+.mrcoder/
+.continue/
+.kilo/
+
+# Node
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# Build
+.next/
+out/
+build/
+coverage/
+
+# Vercel
+.vercel/
