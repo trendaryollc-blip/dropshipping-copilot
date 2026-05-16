@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Staging: open rules for testing only. Remove or tighten before production.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
