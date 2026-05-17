@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { useMemo, useState } from "react"
-import { Search, Bell, ChevronDown } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +19,6 @@ import { NotificationsPopover } from "@/components/notifications-popover"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
-import Link from "next/link"
 
 export function HeaderBar() {
    const { user, isAuthenticated, logout } = useAuthStore()

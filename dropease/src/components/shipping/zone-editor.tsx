@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react"
+import { nanoid } from "nanoid"
 import type { ShippingRate } from "@/types"
 
 export default function ZoneEditor() {
@@ -28,7 +29,7 @@ export default function ZoneEditor() {
         <div className="flex gap-2">
           <button onClick={() => {
             if (!name) return
-            const z = { id: crypto.randomUUID(), name, countries: countries.split(',').map(s=>s.trim()).filter(Boolean) }
+            const z = { id: nanoid(), name, countries: countries.split(',').map(s=>s.trim()).filter(Boolean) }
             save([z, ...zones])
             setName('')
             setCountries('')

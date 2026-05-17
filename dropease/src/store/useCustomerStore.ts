@@ -1,5 +1,6 @@
 "use client"
 import { create } from "zustand"
+import { nanoid } from "nanoid"
 import { loadCustomersFromLocal, saveCustomersToLocal, generateMockCustomers } from "@/lib/crm-service"
 import type { CustomerProfile } from "@/types"
 
@@ -27,30 +28,30 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
   },
   addCustomer: (c) =>
     set((state) => {
-      const rec: CustomerRecord = { ...c, id: crypto.randomUUID(), notes: [], purchases: [] }
+      const rec: CustomerRecord = { ...c, id: nanoid(), notes: [], purchases: [] }
       const customers = [rec, ...state.customers]
       saveCustomersToLocal(customers)
       return { customers }
     }),
-  updateCustomer: (id, patch) =>
-    set((state) => {
-      const customers = state.customers.map((cu) => (cu.id === id ? { ...cu, ...patch } : cu))
-      saveCustomersToLocal(customers)
-      return { customers }
-    }),
-  addNote: (id, text) =>
-    set((state) => {
-      const customers = state.customers.map((cu) =>
-        cu.id === id
-          ? { ...cu, notes: [{ id: crypto.randomUUID(), text, createdAt: new Date().toISOString() }, ...(cu.notes || [])] }
-          : cu
-      )
-      saveCustomersToLocal(customers)
-      return { customers }
-    }),
-  addPurchase: (id, purchase) =>
-    set((state) => {
-      const p = { id: crypto.randomUUID(), date: new Date().toISOString().split("T")[0], total: purchase.total, items: purchase.items }
+    updateCustomer: (id, patch) =>
+      set((state) => {
+        const customers = state.customers.map((cu) => (cu.id === id ? { ...cu, ...patch } : cu))
+        saveCustomersToLocal(customers)
+        return { customers }
+      }),
+    addNote: (id, text) =>
+      set((state) => {
+        const customers = state.customers.map((cu) =>
+          cu.id === id
+            ? { ...cu, notes: [{ id: nanoid(), text, createdAt: new Date().toISOString() }, ...(cu.notes || [])] }
+            : cu
+        )
+        saveCustomersToLocal(customers)
+        return { customers }
+      }),
+    addPurchase: (id, purchase) =>
+      set((state) => {
+        const p = { id: nanoid(), date: new Date().toISOString().split("T")[0], total: purchase.total, items: purchase.items }
       const customers = state.customers.map((cu) => (cu.id === id ? { ...cu, purchases: [p, ...(cu.purchases || [])], orders: (cu.orders || 0) + 1, lifetimeValue: (cu.lifetimeValue || 0) + purchase.total, lastOrderDate: new Date().toISOString().split("T")[0] } : cu))
       saveCustomersToLocal(customers)
       return { customers }

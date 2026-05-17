@@ -1,5 +1,6 @@
 "use client"
 import { create } from "zustand"
+import { nanoid } from "nanoid"
 import type { ShipmentTracking } from "@/types"
 import { trackShipmentMock, generateManifestCSV } from "@/lib/shipping-service"
 
@@ -35,7 +36,7 @@ export const useShipmentStore = create<ShipmentState>((set, get) => ({
   shipments: [],
   rmas: [],
   addShipment: (s) => {
-    const rec = { ...s, id: crypto.randomUUID(), status: "created" }
+    const rec = { ...s, id: nanoid(), status: "created" }
     set((state) => ({ shipments: [rec, ...state.shipments] }))
   },
   track: (trackingNumber) => trackShipmentMock(trackingNumber),

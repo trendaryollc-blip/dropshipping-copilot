@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { nanoid } from "nanoid"
 import type { User } from "@/types"
 
 interface RegisteredUser extends User {
@@ -54,7 +55,7 @@ export const useAuthStore = create<AuthState>()(
         if (exists) return false
 
         const newUser: RegisteredUser = {
-          id: crypto.randomUUID(),
+          id: nanoid(),
           name,
           email,
           password,

@@ -1,7 +1,9 @@
 "use client"
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
+import { nanoid } from "nanoid"
 import { products as initialProducts, orders as initialOrders, stores as initialStores } from "@/lib/mock-data"
-import type { Product, Order, ProductStatus, Store, StoreStatus, AutomationRule, FulfillmentRule, PriceMonitoringRule, EmailMarketingRule, InventoryRule, AutomationStatus } from "@/types"
+import type { Product, Order, ProductStatus, Store, StoreStatus, AutomationRule, AutomationStatus } from "@/types"
 
 interface AppState {
   products: Product[]
@@ -20,7 +22,9 @@ interface AppState {
   toggleAutomationEnabled: (id: string) => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
   products: initialProducts,
   orders: initialOrders,
   stores: initialStores,
@@ -48,7 +52,7 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       stores: [
         ...state.stores,
-        { ...store, id: crypto.randomUUID(), connectedAt: new Date().toISOString().split("T")[0] },
+        { ...store, id: nanoid(), connectedAt: new Date().toISOString().split("T")[0] },
       ],
     })),
   updateStoreStatus: (id, status) =>
@@ -67,10 +71,12 @@ export const useAppStore = create<AppState>((set) => ({
         rule.id === id ? { ...rule, status } : rule
       ),
     })),
-  toggleAutomationEnabled: (id) =>
-    set((state) => ({
-      automationRules: state.automationRules.map((rule) =>
-        rule.id === id ? { ...rule, enabled: !rule.enabled, status: rule.enabled ? "paused" : "active" } : rule
-      ),
-    })),
-}))
+toggleAutomationEnabled: (id) =>
+     set((state) => ({
+       automationRules: state.automationRules.map((rule) =>
+         rule.id === id ? { ...rule, enabled: !rule.enabled, status: rule.enabled ? "paused" : "active" } : rule
+       ),
+     })),
+  }),
+  { name: "dropease-storage" }
+))

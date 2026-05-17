@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from "react"
+import { nanoid } from "nanoid"
 import { useShipmentStore } from "@/store/useShipmentStore"
 import { generatePDFLabel, calculateInsuranceCost } from "@/lib/shipping-service"
 import type { ShippingRate } from "@/types"
@@ -16,7 +17,7 @@ export default function MultiPackageManager() {
   function addPackage() {
     const weight = parseFloat(w)
     if (isNaN(weight) || weight <= 0) return
-    setPackages(p => [{ id: crypto.randomUUID(), weight }, ...p])
+    setPackages(p => [{ id: nanoid(), weight }, ...p])
     setW("")
   }
 

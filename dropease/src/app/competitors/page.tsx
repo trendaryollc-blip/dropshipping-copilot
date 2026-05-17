@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { nanoid } from "nanoid"
 import { Plus, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, RefreshCw, Bell } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -78,7 +79,7 @@ export default function CompetitorsPage() {
     }
     const price = parseFloat(form.currentPrice)
     const newComp: CompetitorProduct = {
-      id: crypto.randomUUID(),
+      id: nanoid(),
       competitorName: form.competitorName,
       productName: form.productName,
       url: form.url,

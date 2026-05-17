@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { nanoid } from "nanoid"
 import type { Notification, NotificationType } from "@/types"
 
 const initialNotifications: Notification[] = [
@@ -71,7 +72,7 @@ export const useNotificationStore = create<NotificationState>()(
           notifications: [
             {
               ...n,
-              id: crypto.randomUUID(),
+              id: nanoid(),
               createdAt: new Date().toISOString(),
               read: false,
             },

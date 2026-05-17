@@ -1,5 +1,6 @@
 "use client"
 import { create } from "zustand"
+import { nanoid } from "nanoid"
 import { loadCarriersFromLocal, saveCarriersToLocal, generateMockCarriers, getRatesForShipment } from "@/lib/shipping-service"
 import { getAdapterForProvider } from "@/lib/shipping-adapters/registry"
 import type { ShippingRate } from "@/types"
@@ -29,7 +30,7 @@ export const useShippingStore = create<ShippingState>((set) => ({
   },
   addCarrier: (c) =>
     set((state) => {
-      const carrier: CarrierConfig = { id: crypto.randomUUID(), provider: c.provider, accountName: c.accountName, connected: false, createdAt: new Date().toISOString() }
+      const carrier: CarrierConfig = { id: nanoid(), provider: c.provider, accountName: c.accountName, connected: false, createdAt: new Date().toISOString() }
       const carriers = [carrier, ...state.carriers]
       saveCarriersToLocal(carriers)
       return { carriers }
