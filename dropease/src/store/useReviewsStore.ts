@@ -26,9 +26,9 @@ export const useReviewsStore = create<ReviewsState>((set, get) => ({
     const rev: ProductReview = { id: crypto.randomUUID(), ...r, createdAt: new Date().toISOString(), moderated: 'pending', replies: [] }
     set((state) => { const next = [rev, ...state.reviews]; saveReviewsToLocal(next); return { reviews: next } })
   },
-  approve: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'approved' } : r); saveReviewsToLocal(next); return { reviews: next } }),
-  flag: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'flagged' } : r); saveReviewsToLocal(next); return { reviews: next } }),
-  remove: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'removed' } : r); saveReviewsToLocal(next); return { reviews: next } }),
+  approve: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'approved' as const } : r); saveReviewsToLocal(next); return { reviews: next } }),
+  flag: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'flagged' as const } : r); saveReviewsToLocal(next); return { reviews: next } }),
+  remove: (id) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, moderated: 'removed' as const } : r); saveReviewsToLocal(next); return { reviews: next } }),
   reply: (id, author, message) => set((state) => { const next = state.reviews.map(r => r.id === id ? { ...r, replies: [{ id: crypto.randomUUID(), author, message, createdAt: new Date().toISOString() }, ...(r.replies || [])] } : r); saveReviewsToLocal(next); return { reviews: next } }),
   importCSV: async (file) => {
     const imported = await importReviewsFromCSV(file)

@@ -20,7 +20,7 @@ interface OrderWorkflow {
   steps: {
     id: string
     name: string
-    type: "approval" | "quality_check" | "fraud_check" | "customs_clearance" | "notification"
+    type: "approval" | "quality_check" | "fraud_check" | "customs_clearance" | "notification" | "custom"
     assignee?: string
     autoAdvance: boolean
     timeLimit?: number // minutes

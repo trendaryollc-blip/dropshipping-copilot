@@ -6,7 +6,7 @@ export async function* streamCsvRows(rows: string[][], chunkSize = 50) {
 }
 
 export function exportLargeCsv(rows: string[][]) {
-  const blob = new Blob(rows.map((row) => row.join(',')).join('\n'), { type: 'text/csv' })
+  const blob = new Blob([rows.map((row) => row.join(',')).join('\n')], { type: 'text/csv' })
   return URL.createObjectURL(blob)
 }
 

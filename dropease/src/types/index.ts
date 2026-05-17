@@ -360,6 +360,22 @@ export interface PaymentGatewayConfig {
   fees: { percentage: number; fixed: number }
 }
 
+export interface AdPlatformConfig {
+  provider: string
+  accountName: string
+  connected: boolean
+  lastSync: string
+  spendThisPeriod: number
+  campaigns: number
+}
+
+export interface AdSpendData {
+  provider: string
+  spend: number
+  clicks: number
+  conversions: number
+}
+
 export interface PaymentTransaction {
   id: string
   orderId: string

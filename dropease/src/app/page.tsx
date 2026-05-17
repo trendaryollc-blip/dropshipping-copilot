@@ -24,10 +24,10 @@ const quickActions = [
 ]
 
 const activityAccent = {
-  import: "bg-emerald-400/15 text-emerald-300",
-  order: "bg-cyan-400/15 text-cyan-300",
-  supplier: "bg-violet-400/15 text-violet-300",
-  description: "bg-fuchsia-400/15 text-fuchsia-300",
+  import: "bg-emerald-400",
+  order: "bg-cyan-400",
+  supplier: "bg-violet-400",
+  description: "bg-fuchsia-400",
 }
 
 const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
@@ -44,11 +44,9 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-emerald-300/80">Dashboard</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-            Modern dropshipping command center
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+          <p className="text-sm uppercase tracking-[0.3em] text-[#0D7C66]/80">Dashboard</p>
+          <h1 className="page-header">Modern dropshipping command center</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#6783A0] sm:text-base">
             Monitor revenue, suppliers, automation, and market momentum from one elegant dashboard.
           </p>
         </div>
@@ -85,10 +83,10 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Quick Actions</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">Triggers for speed and focus</h2>
+              <p className="text-sm uppercase tracking-[0.24em] text-[#6783A0]">Quick Actions</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#171D28]">Triggers for speed and focus</h2>
             </div>
-            <p className="text-sm text-slate-400">Use the most important actions whenever you need a boost.</p>
+            <p className="text-sm text-[#6783A0]">Use the most important actions whenever you need a boost.</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -103,13 +101,13 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <AIInsightsPanel />
 
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/95 p-5 shadow-[0_35px_90px_-50px_rgba(0,0,0,0.55)]">
+          <div className="rounded-[2rem] border border-[#DDE6EE] bg-white p-5 shadow-[0_20px_60px_-24px_rgba(13,124,102,0.22)]">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-emerald-300/80">Recent activity</p>
-                <h2 className="mt-2 text-xl font-semibold text-white">Timeline updates</h2>
+                <p className="text-sm uppercase tracking-[0.24em] text-[#0D7C66]/80">Recent activity</p>
+                <h2 className="mt-2 text-xl font-semibold text-[#171D28]">Timeline updates</h2>
               </div>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-slate-300">Live</span>
+              <span className="rounded-full bg-[#D4F0EE]/60 px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#0D7C66]">Live</span>
             </div>
 
             <div className="mt-5 space-y-4">
@@ -120,12 +118,13 @@ export default function DashboardPage() {
                   title={item.message}
                   time={item.time}
                   accent={activityAccent[item.type]}
+                  badgeTextColor="text-[#6783A0]"
                 />
               ))}
             </div>
 
             <div className="mt-5 flex justify-center">
-              <Link href="/activity" className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-white transition hover:bg-white/10">
+              <Link href="/activity" className="rounded-full border border-[#DDE6EE] bg-[#E4EDF4]/55 px-5 py-2 text-sm text-[#0D7C66] transition hover:bg-[#D4F0EE]/70">
                 Load more
               </Link>
             </div>

@@ -41,7 +41,7 @@ export default function RootLayout({
           <QueryProvider>
             <TooltipProvider>
               <SidebarProvider defaultOpen={true}>
-                <div className="flex min-h-screen w-full bg-slate-950 text-white">
+                <div className="flex min-h-screen w-full bg-background text-foreground">
                   <SidebarNav />
                   <div className="flex flex-1 flex-col min-w-0">
                     <HeaderBar />

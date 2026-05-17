@@ -1,91 +1,113 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "tw-animate-css";
 
 @layer base {
   :root {
-    /* Brand palette - Emerald */
-    --primary: #00563B;
-    --primary-medium: #009D6B;
-    --primary-light: #D4FFE9;
+    /* ─── Page brand colors ──────────────────────────────────────────────────── */
+    --primary: #0D7C66;
+    --primary-medium: #12B891;
+    --primary-light: #D4F0EE;
+    --primary-foreground: #E4EDF4;
 
-    /* Core tokens */
-    --background: #F4F9F7;
-    --foreground: #0A1A13;
+    /* ─── Page background & surface ─────────────────────────────────────────── */
+    /* Cool light grey page backdrop — visually anti-white, cards pop on top */
+    --background: #EFF2F5;
+    --foreground: #171D28;
+    /* Crisp white card surface — high-contrast against the #EFF2F5 page */
     --card: #FFFFFF;
-    --card-foreground: #0A1A13;
-    --popover: #FFFFFF;
-    --popover-foreground: #0A1A13;
-    --primary-foreground: #FFFFFF;
-    --secondary: #E8F5EE;
-    --secondary-foreground: #00563B;
-    --muted: #EEF5F1;
-    --muted-foreground: #6B7280;
-    --accent: #E8F5EE;
-    --accent-foreground: #00563B;
-    --destructive: #EF4444;
-    --border: #E2EDE8;
-    --input: #E2EDE8;
-    --ring: #009D6B;
-    --radius: 0.625rem;
+    --card-foreground: #171D28;
+    --popover: #F8FAFC;
+    --popover-foreground: #171D28;
 
-    /* Sidebar – dark emerald */
-    --sidebar: #00563B;
-    --sidebar-foreground: #F0FAF5;
-    --sidebar-primary: #009D6B;
+    --secondary: #E4EDF4;
+    --secondary-foreground: #171D28;
+    --muted: #DDE6EE;
+    --muted-foreground: #52665E;
+    --accent: #E4EDF4;
+    --accent-foreground: #171D28;
+    --destructive: #DC4C40;
+    --border: #DDE2E6;
+    --input: #DDE2E6;
+    --ring: #0D7C66;
+
+    /* ─── Sidebar: super-deep midnight-navy — visually anti-cream, anti-white ───
+     * #0B1A2B is so dark that even on a dark page it looks independently richness */
+    --sidebar: #0B1A2B;
+    --sidebar-foreground: #CBD5E2;
+    --sidebar-primary: #0D7C66;
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: rgba(255, 255, 255, 0.08);
-    --sidebar-accent-foreground: #FFFFFF;
-    --sidebar-border: rgba(255, 255, 255, 0.08);
-    --sidebar-ring: #009D6B;
+    --sidebar-accent: rgba(255, 255, 255, 0.09);
+    --sidebar-accent-foreground: #CBD5E2;
+    --sidebar-border: rgba(255, 255, 255, 0.10);
+    --sidebar-ring: #12B891;
 
-    /* Status colors */
-    --success: #22C55E;
-    --warning: #F59E0B;
-    --info: #3B82F6;
+    success: #0D7C66;
+    --warning: #C07D20;
+    --info: #2E6AA8;
 
-    /* Chart colors */
-    --chart-1: #00563B;
-    --chart-2: #009D6B;
-    --chart-3: #93C572;
-    --chart-4: #D4FFE9;
-    --chart-5: #6B7280;
+    --chart-1: #0D7C66;
+    --chart-2: #12B891;
+    --chart-3: #7ABAA8;
+    --chart-4: #D4F0EE;
+    --chart-5: #52665E;
   }
-  
-  /* ── Dark Mode ─────────────────────────────────────────────────────────── */
+
   .dark {
-    --primary: #00C87B;
-    --primary-medium: #00F09A;
-    --primary-light: #003D2A;
-  
-    --background: #0E1A14;
-    --foreground: #E8F5EE;
-    --card: #131F18;
-    --card-foreground: #E8F5EE;
-    --popover: #172214;
-    --popover-foreground: #E8F5EE;
-    --primary-foreground: #001A0F;
-    --secondary: #1A2E22;
-    --secondary-foreground: #A7D9B8;
-    --muted: #192A20;
-    --muted-foreground: #7BA88D;
-    --accent: #1A2E22;
-    --accent-foreground: #A7D9B8;
-    --destructive: #FF7070;
-    --border: #1E3428;
-    --input: #1E3428;
-    --ring: #00C87B;
-  
-    /* Chart colors – dark */
-    --chart-1: #00C87B;
-    --chart-2: #00F09A;
-    --chart-3: #6ECA94;
-    --chart-4: #1A2E22;
-    --chart-5: #7BA88D;
+    --primary: #12B891;
+    --primary-medium: #0D7C66;
+    --primary-light: #0D2A24;
+    --primary-foreground: #E4EDF4;
+
+    --background: #0E1622;
+    --foreground: #CBD5E2;
+    /* White cards in a dark environment look rich and slabbed */
+    --card: #FFFFFF;
+    --card-foreground: #0E1622;
+    --popover: #172432;
+    --popover-foreground: #CBD5E2;
+
+    --secondary: #172432;
+    --secondary-foreground: #CBD5E2;
+    --muted: #172432;
+    --muted-foreground: #8193A4;
+    --accent: #172432;
+    --accent-foreground: #CBD5E2;
+    --destructive: #F07064;
+    --border: #2D3D52;
+    --input: #2D3D52;
+    --ring: #12B891;
+
+    /* ─── Dark-mode sidebar: even richer navy pops off the cover-midnight page ───── */
+    --sidebar: #0B1A2B;
+    --sidebar-foreground: #CBD5E2;
+    --sidebar-primary: #0D7C66;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: rgba(255, 255, 255, 0.09);
+    --sidebar-accent-foreground: #CBD5E2;
+    --sidebar-border: rgba(255, 255, 255, 0.10);
+    --sidebar-ring: #12B891;
+
+    --success: #12B891;
+    --warning: #C07D20;
+    --info: #2E6AA8;
+
+    --chart-1: #12B891;
+    --chart-2: #0D7C66;
+    --chart-3: #7ABAA8;
+    --chart-4: #172432;
+    --chart-5: #8193A4;
   }
 
   * {
     box-sizing: border-box;
     border-color: var(--border);
+  }
+
+  html {
+    color-scheme: light dark;
   }
 
   body {
@@ -96,75 +118,106 @@
   }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+/* ─── Sidebar system – guarantees the flex-gap always has a width ───────────────
+ *
+ * The shadcn Sidebar uses a two-element technique on desktop:
+ *   1. a spacer <div data-slot="sidebar-gap"> that holds the sidebar's width
+ *      so adjacent flex siblings never wrap underneath it
+ *   2. a fixed <div data-slot="sidebar-container"> that is removed from normal
+ *      flow – its position alone prevents overlap
+ *
+ * Because Tailwind v3 drops arbitrary-width properties that contain `var(` in
+ * their value (w-[var(--sidebar-width)] is silently culled) the spacer div would
+ * get width:auto → collapses to 0, forcing the content <main> into a new flex
+ * row.  These rules bypass the Tailwind parser entirely by targeting the
+ * data-slot attribute, which is a fixed string that no parser can elide.       */
 
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-info: var(--info);
-
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-
-  --radius-xs: calc(var(--radius) - 4px);
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 4px);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-slot="sidebar-gap"] {
+  /* Default expanded width – matches SIDEBAR_WIDTH = "16rem" in sidebar.tsx */
+  width: 16rem;
+  flex-shrink: 0;
+}
+/* Collapsed ("icon") variant – matches SIDEBAR_WIDTH_ICON = "3rem" */
+[data-slot="sidebar-wrapper"][data-collapsible="icon"] > [data-slot="sidebar-gap"] {
+  width: 3rem;
+}
+/* Collapsed width for the fixed sidebar container too */
+[data-slot="sidebar-wrapper"][data-collapsible="icon"]
+  > [data-slot="sidebar-container"] {
+  width: 3rem;
+}
+/* Off-canvas – hide the gap entirely */
+[data-slot="sidebar-wrapper"][data-collapsible="offcanvas"] > [data-slot="sidebar-gap"] {
+  width: 0;
 }
 
-/* Custom utilities */
-@utility stat-card {
-  background-color: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  border: 1px solid var(--border);
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * THEME LAYERS – page pills, messages, and alerts
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── Toast ── */
+  .toast-success {
+    --toast-icon-color: var(--success);
+  }
+  .toast-error {
+    --toast-icon-color: var(--destructive);
+  }
+  .toast-info {
+    --toast-icon-color: var(--info);
+  }
+
+  /* ── Badge semantic colours ── */
+  .badge-success {
+    background-color: oklch(from var(--success) calc(l + .45) c h / .15);
+    color: var(--success);
+    border-color: oklch(from var(--success) calc(l - .15) c h / 1);
+  }
+  .badge-warning {
+    background-color: oklch(from var(--warning) calc(l + .40) c h / .15);
+    color: var(--warning);
+    border-color: oklch(from var(--warning) calc(l - .10) c h / 1);
+  }
+  .badge-danger {
+    background-color: oklch(from var(--destructive) calc(l + .42) c h / .13);
+    color: var(--destructive);
+    border-color: oklch(from var(--destructive) calc(l - .10) c h / 1);
+  }
 }
 
-@utility page-header {
-  font-size: 1.5rem;
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * PAGE-HEADER / STAT-CARD / SECTION-LABEL  – shared layout tokens
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Page headings: consistent scale, weight, and letter-spacing */
+h1.page-header {
+  font-size: 1.875rem;
   font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--foreground);
-  line-height: 1.25;
 }
 
-@utility section-label {
+/* Stat / KPI cards: pure-white slab with a visible border + subtle slate-blue-highlight shadow */
+.stat-card {
+  background-color: var(--card);
+  border: 1px solid rgba(100, 130, 170, 0.18);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(15, 38, 60, 0.07);
+  transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(15, 38, 60, 0.12);
+  border-color: #0D7C66;
+  transform: translateY(-1px);
+}
+
+/* Inline section sub-label (uppercase, tracked, slim) */
+.section-label {
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--muted-foreground);
 }

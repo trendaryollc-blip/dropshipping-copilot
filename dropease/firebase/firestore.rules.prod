@@ -1,9 +1,96 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Production: require authentication by default. Adjust per-collection rules as needed.
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper function to check if user has pro plan
+    function isProUser() {
+      return isAuthenticated() && get(/databases/$(database)/documents/dropease_users/$(request.auth.uid)).data.plan == 'pro';
+    }
+
+    // ============================================================================
+    // USERS COLLECTION
+    // ============================================================================
+    match /dropease_users/{userId} {
+      // Users can read their own data
+      allow read: if isOwner(userId);
+      // Users can update their own data (except plan)
+      allow update: if isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['plan']);
+      // Only system can create users
+      allow create: if false;
+      // Only system can delete users
+      allow delete: if false;
+    }
+
+    // ============================================================================
+    // PRODUCTS COLLECTION
+    // ============================================================================
+    match /dropease_products/{productId} {
+      // Authenticated users can read products
+      allow read: if isAuthenticated();
+      // Pro users can create products
+      allow create: if isProUser();
+      // Pro users can update their own products
+      allow update: if isProUser();
+      // Pro users can delete their own products
+      allow delete: if isProUser();
+    }
+
+    // ============================================================================
+    // SUPPLIERS COLLECTION
+    // ============================================================================
+    match /dropease_suppliers/{supplierId} {
+      // Authenticated users can read suppliers
+      allow read: if isAuthenticated();
+      // Pro users can create suppliers
+      allow create: if isProUser();
+      // Pro users can update suppliers
+      allow update: if isProUser();
+      // Pro users can delete suppliers
+      allow delete: if isProUser();
+    }
+
+    // ============================================================================
+    // ORDERS COLLECTION
+    // ============================================================================
+    match /dropease_orders/{orderId} {
+      // Authenticated users can read orders
+      allow read: if isAuthenticated();
+      // Pro users can create orders
+      allow create: if isProUser();
+      // Pro users can update orders
+      allow update: if isProUser();
+      // Pro users can delete orders
+      allow delete: if isProUser();
+    }
+
+    // ============================================================================
+    // AUTOMATION RULES COLLECTION
+    // ============================================================================
+    match /dropease_automation_rules/{ruleId} {
+      // Authenticated users can read automation rules
+      allow read: if isAuthenticated();
+      // Pro users can create automation rules
+      allow create: if isProUser();
+      // Pro users can update their own automation rules
+      allow update: if isProUser();
+      // Pro users can delete their own automation rules
+      allow delete: if isProUser();
+    }
+
+    // ============================================================================
+    // DEFAULT DENY
+    // ============================================================================
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }
