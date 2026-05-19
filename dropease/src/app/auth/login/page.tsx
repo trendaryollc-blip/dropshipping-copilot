@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, LogIn, Loader2, AlertCircle } from "lucide-react"
@@ -10,6 +10,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
+import {
+  googleSignIn,
+  isGoogleRedirectInFlight,
+  clearGoogleRedirectFlag,
+  handleGoogleRedirect,
+} from "@/lib/firebase-auth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -17,8 +23,33 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { login, googleSignIn } = useAuthStore()
+  const { login } = useAuthStore()
   const router = useRouter()
+
+  // ── Consume Google OAuth redirect result on mount ──────────────────────────
+  // After Google redirects back, `handleGoogleRedirect()` calls `getRedirectResult()`
+  // which synchronously sets `currentUser` so `onAuthStateChanged` fires → store is
+  // populated.  We do NOT use `isGoogleRedirectInFlight()` to guard here because
+  // a redirect round-trip is a normal post-login page navigation, not an error.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const resolved = await handleGoogleRedirect()
+        if (resolved && !cancelled) {
+          clearGoogleRedirectFlag()
+          toast.success("Signed in with Google! 👋")
+        }
+      } catch {
+        // no-op — redirect wasn't pending
+      } finally {
+        clearGoogleRedirectFlag()
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -46,29 +77,19 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
-    setLoading(true)
     setError("")
     try {
-      const ok = await googleSignIn()
-      if (ok) {
-        toast.success("Welcome! 👋")
-        router.push("/")
-        router.refresh()
-      }
+      await googleSignIn("redirect")
     } catch (err: any) {
       const code = err?.code || ""
       let msg = "Google sign-in failed."
       if (code === "auth/popup-closed-by-user") {
         msg = "Google sign-in cancelled."
-      } else if (code === "auth/account-exists-with-different-credential") {
-        msg = "An account already exists with this email sign-in method."
       } else if (code.startsWith("auth/")) {
         msg = code.replace("auth/", "").replace(/-/g, " ")
         msg = msg.charAt(0).toUpperCase() + msg.slice(1)
       }
       setError(msg)
-    } finally {
-      setLoading(false)
     }
   }
 

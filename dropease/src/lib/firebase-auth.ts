@@ -11,6 +11,8 @@ import {
   updateProfile as fbUpdateProfile,
   sendEmailVerification,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   User as FBUser,
 } from "firebase/auth"
@@ -124,14 +126,81 @@ export async function updateAuthProfile(data: {
 }
 
 /**
- * Sign in with Google via a popup.
- * Returns the converted app User so callers never deal with FB types.
+ * Track an in-flight Google redirect.  Set to true just before navigating to Google
+ * and cleared by the `googleAuthDone` callback in the root layout so the sidebar /
+ * auth store bootstrap don't interfere mid-popup cycle.
  */
-export async function googleSignIn(): Promise<User> {
+let googleRedirectInFlight = false
+
+/**
+ * Sign in with Google.
+ * Works in two modes:
+ *   • `popup`  — opens a centred popup window (fast, stays on same page)
+ *   • `redirect` — navigates the top-level page to Google OAuth (blocking; wakes
+ *                  back up on the callback /popup page).
+ *
+ * Returns a Promise that resolves to `true` on success or rejects with an
+ * `auth/*` code string on failure.
+ */
+export async function googleSignIn(mode: "popup" | "redirect" = "redirect"): Promise<void> {
   const provider = new GoogleAuthProvider()
-  provider.setCustomParameters({ prompt: "select_account" })
-  const cred = await signInWithPopup(auth, provider)
-  return fbUserToUser(cred.user)
+  // Never force a prompt — Google returns silently (or closes the popup)
+  // when the user is already signed in.
+  // provider.setCustomParameters({ prompt: "select_account" })  ← removed
+
+  // Use redirect as default: blocks the page but survives popup blockers
+  // because the browser treats it as a top-level navigation, not a popup.
+  if (mode === "redirect") {
+    googleRedirectInFlight = true
+    await signInWithRedirect(auth, provider)
+    // If we get here, Google did NOT redirect back (OAuth aborted).
+    googleRedirectInFlight = false
+    return
+  }
+
+  // ─── popup mode ──────────────────────────────────────────────────────────
+  try {
+    await signInWithPopup(auth, provider)
+  } finally {
+    googleRedirectInFlight = false
+  }
+}
+
+/**
+ * Returns true while a Google OAuth redirect is in flight.
+ * Other code (sidebar mock-doc blockers, GraphQL integrations, etc.)
+ * should skip work while `true` to avoid corrupting the post-auth Firestore load.
+ */
+export function isGoogleRedirectInFlight(): boolean {
+  return googleRedirectInFlight
+}
+
+/**
+ * Resets the in-flight flag — call this from the `_app` bootstrap or a layout
+ * effect once the page wakes back up after a redirect OAuth round-trip.
+ */
+export function clearGoogleRedirectFlag() {
+  googleRedirectInFlight = false
+}
+
+/**
+ * Call this once (e.g. from the root layout) to consume any pending OAuth
+ * result from a `signInWithRedirect` round-trip.  Returns `true` if a redirect
+ * was pending and is now resolved, `false` otherwise.
+ */
+export async function handleGoogleRedirect(): Promise<boolean> {
+  try {
+    const result = await getRedirectResult(auth)
+    if (result) {
+      // User returned from Google OAuth redirect — onAuthStateChanged will pick
+      // up the new session.  Resolve the redirect flag.
+      googleRedirectInFlight = false
+      return true
+    }
+  } catch {
+    // No redirect pending — this is a normal page load.
+  }
+  return false
 }
 
 /**
