@@ -10,13 +10,13 @@ import {
   onAuthStateChanged,
   updateProfile as fbUpdateProfile,
   sendEmailVerification,
+  signInWithPopup,
+  GoogleAuthProvider,
   User as FBUser,
 } from "firebase/auth"
 import { initializeApp, getApps } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
 import type { User } from "@/types"
-
-// ── Firebase App initialisation (singleton) ────────────────────────────────────
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -121,6 +121,17 @@ export async function updateAuthProfile(data: {
   if (!auth.currentUser) throw new Error("No authenticated user")
   await fbUpdateProfile(auth.currentUser, data)
   return fbUserToUser(auth.currentUser)
+}
+
+/**
+ * Sign in with Google via a popup.
+ * Returns the converted app User so callers never deal with FB types.
+ */
+export async function googleSignIn(): Promise<User> {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: "select_account" })
+  const cred = await signInWithPopup(auth, provider)
+  return fbUserToUser(cred.user)
 }
 
 /**
