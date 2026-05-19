@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   title: "DropEase – Your Dropshipping Assistant",
   description:
     "Find products, discover suppliers, generate descriptions and manage your dropshipping business easily.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({

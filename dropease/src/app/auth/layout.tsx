@@ -10,6 +10,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Sign In – DropEase",
+  icons: { icon: "/favicon.ico" },
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
