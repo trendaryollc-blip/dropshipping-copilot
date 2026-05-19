@@ -17,6 +17,7 @@
     "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-label": "^2.1.0",
     "@tanstack/react-query": "^5.100.10",
+    "axios": "^1.16.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^10.7.1",

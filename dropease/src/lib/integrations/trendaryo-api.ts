@@ -38,6 +38,11 @@ class TrendaryoAPI {
     });
   }
 
+  // Adapter interface — connects (reads config from env at instantiation)
+  async connect(config: { shopUrl?: string; apiKey?: string }) {
+    return { connected: !!this.client.defaults.headers['x-api-key'] };
+  }
+
   // Get all products from Trendaryo
   async getAllProducts() {
     try {
@@ -45,6 +50,17 @@ class TrendaryoAPI {
       return response.data;
     } catch (error: any) {
       console.error('Trendaryo: Failed to fetch products', error.message);
+      throw error;
+    }
+  }
+
+  // Get all orders from Trendaryo
+  async getAllOrders() {
+    try {
+      const response = await this.client.get('/orders');
+      return response.data;
+    } catch (error: any) {
+      console.error('Trendaryo: Failed to fetch orders', error.message);
       throw error;
     }
   }
@@ -80,6 +96,31 @@ class TrendaryoAPI {
       console.error(`Trendaryo: Failed to update order ${orderId}`, error.message);
       throw error;
     }
+  }
+
+  // ── Adapter bridge methods ──────────────────────────────────────────
+
+  async fetchProducts() {
+    const data = await this.getAllProducts();
+    return Array.isArray(data) ? data : (data?.data ?? []);
+  }
+
+  async fetchOrders() {
+    const data = await this.getAllOrders();
+    return Array.isArray(data) ? data : (data?.data ?? []);
+  }
+
+  async pushProduct(product: any) {
+    return this.updateProduct(product.id, { price: product.price });
+  }
+
+  async pushOrder(order: any) {
+    return this.createOrder({
+      userId: order.customer || order.userId || 'unknown',
+      items: [{ productId: order.productName || order.id, quantity: order.quantity || 1, unitPrice: order.total || 0 }],
+      total: order.total || 0,
+      shippingAddress: {},
+    });
   }
 }
 
