@@ -1,94 +1,107 @@
 "use client"
-
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { nanoid } from "nanoid"
 import type { User } from "@/types"
-
-interface RegisteredUser extends User {
-  password: string
-}
+import {
+  signIn,
+  signUp,
+  signOut,
+  onAuthChange,
+  updateAuthProfile,
+  getAuthInstance,
+} from "@/lib/firebase-auth"
 
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
-  registeredUsers: RegisteredUser[]
-  login: (email: string, password: string) => boolean
-  register: (name: string, email: string, password: string) => boolean
-  logout: () => void
-  updateProfile: (data: Partial<User>) => void
+  isInitialised: boolean
+  login: (email: string, password: string) => Promise<boolean>
+  register: (name: string, email: string, password: string) => Promise<boolean>
+  logout: () => Promise<void>
+  updateProfile: (data: Partial<User>) => Promise<void>
   completeOnboarding: () => void
-}
-
-const DEMO_USER: RegisteredUser = {
-  id: "demo-1",
-  name: "Drop Shipper",
-  email: "beginner@dropease.com",
-  password: "password123",
-  plan: "free",
-  createdAt: "2024-01-01",
-  isOnboarded: true,
-  avatar: "https://i.pravatar.cc/80?u=dropease-user",
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       user: null,
       isAuthenticated: false,
-      registeredUsers: [DEMO_USER],
+      isInitialised: false,
 
-      login: (email, password) => {
-        const found = get().registeredUsers.find(
-          (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-        )
-        if (!found) return false
-        const { password: _pw, ...user } = found
-        set({ user, isAuthenticated: true })
-        return true
-      },
-
-      register: (name, email, password) => {
-        const exists = get().registeredUsers.some(
-          (u) => u.email.toLowerCase() === email.toLowerCase()
-        )
-        if (exists) return false
-
-        const newUser: RegisteredUser = {
-          id: nanoid(),
-          name,
-          email,
-          password,
-          plan: "free",
-          createdAt: new Date().toISOString().split("T")[0],
-          isOnboarded: false,
-          avatar: `https://i.pravatar.cc/80?u=${email}`,
+      login: async (email, password) => {
+        try {
+          const user = await signIn(email, password)
+          set({ user, isAuthenticated: true, isInitialised: true })
+          return true
+        } catch (err: any) {
+          console.warn("[Auth] login failed:", err.message)
+          return false
         }
-
-        const { password: _pw, ...user } = newUser
-        set((state) => ({
-          registeredUsers: [...state.registeredUsers, newUser],
-          user,
-          isAuthenticated: true,
-        }))
-        return true
       },
 
-      logout: () => set({ user: null, isAuthenticated: false }),
+      register: async (name, email, password) => {
+        try {
+          const user = await signUp(email, password, name)
+          set({ user, isAuthenticated: true, isInitialised: true })
+          return true
+        } catch (err: any) {
+          console.warn("[Auth] register failed:", err.message)
+          return false
+        }
+      },
 
-      updateProfile: (data) =>
-        set((state) => ({
-          user: state.user ? { ...state.user, ...data } : null,
-        })),
+      logout: async () => {
+        try {
+          await signOut()
+        } finally {
+          set({ user: null, isAuthenticated: false })
+        }
+      },
+
+      updateProfile: async (data) => {
+        try {
+          const current = getAuthInstance().currentUser
+          if (current) {
+            const updated = await updateAuthProfile({
+              displayName: data.name,
+              photoURL: data.avatar,
+            })
+            set({ user: updated })
+          } else {
+            set((state) => ({
+              user: state.user ? { ...state.user, ...data } : null,
+            }))
+          }
+        } catch (err) {
+          console.warn("[Auth] updateProfile failed:", err)
+          set((state) => ({
+            user: state.user ? { ...state.user, ...data } : null,
+          }))
+        }
+      },
 
       completeOnboarding: () =>
         set((state) => ({
           user: state.user ? { ...state.user, isOnboarded: true } : null,
-          registeredUsers: state.registeredUsers.map((u) =>
-            u.id === state.user?.id ? { ...u, isOnboarded: true } : u
-          ),
         })),
     }),
-    { name: "dropease-auth" }
-  )
+    {
+      name: "dropease-auth",
+      partialize: (state) => ({
+        isOnboarded: state.user?.isOnboarded || false,
+      }),
+    },
+  ),
 )
+
+// ── Bootstrap: subscribe to Firebase Auth on first client mount ────────────────
+if (typeof window !== "undefined") {
+  onAuthChange((user) => {
+    useAuthStore.setState({
+      user,
+      isAuthenticated: !!user,
+      isInitialised: true,
+    })
+  })
+}

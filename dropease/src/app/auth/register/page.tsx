@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, UserPlus, Loader2 } from "lucide-react"
+import { Eye, EyeOff, UserPlus, Loader2, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { register } = useAuthStore()
+  const { register, login } = useAuthStore()
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,14 +33,21 @@ export default function RegisterPage() {
       return
     }
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 800))
-    const success = register(name, email, password)
-    setLoading(false)
-    if (success) {
-      toast.success("Account created! Welcome to DropEase 🚀")
-      router.push("/")
-    } else {
-      setError("An account with this email already exists.")
+    try {
+      // Firebase register — errors surface here if the email already exists
+      const ok = await register(name, email, password)
+      if (ok) {
+        toast.success("Account created! Welcome to DropEase 🚀")
+        router.push("/")
+        router.refresh()
+      } else {
+        setError("An account with this email already exists.")
+      }
+    } catch (err: any) {
+      const msg = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Registration failed."
+      setError(msg.charAt(0).toUpperCase() + msg.slice(1) + ".")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -53,9 +60,10 @@ export default function RegisterPage() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
-              {error}
-            </p>
+            <div className="flex items-center gap-2 rounded-lg bg-destructive/10 px-3 py-2.5 text-xs text-destructive">
+              <AlertCircle className="size-4 shrink-0" />
+              <span>{error}</span>
+            </div>
           )}
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">Full Name</Label>
@@ -64,6 +72,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
+              className="h-11"
             />
           </div>
           <div className="space-y-1.5">
@@ -74,6 +83,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              className="h-11"
             />
           </div>
           <div className="space-y-1.5">
@@ -85,27 +95,27 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
-                className="pr-10"
+                className="pr-10 h-11"
               />
               <button
                 type="button"
                 onClick={() => setShowPw(!showPw)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
               >
                 {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full h-11 text-sm font-medium" disabled={loading}>
             {loading ? (
-              <><Loader2 className="size-4 animate-spin" /> Creating account...</>
+              <><Loader2 className="size-4 animate-spin" /> Creating account…</>
             ) : (
               <><UserPlus className="size-4" /> Create Account</>
             )}
           </Button>
         </form>
 
-        <div className="mt-4 text-center text-xs text-muted-foreground">
+        <div className="mt-5 text-center text-xs text-muted-foreground">
           Already have an account?{" "}
           <Link href="/auth/login" className="text-primary hover:underline font-medium">
             Sign in
