@@ -14,6 +14,7 @@ import {
 import { orders } from "@/lib/mock-data"
 import { toast } from "sonner"
 import { exportToCSV } from "@/lib/csv-export"
+import { AIActionButton } from "@/components/AIActionButton"
 import type { OrderStatus } from "@/types"
 import { useOrderUpdates, useWebSocket } from "@/hooks/use-websocket"
 import { testRealTimeFeatures } from "@/lib/websocket-test"
@@ -224,15 +225,27 @@ export default function OrdersPage() {
                       {status.label}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {order.trackingNumber ? (
-                      <button onClick={() => toast.success(`Tracking: ${order.trackingNumber}`)} className="font-mono text-[11px] text-primary hover:underline">
-                        {order.trackingNumber}
-                      </button>
-                    ) : (
-                      <span className="text-[11px] text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
+                   <TableCell>
+                     <AIActionButton
+                       task="fraud_detection"
+                       input={{
+                         orderAmount: order.total,
+                         customerEmail: order.customer.toLowerCase().replace(/\s+/g, '') + '@example.com',
+                         shippingCountry: 'US',
+                       }}
+                       label="AI"
+                       size="sm"
+                     />
+                   </TableCell>
+                   <TableCell>
+                     {order.trackingNumber ? (
+                       <button onClick={() => toast.success(`Tracking: ${order.trackingNumber}`)} className="font-mono text-[11px] text-primary hover:underline">
+                         {order.trackingNumber}
+                       </button>
+                     ) : (
+                       <span className="text-[11px] text-muted-foreground">—</span>
+                     )}
+                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{order.estimatedDelivery}</TableCell>
                 </TableRow>
               )

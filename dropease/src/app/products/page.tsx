@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress"
 import { products } from "@/lib/mock-data"
 import { useAppStore } from "@/store/useAppStore"
 import { toast } from "sonner"
+import { AIActionButton } from "@/components/AIActionButton"
 import type { CompetitionLevel, Product } from "@/types"
 
 const NICHES = ["All", "Electronics", "Fashion", "Home & Garden", "Beauty", "Sports"]
@@ -130,19 +131,31 @@ export default function ProductsPage() {
                   </div>
                   <Progress value={product.trendScore} className="h-1.5" />
                 </div>
-                <Button
-                  size="sm"
-                  className="mt-auto h-7 text-xs"
-                  variant={isImported ? "outline" : "default"}
-                  onClick={() => handleImport(product)}
-                  disabled={isImported}
-                >
-                  {isImported ? (
-                    <><CheckCircle className="size-3" /> Imported</>
-                  ) : (
-                    <><ArrowUpRight className="size-3" /> Import Product</>
-                  )}
-                </Button>
+                <div className="mt-auto flex gap-2">
+                  <Button
+                    size="sm"
+                    className="h-7 flex-1 text-xs"
+                    variant={isImported ? "outline" : "default"}
+                    onClick={() => handleImport(product)}
+                    disabled={isImported}
+                  >
+                    {isImported ? "Imported" : "Import Product"}
+                  </Button>
+                  <AIActionButton
+                    task="product_description"
+                    input={{
+                      productName: product.name,
+                      niche: product.niche,
+                      features: ["High quality", "Trending", "Good reviews"],
+                      priceRange: product.priceRange,
+                    }}
+                    label="AI"
+                    onSuccess={(result) => {
+                      toast.success("Description generated!")
+                      console.log("AI Description:", result)
+                    }}
+                  />
+                </div>
               </div>
             </div>
           )

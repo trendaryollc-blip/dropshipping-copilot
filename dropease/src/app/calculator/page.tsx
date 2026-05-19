@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { AIActionButton } from "@/components/AIActionButton"
 import type { MarginResult } from "@/types"
 
 interface CalcInputs {
@@ -213,6 +214,22 @@ export default function CalculatorPage() {
               <NumInput label="Ad Spend per Sale" value={inputs.adSpend} onChange={set("adSpend")} icon={Megaphone} prefix="$" hint="Average advertising cost per conversion" />
               <NumInput label="Return Rate" value={inputs.returnRate} onChange={set("returnRate")} icon={RefreshCw} suffix="%" hint="Estimated % of orders returned" />
             </div>
+            <AIActionButton
+              task="dynamic_pricing"
+              input={{
+                productName: "Your Product",
+                currentPrice: inputs.sellingPrice,
+                competitorPrices: [inputs.sellingPrice * 0.95, inputs.sellingPrice * 1.05],
+                demandScore: 75,
+                inventoryLevel: 60,
+                marginTarget: 30,
+              }}
+              label="Get AI Pricing Recommendation"
+              variant="default"
+              onSuccess={(result) => {
+                toast.success(`Recommended price: $${result.recommendedPrice}`)
+              }}
+            />
           </CardContent>
         </Card>
 

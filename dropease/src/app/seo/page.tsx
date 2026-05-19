@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { AIActionButton } from "@/components/AIActionButton"
 
 const KEYWORD_SUGGESTIONS: Record<string, string[]> = {
   electronics: ["wireless", "bluetooth", "noise cancelling", "fast charging", "USB-C", "smart", "portable", "waterproof"],
@@ -129,9 +130,24 @@ export default function SEOPage() {
               </div>
             </div>
 
-            <Button className="w-full" onClick={generate}>
-              <Search className="size-3.5" /> Generate SEO Tags
-            </Button>
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={generate}>
+                <Search className="size-3.5" /> Generate SEO Tags
+              </Button>
+              <AIActionButton
+                task="seo_optimization"
+                input={{
+                  productName,
+                  niche: category,
+                  targetKeywords: keywords.split(',').map(k => k.trim()).filter(Boolean),
+                }}
+                label="AI"
+                onSuccess={(result) => {
+                  if (result.optimizedTitle) setMetaTitle(result.optimizedTitle)
+                  if (result.metaDescription) setMetaDesc(result.metaDescription)
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
 

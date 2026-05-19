@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import { AIActionButton } from "@/components/AIActionButton"
 import type { NicheTrend } from "@/types"
 
 const trends: NicheTrend[] = [
@@ -24,17 +25,26 @@ const trends: NicheTrend[] = [
 
 export default function TrendsPage() {
   const [search, setSearch] = useState("")
+  const [aiInsights, setAiInsights] = useState<any>(null)
 
   const filtered = trends.filter((t) => t.niche.toLowerCase().includes(search.toLowerCase()))
   const sorted = [...filtered].sort((a, b) => b.trendScore - a.trendScore)
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="page-header">Niche Trend Explorer</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Discover which niches are trending right now and find winning products before competition spikes.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-header">Niche Trends</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Discover emerging product niches with high growth potential.
+          </p>
+        </div>
+        <AIActionButton
+          task="seo_optimization"
+          input={{ productName: "Market Analysis", niche: "General" }}
+          label="AI Trend Analysis"
+          onSuccess={setAiInsights}
+        />
       </div>
 
       {/* Top 3 hot niches */}

@@ -26,6 +26,7 @@ import { AutomatedSupplierReordering } from "@/components/automation/automated-s
 import { AiPoweredUpsell } from "@/components/automation/ai-powered-upsell"
 import { SeasonalCampaignAutomation } from "@/components/automation/seasonal-campaign-automation"
 import { AutomatedComplianceReporting } from "@/components/automation/automated-compliance-reporting"
+import { AIActionButton } from "@/components/AIActionButton"
 
 const tabs = [
   { id: "fulfillment",     label: "Auto-Fulfillment",        icon: Package,      color: "text-emerald-600", bg: "bg-emerald-100", description: "Automatically process and fulfill orders based on your rules" },
@@ -44,6 +45,7 @@ const tabs = [
   { id: "upsell",          label: "AI Upsell & Cross-sell",   icon: Sparkles,     color: "text-rose-600",    bg: "bg-rose-100",    description: "AI-powered product recommendations to increase order value" },
   { id: "seasonal",        label: "Seasonal Campaigns",       icon: Calendar,     color: "text-sky-600",     bg: "bg-sky-100",     description: "Schedule and automate seasonal promotions and campaigns" },
   { id: "compliance",      label: "Compliance Reporting",     icon: Shield,       color: "text-gray-600",    bg: "bg-gray-100",    description: "Generate compliance reports and audit logs automatically" },
+  { id: "ai-hub",            label: "AI Automation Hub",        icon: Sparkles,     color: "text-violet-600",  bg: "bg-violet-100",  description: "Access all AI models for different automation tasks" },
 ]
 
 export default function AutomationPage() {
@@ -223,6 +225,57 @@ export default function AutomationPage() {
             <TabsContent value="upsell"><AiPoweredUpsell /></TabsContent>
             <TabsContent value="seasonal"><SeasonalCampaignAutomation /></TabsContent>
             <TabsContent value="compliance"><AutomatedComplianceReporting /></TabsContent>
+            <TabsContent value="ai-hub">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-violet-600" />
+                    AI Automation Hub
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Access specialized AI models for different automation tasks.
+                  </p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">Order Processing (Groq)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="order_processing" input={{orderId:"ORD-1",customerName:"Demo",totalAmount:99,items:[{name:"Item",quantity:1,price:99}]}} label="Run Order AI" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">Descriptions (Gemini)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="product_description" input={{productName:"Demo",niche:"Electronics",features:["Premium"],priceRange:{min:49,max:79}}} label="Generate Description" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">SEO (DeepSeek)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="seo_optimization" input={{productName:"Demo",niche:"Fashion"}} label="Optimize SEO" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">Pricing (OpenRouter)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="dynamic_pricing" input={{productName:"Demo",currentPrice:99,competitorPrices:[89,109],demandScore:80,inventoryLevel:50,marginTarget:35}} label="Get Pricing" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">Fraud (Cloudflare)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="fraud_detection" input={{orderAmount:199,customerEmail:"test@example.com",shippingCountry:"US"}} label="Check Risk" />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle className="text-sm">Image Analysis (HF)</CardTitle></CardHeader>
+                    <CardContent>
+                      <AIActionButton task="image_analysis" input={{imageUrl:"https://picsum.photos/200",productName:"Demo"}} label="Analyze Image" />
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>

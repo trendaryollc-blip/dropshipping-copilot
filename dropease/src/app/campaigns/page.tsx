@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+import { AIActionButton } from "@/components/AIActionButton"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -77,6 +78,7 @@ function fmtNum(n: number) {
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<AdCampaign[]>(initialCampaigns)
+  const [aiCopy, setAiCopy] = useState<any>(null)
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>("all")
   const [createOpen, setCreateOpen] = useState(false)
   const [newName, setNewName] = useState("")
@@ -133,15 +135,25 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Ad Campaign Manager</h1>
-          <p className="text-muted-foreground">
-            Track and optimize your Google, Meta, and TikTok ad campaigns in one place.
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-header">Ad Campaigns</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage and optimize your advertising campaigns across Google, Meta, and TikTok.
           </p>
         </div>
+        <AIActionButton
+          task="product_description"
+          input={{
+            productName: "Marketing Campaign",
+            niche: "Advertising",
+            features: ["High conversion", "Targeted audience"],
+            priceRange: { min: 100, max: 500 },
+          }}
+          label="AI Ad Copy"
+          onSuccess={setAiCopy}
+         />
         <Button onClick={() => setCreateOpen(true)} className="shrink-0">
           <Plus className="size-4 mr-1.5" />
           New Campaign

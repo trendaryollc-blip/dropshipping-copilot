@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { nanoid } from "nanoid"
-import { Plus, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, RefreshCw, Bell } from "lucide-react"
+import { Plus, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, RefreshCw, Bell, Sparkles } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { AIActionButton } from "@/components/AIActionButton"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
@@ -65,10 +66,26 @@ const INITIAL_COMPETITORS: CompetitorProduct[] = [
       { date: "Jan 12", price: 19.99 },
     ],
   },
+  {
+    id: "4",
+    competitorName: "Trendaryo",
+    productName: "Nebula Sneaker",
+    url: "https://trendaryo.com",
+    currentPrice: 89,
+    previousPrice: 119,
+    ourPrice: 79.99,
+    lastChecked: "Just now",
+    priceHistory: [
+      { date: "May 10", price: 119 },
+      { date: "May 12", price: 99 },
+      { date: "May 15", price: 89 },
+    ],
+  },
 ]
 
 export default function CompetitorsPage() {
   const [competitors, setCompetitors] = useState<CompetitorProduct[]>(INITIAL_COMPETITORS)
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState({ competitorName: "", productName: "", url: "", currentPrice: "", ourPrice: "" })
 
@@ -104,6 +121,19 @@ export default function CompetitorsPage() {
       prev.map((c) => (c.id === id ? { ...c, lastChecked: "Just now" } : c))
     )
     toast.info("Price refreshed")
+  }
+
+  async function analyzeCompetitors() {
+    toast.loading("AI is analyzing competitors...", { id: "ai-competitors" })
+    try {
+      const { generateCompetitorAnalysisWithDeepSeek } = await import("@/lib/ai/deepseek-competitor")
+
+      const result = await generateCompetitorAnalysisWithDeepSeek(competitors)
+      setAiAnalysis(result)
+      toast.success("AI analysis complete!", { id: "ai-competitors" })
+    } catch (e) {
+      toast.error("Analysis failed. Check API keys.", { id: "ai-competitors" })
+    }
   }
 
   return (
@@ -152,6 +182,15 @@ export default function CompetitorsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="flex justify-end">
+        <AIActionButton
+         task="competitor_analysis"
+          label="AI Competitor Analysis"
+          input={{ competitors }}
+          onSuccess={(result) => { setAiAnalysis(result); toast.success("Analysis done!") }}
+        />
       </div>
 
       {/* Stats */}
@@ -236,35 +275,14 @@ export default function CompetitorsPage() {
                             const height = ((h.price - min) / range) * 24 + 8
                             const isLatest = i === comp.priceHistory.length - 1
                             return (
-                              <div key={i} className="flex flex-col items-center gap-0.5">
-                                <div
-                                  style={{ height: `${height}px` }}
-                                  className={cn("w-6 rounded-sm", isLatest ? "bg-primary" : "bg-muted-foreground/30")}
-                                  title={`${h.date}: $${h.price}`}
-                                />
-                                <span className="text-[9px] text-muted-foreground">{h.date.split(" ")[1]}</span>
+                              <div className="flex flex-col items-center">
+                                <div className={cn("w-6 rounded-t", isLatest ? "bg-primary" : "bg-muted")} style={{ height: `${height}px` }} />
+                                <p className="text-[9px] text-muted-foreground mt-0.5">${h.price}</p>
                               </div>
                             )
                           })}
                         </div>
                       </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-2 shrink-0">
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon-sm" onClick={() => refresh(comp.id)} title="Refresh price">
-                          <RefreshCw className="size-3.5" />
-                        </Button>
-                        {comp.url && (
-                          <a href={comp.url} target="_blank" rel="noopener noreferrer" title="Visit page" className="inline-flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-                            <ExternalLink className="size-3.5" />
-                          </a>
-                        )}
-                        <Button variant="ghost" size="icon-sm" onClick={() => remove(comp.id)} title="Remove" className="text-destructive hover:text-destructive">
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">Checked: {comp.lastChecked}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -273,6 +291,17 @@ export default function CompetitorsPage() {
           })}
         </div>
       )}
+      {aiAnalysis && (
+        <Card className="mt-6 border-primary/20 bg-primary/[0.03]">
+          <CardContent className="pt-5 pb-4">
+            <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+              <Sparkles className="size-4" /> AI Competitor Analysis
+            </h3>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{aiAnalysis}</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
+

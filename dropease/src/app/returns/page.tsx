@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Package, CheckCircle, XCircle, DollarSign, RotateCcw, Search } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Package, CheckCircle, XCircle, DollarSign, RotateCcw, Search, Sparkles } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { AIActionButton } from "@/components/AIActionButton"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -12,6 +13,8 @@ import {
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import type { ReturnRequest, ReturnStatus } from "@/types"
+
+interface ReturnWithAI extends ReturnRequest { aiRecommendation: string }
 
 const INITIAL_RETURNS: ReturnRequest[] = [
   { id: "RET-001", orderId: "ORD-1040", productName: "Bamboo Cutting Board Set", productImage: "https://picsum.photos/seed/bamboo/60/60", customer: "Emily Chen", reason: "damaged", status: "requested", requestedAt: "2024-01-16", amount: 19.99, notes: "Product arrived cracked on one side." },
@@ -38,6 +41,7 @@ const reasonLabel: Record<string, string> = {
 
 export default function ReturnsPage() {
   const [returns, setReturns] = useState<ReturnRequest[]>(INITIAL_RETURNS)
+  const [aiDecisions, setAiDecisions] = useState<ReturnWithAI[]>([])
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
 
@@ -72,6 +76,24 @@ export default function ReturnsPage() {
     requested: returns.filter((r) => r.status === "requested").length,
     refunded: returns.filter((r) => r.status === "refunded").length,
     totalRefunded: returns.filter((r) => r.status === "refunded").reduce((s, r) => s + r.amount, 0),
+  }
+
+  async function reviewReturnsWithAI() {
+    const pending = returns.filter(r => r.status === "requested")
+    if (pending.length === 0) { toast.info("No pending returns to review"); return }
+    toast.loading("AI is reviewing returns...", { id: "ai-returns" })
+    try {
+      const { analyzeReturnsWithDeepSeek } = await import("@/lib/ai/deepseek-returns")
+      const results = await analyzeReturnsWithDeepSeek(pending)
+      const merged = pending.map(r => {
+        const dec = results.find(d => d.id === r.id)
+        return { ...r, aiRecommendation: dec ? `${dec.recommendation.toUpperCase()} (${dec.confidence}) — ${dec.suggestedAction}` : "Pending" }
+      })
+      setAiDecisions(merged)
+      toast.success(`Reviewed ${results.length} returns!`, { id: "ai-returns" })
+    } catch (e) {
+      toast.error("AI review failed. Check API key.", { id: "ai-returns" })
+    }
   }
 
   return (
@@ -121,8 +143,37 @@ export default function ReturnsPage() {
             <SelectItem value="denied">Denied</SelectItem>
           </SelectContent>
         </Select>
-        <p className="ml-auto text-xs text-muted-foreground">{filtered.length} returns</p>
+        <div className="ml-auto flex gap-2 items-center">
+          <p className="text-xs text-muted-foreground mr-2">{filtered.length} returns</p>
+          <AIActionButton
+            task="returns_review"
+            input={{ returns: returns.filter(r => r.status === "requested") }}
+            label="AI Auto-Review"
+            onSuccess={(result) => {
+              toast.success("AI recommendations ready", { id: "ai-returns" })
+            }}
+          />
+        </div>
       </div>
+
+      {aiDecisions.length > 0 && (
+        <Card className="border-primary/20 bg-primary/[0.03]">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Sparkles className="size-4 text-primary" /> AI Return Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {aiDecisions.map((ret) => (
+              <div key={ret.id} className="text-xs flex justify-between items-start gap-3">
+                <span className="truncate">{ret.productName}</span>
+                <span className="font-medium text-primary whitespace-nowrap">{ret.aiRecommendation}</span>
+              </div>
+            ))}
+          </CardContent>
+          <Button onClick={() => setAiDecisions([])} size="sm" variant="ghost" className="w-full mt-1">Dismiss</Button>
+        </Card>
+      )}
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 rounded-xl border border-dashed border-border text-center">

@@ -12,6 +12,8 @@ import { PerformanceToggle } from "@/components/performance-monitor"
 import { ThemeProvider } from "@/components/theme-provider"
 import { OnboardingWizard } from "@/components/onboarding-wizard"
 import { PWARegister } from "@/components/pwa-register"
+import { FirestoreTestLoader } from "@/components/FirestoreTestLoader"
+import { FirestoreDataLoader } from "@/components/FirestoreDataLoader"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -53,6 +55,8 @@ export default function RootLayout({
               <Toaster richColors position="top-right" />
               <OnboardingWizard />
               <PWARegister />
+              <FirestoreTestLoader />
+              <FirestoreDataLoader />
             </TooltipProvider>
           </QueryProvider>
         </ThemeProvider>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { suppliers } from "@/lib/mock-data"
 import { toast } from "sonner"
+import { AIActionButton } from "@/components/AIActionButton"
 
 const CATEGORIES = ["All", "Electronics", "Fashion", "Home & Garden", "Beauty", "Sports", "Pet Supplies"]
 const COUNTRIES = ["All", "China", "USA", "Turkey", "South Korea", "Germany"]
@@ -26,11 +27,23 @@ export default function SuppliersPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="page-header">Supplier Finder</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Browse verified, reliable suppliers for your dropshipping business.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-header">Supplier Finder</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Find trusted suppliers with high ratings and fast response times.
+          </p>
+        </div>
+        <AIActionButton
+          task="order_processing"
+          input={{
+            orderId: "SUPPLIER-ANALYSIS",
+            customerName: "Supplier Evaluation",
+            totalAmount: 500,
+            items: [{ name: "Supplier Analysis", quantity: 1, price: 500 }],
+          }}
+          label="AI Supplier Analysis"
+        />
       </div>
 
       {/* Filters */}

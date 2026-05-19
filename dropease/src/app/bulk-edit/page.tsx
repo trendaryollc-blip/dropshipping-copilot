@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { products as initialProducts } from "@/lib/mock-data"
+import { AIActionButton } from "@/components/AIActionButton"
 import type { Product, ProductStatus } from "@/types"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -51,6 +52,7 @@ export default function BulkEditPage() {
     }))
   )
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [aiResults, setAiResults] = useState<any[]>([])
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
   const [panelOpen, setPanelOpen] = useState(false)
@@ -139,15 +141,28 @@ export default function BulkEditPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Bulk Product Editor</h1>
-          <p className="text-muted-foreground">
-            Select multiple products and apply price, status, or stock changes all at once.
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-header">Bulk Edit</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Edit prices, stock, and status for multiple products at once.
           </p>
         </div>
+        <AIActionButton
+          task="product_description"
+          input={{
+            productName: "Bulk Products",
+            niche: "General",
+            features: ["High quality", "Trending"],
+            priceRange: { min: 20, max: 100 },
+          }}
+          label="AI Bulk Descriptions"
+          onSuccess={(result) => {
+            setAiResults([...aiResults, result])
+            toast.success("AI descriptions generated for bulk!")
+          }}
+         />
         {selectedCount > 0 && (
           <Button onClick={() => setPanelOpen(o => !o)} className="shrink-0">
             <PenLine className="size-4 mr-1.5" />

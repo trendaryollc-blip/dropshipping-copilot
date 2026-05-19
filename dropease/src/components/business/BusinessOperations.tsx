@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
+import { AIActionButton } from "@/components/AIActionButton"
 import {
   crmService,
   shippingService,
@@ -181,11 +182,23 @@ export function BusinessOperations() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-header">Business Operations</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage customer lifecycle, payments, shipping, pricing, affiliates, and workflow automation from one place.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-header">Business Operations</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage customers, shipping, payments, and business automation in one place.
+          </p>
+        </div>
+        <AIActionButton
+          task="order_processing"
+          input={{
+            orderId: "BIZ-ANALYSIS",
+            customerName: "Business Overview",
+            totalAmount: 1500,
+            items: [{ name: "Business Analysis", quantity: 1, price: 1500 }],
+          }}
+          label="AI Business Insights"
+        />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">

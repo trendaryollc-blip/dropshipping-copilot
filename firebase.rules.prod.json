@@ -1,0 +1,100 @@
+{
+  "rules": {
+    "dropease_users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "dropease_stores": {
+      "$storeId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_products": {
+      "$productId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_suppliers": {
+      "$supplierId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_orders": {
+      "$orderId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_customers": {
+      "$customerId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_returns": {
+      "$returnId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_automation_rules": {
+      "$ruleId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_price_monitoring": {
+      "$logId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_competitors": {
+      "$competitorId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_reviews": {
+      "$reviewId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_ai_generations": {
+      "$logId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_analytics": {
+      "$periodId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_campaigns": {
+      "$campaignId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_webhooks": {
+      "$subscriptionId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "dropease_analytics_rollup": {
+      "$rollupId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}

@@ -1,1 +1,1 @@
-{"name":"dropease","version":"0.1.0"}
+{"name":"dropease","version":"0.1.0","dependencies":{"firebase-admin":"^13.10.0"}}

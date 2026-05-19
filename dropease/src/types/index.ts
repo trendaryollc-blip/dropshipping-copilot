@@ -15,7 +15,11 @@ export interface Product {
   trendScore: number
   supplierName: string
   status: ProductStatus
+  trendaryoUrl?: string        // URL path on trendaryo.com for price scraping
   importedAt?: string
+  price?: number               // latest live price scraped from Trendaryo
+  currency?: string            // currency code (e.g. "INR")
+  priceLastUpdated?: string    // ISO timestamp of last price sync
   description?: string
   views?: number
 }
