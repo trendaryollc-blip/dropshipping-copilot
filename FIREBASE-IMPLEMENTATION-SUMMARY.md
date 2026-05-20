@@ -46,11 +46,11 @@ Each API route supports:
 
 ### 6. Security Rules
 - ✅ Updated `firebase/firestore.rules.prod` with production rules:
-  - Authentication required for all operations
-  - Pro plan required for write operations
-  - User-specific access control
-  - Collection-specific permissions
-- ✅ Updated `firebase/firestore.rules.staging` with open rules for development
+   - Authentication required for all operations
+   - Pro plan required for write operations
+   - User-specific access control
+   - Collection-specific permissions
+   - Updated `firebase/firestore.rules.staging` for development
 
 ### 7. Real-Time Features
 - ✅ Real-time listeners in firestore-service.ts
@@ -102,9 +102,9 @@ npm install
 ```bash
 firebase deploy --only firestore:rules
 ```
-Or use staging rules for development:
+Or use production rules:
 ```bash
-firebase deploy --only firestore:rules --config firebase.json
+firebase deploy --only firestore:rules --config firebase.prod.json
 ```
 
 ### Step 4: Test the Implementation

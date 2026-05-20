@@ -2,7 +2,7 @@ import { addDocument, setDocument } from './firestore-service'
 import { products, suppliers, orders } from './mock-data'
 
 /**
- * Seed initial data into Firestore (staging only)
+ * Seed initial data into Firestore (production)
  * Run this once after setting up your database
  */
 export async function seedFirestoreData() {

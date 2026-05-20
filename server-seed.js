@@ -28,7 +28,7 @@ try {
 }
 
 // ── 2. Firestore helpers ──────────────────────────────────────────────────────
-const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "trendaryo-automation-staging"
+const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "trendaryo-automation-prod"
 const BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`
 
 function toProtoVal(value) {
