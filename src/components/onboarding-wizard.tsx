@@ -65,8 +65,8 @@ export function OnboardingWizard() {
   }
 
   return (
-    <Dialog open={true} onOpenChange={() => {}}>
-      <DialogContent showCloseButton={false} className="sm:max-w-md">
+    <Dialog open={true} onOpenChange={() => {}} modal={false}>
+      <DialogContent showCloseButton={false} showOverlay={false} className="sm:max-w-md">
         <DialogHeader>
           <div className={`mx-auto flex size-14 items-center justify-center rounded-2xl text-2xl mb-2 ${current.color}`}>
             {current.emoji}
