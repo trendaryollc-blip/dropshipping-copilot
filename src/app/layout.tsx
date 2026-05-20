@@ -6,14 +6,12 @@ import { SidebarNav } from "@/components/layout/SidebarNav"
 import { HeaderBar } from "@/components/layout/HeaderBar"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { LazyStockAlert } from "@/components/lazy-component"
 import { QueryProvider } from "@/components/query-provider"
+import { RouteLoadingIndicator } from "@/components/ui/route-loading-indicator"
 import { PerformanceToggle } from "@/components/performance-monitor"
 import { ThemeProvider } from "@/components/theme-provider"
 import { OnboardingWizard } from "@/components/onboarding-wizard"
-import { PWARegister } from "@/components/pwa-register"
-import { FirestoreTestLoader } from "@/components/FirestoreTestLoader"
-import { FirestoreDataLoader } from "@/components/FirestoreDataLoader"
+import { ClientOnlyWidgets } from "@/components/ui/client-only-widgets"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,6 +27,11 @@ export const metadata: Metadata = {
   title: "DropEase – Your Dropshipping Assistant",
   description:
     "Find products, discover suppliers, generate descriptions and manage your dropshipping business easily.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    minimumScale: 1,
+  },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -45,6 +48,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <RouteLoadingIndicator />
           <QueryProvider>
             <TooltipProvider>
               <SidebarProvider defaultOpen={true}>
@@ -52,16 +56,13 @@ export default function RootLayout({
                   <SidebarNav />
                   <div className="flex flex-1 flex-col min-w-0">
                     <HeaderBar />
-                    <LazyStockAlert />
                     <main className="flex-1 px-4 py-5 sm:px-6 lg:px-8">{children}</main>
                   </div>
                 </div>
               </SidebarProvider>
               <Toaster richColors position="top-right" />
               <OnboardingWizard />
-              <PWARegister />
-              <FirestoreTestLoader />
-              <FirestoreDataLoader />
+              <ClientOnlyWidgets />
             </TooltipProvider>
           </QueryProvider>
         </ThemeProvider>
