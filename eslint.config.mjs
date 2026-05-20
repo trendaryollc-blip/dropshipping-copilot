@@ -1,8 +1,9 @@
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import nextPlugin from '@next/eslint-plugin-next';
 
-export default tseslint.config(
+export default [
   {
     ignores: [
       "node_modules/**",
@@ -33,7 +34,11 @@ export default tseslint.config(
         ecmaFeatures: { jsx: true },
       },
     },
+    plugins: {
+      '@next/next': nextPlugin,
+    },
     rules: {
+      ...nextPlugin.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
@@ -44,4 +49,4 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-expressions": "off",
     },
   }
-);
+];
