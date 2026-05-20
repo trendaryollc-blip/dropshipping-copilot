@@ -107,7 +107,42 @@ main().catch((e) => {
 async function main() {
   console.log(`\n🌱  DropEase Firestore seed — project: ${PROJECT_ID}\n`)
 
-  const md = require("./mock-data.ts")
+  // Embedded mock data (extracted from src/lib/mock-data.ts)
+  const md = {
+    products: [
+      { id: "1", name: "Wireless Earbuds Pro", image: "https://picsum.photos/seed/earbuds/400/300", niche: "Electronics", priceRange: { min: 15, max: 45 }, competition: "low", trendScore: 87, supplierName: "TechSupply Co", status: "active", trendaryoUrl: "/products/wireless-earbuds-pro", price: 2499, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-10", views: 1240 },
+      { id: "2", name: "Minimalist Watch Band", image: "https://picsum.photos/seed/watch/400/300", niche: "Fashion", priceRange: { min: 5, max: 18 }, competition: "medium", trendScore: 72, supplierName: "FashionHub", status: "active", importedAt: "2024-01-12", views: 870 },
+      { id: "3", name: "Portable LED Desk Lamp", image: "https://picsum.photos/seed/lamp/400/300", niche: "Home & Garden", priceRange: { min: 12, max: 35 }, competition: "low", trendScore: 91, supplierName: "HomeGoods Direct", status: "draft", importedAt: "2024-01-08", views: 630 },
+      { id: "4", name: "Bamboo Cutting Board Set", image: "https://picsum.photos/seed/bamboo/400/300", niche: "Home & Garden", priceRange: { min: 8, max: 25 }, competition: "medium", trendScore: 65, supplierName: "EcoSupply", status: "active", trendaryoUrl: "/products/bamboo-cutting-board-set", price: 699, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-08", views: 450 },
+      { id: "5", name: "Facial Roller Massager", image: "https://picsum.photos/seed/roller/400/300", niche: "Beauty", priceRange: { min: 6, max: 20 }, competition: "high", trendScore: 78, supplierName: "BeautyPro", status: "active", trendaryoUrl: "/products/facial-roller-massager", price: 599, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-15", views: 2100 },
+      { id: "6", name: "Resistance Band Set", image: "https://picsum.photos/seed/bands/400/300", niche: "Sports", priceRange: { min: 10, max: 30 }, competition: "low", trendScore: 83, supplierName: "FitGear Supply", status: "draft", importedAt: "2024-01-10", views: 380 },
+      { id: "7", name: "Phone Grip Stand", image: "https://picsum.photos/seed/phonegrip/400/300", niche: "Electronics", priceRange: { min: 3, max: 12 }, competition: "high", trendScore: 55, supplierName: "TechSupply Co", status: "archived", importedAt: "2024-01-07", views: 980 },
+      { id: "8", name: "Reusable Water Bottle", image: "https://picsum.photos/seed/bottle/400/300", niche: "Sports", priceRange: { min: 8, max: 22 }, competition: "medium", trendScore: 70, supplierName: "EcoSupply", status: "active", trendaryoUrl: "/products/reusable-water-bottle", price: 499, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-09", views: 760 },
+      { id: "9", name: "Candle Making Kit", image: "https://picsum.photos/seed/candle/400/300", niche: "Home & Garden", priceRange: { min: 18, max: 40 }, competition: "low", trendScore: 80, supplierName: "HomeGoods Direct", status: "active", importedAt: "2024-01-11", views: 510 },
+      { id: "10", name: "Magnetic Phone Wallet", image: "https://picsum.photos/seed/wallet/400/300", niche: "Fashion", priceRange: { min: 4, max: 15 }, competition: "medium", trendScore: 68, supplierName: "FashionHub", status: "draft", importedAt: "2024-01-10", views: 340 },
+      { id: "11", name: "Essential Oil Diffuser", image: "https://picsum.photos/seed/diffuser/400/300", niche: "Beauty", priceRange: { min: 14, max: 38 }, competition: "medium", trendScore: 75, supplierName: "BeautyPro", status: "active", trendaryoUrl: "/products/essential-oil-diffuser", price: 899, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-13", views: 890 },
+      { id: "12", name: "Foldable Travel Bag", image: "https://picsum.photos/seed/bag/400/300", niche: "Fashion", priceRange: { min: 10, max: 28 }, competition: "low", trendScore: 88, supplierName: "FashionHub", status: "active", trendaryoUrl: "/products/foldable-travel-bag", price: 1299, currency: "INR", priceLastUpdated: "2026-05-18T04:00:00Z", importedAt: "2024-01-14", views: 1450 },
+    ],
+    suppliers: [
+      { id: "1", name: "TechSupply Co", avatar: "https://i.pravatar.cc/80?u=techsupply", categories: ["Electronics", "Gadgets"], trustScore: 4.8, responseTime: "< 2 hrs", country: "China", totalProducts: 2400, verified: true, minOrder: 1 },
+      { id: "2", name: "FashionHub", avatar: "https://i.pravatar.cc/80?u=fashionhub", categories: ["Fashion", "Accessories"], trustScore: 4.5, responseTime: "< 4 hrs", country: "Turkey", totalProducts: 1800, verified: true, minOrder: 5 },
+      { id: "3", name: "HomeGoods Direct", avatar: "https://i.pravatar.cc/80?u=homegoods", categories: ["Home & Garden", "Kitchen"], trustScore: 4.7, responseTime: "< 6 hrs", country: "China", totalProducts: 3200, verified: true, minOrder: 1 },
+      { id: "4", name: "BeautyPro", avatar: "https://i.pravatar.cc/80?u=beautypro", categories: ["Beauty", "Skincare"], trustScore: 4.6, responseTime: "< 3 hrs", country: "South Korea", totalProducts: 950, verified: true, minOrder: 3 },
+      { id: "5", name: "FitGear Supply", avatar: "https://i.pravatar.cc/80?u=fitgear", categories: ["Sports", "Fitness"], trustScore: 4.4, responseTime: "< 8 hrs", country: "USA", totalProducts: 680, verified: false, minOrder: 1 },
+      { id: "6", name: "EcoSupply", avatar: "https://i.pravatar.cc/80?u=ecosupply", categories: ["Home & Garden", "Sports", "Eco"], trustScore: 4.9, responseTime: "< 2 hrs", country: "Germany", totalProducts: 420, verified: true, minOrder: 2 },
+      { id: "7", name: "GadgetWorld", avatar: "https://i.pravatar.cc/80?u=gadgetworld", categories: ["Electronics", "Toys"], trustScore: 4.2, responseTime: "< 12 hrs", country: "China", totalProducts: 5600, verified: false, minOrder: 1 },
+      { id: "8", name: "PetLove Supplies", avatar: "https://i.pravatar.cc/80?u=petlove", categories: ["Pet Supplies"], trustScore: 4.7, responseTime: "< 5 hrs", country: "USA", totalProducts: 320, verified: true, minOrder: 2 },
+    ],
+    orders: [
+      { id: "ORD-1042", productName: "Wireless Earbuds Pro", productImage: "https://picsum.photos/seed/earbuds/60/60", customer: "Sarah Mitchell", status: "pending", orderDate: "2024-01-15", estimatedDelivery: "2024-01-25", total: 38.99, quantity: 1 },
+      { id: "ORD-1041", productName: "Foldable Travel Bag", productImage: "https://picsum.photos/seed/bag/60/60", customer: "James Cooper", status: "processing", orderDate: "2024-01-14", estimatedDelivery: "2024-01-24", trackingNumber: "CN123456789", total: 24.99, quantity: 2 },
+      { id: "ORD-1040", productName: "Bamboo Cutting Board Set", productImage: "https://picsum.photos/seed/bamboo/60/60", customer: "Emily Chen", status: "shipped", orderDate: "2024-01-13", estimatedDelivery: "2024-01-22", trackingNumber: "YT987654321", total: 19.99, quantity: 1 },
+      { id: "ORD-1039", productName: "Facial Roller Massager", productImage: "https://picsum.photos/seed/roller/60/60", customer: "Aisha Khan", status: "shipped", orderDate: "2024-01-12", estimatedDelivery: "2024-01-21", trackingNumber: "SF456789123", total: 16.99, quantity: 1 },
+      { id: "ORD-1038", productName: "Resistance Band Set", productImage: "https://picsum.photos/seed/bands/60/60", customer: "Luca Romano", status: "delivered", orderDate: "2024-01-08", estimatedDelivery: "2024-01-18", trackingNumber: "DHL789123456", total: 27.99, quantity: 1 },
+      { id: "ORD-1037", productName: "Essential Oil Diffuser", productImage: "https://picsum.photos/seed/diffuser/60/60", customer: "Priya Sharma", status: "delivered", orderDate: "2024-01-07", estimatedDelivery: "2024-01-17", trackingNumber: "UPS321654987", total: 31.99, quantity: 1 },
+      { id: "ORD-1036", productName: "Candle Making Kit", productImage: "https://picsum.photos/seed/candle/60/60", customer: "Noah Williams", status: "cancelled", orderDate: "2024-01-06", estimatedDelivery: "2024-01-16", total: 35.99, quantity: 1 },
+    ]
+  }
 
   // ── Products ────────────────────────────────────────────────────────────────
   console.log("📦  Seeding products…")
