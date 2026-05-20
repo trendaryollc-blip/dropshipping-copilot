@@ -12,6 +12,10 @@ export default tseslint.config(
       "next-env.d.ts",
       "public/sw.js",
       "tailwind.config.js",
+      // Node.js utility scripts
+      "db-migrate/**",
+      "server-seed.js",
+      "vercel-cache-clear.js",
     ],
   },
   js.configs.recommended,

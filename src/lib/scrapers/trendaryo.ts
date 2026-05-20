@@ -1,5 +1,10 @@
 import { JSDOM } from 'jsdom';
 
+// Safety check: JSDOM only works server-side
+if (typeof window !== 'undefined') {
+  throw new Error('TrendaryoScraper can only be used server-side. Call via /api/trendaryo/* endpoints.');
+}
+
 export interface PriceScraperResult {
   success: boolean;
   price?: number;

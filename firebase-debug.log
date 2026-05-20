@@ -497,3 +497,351 @@ To learn about active projects for the CLI, visit https://firebase.google.com/do
 [info] +  Deploy complete! 
 [info] 
 [info] Project Console: https://console.firebase.google.com/project/trendaryo-automation-staging/overview
+[debug] [2026-05-20T07:43:05.599Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T07:43:05.608Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js projects:list
+[debug] [2026-05-20T07:43:05.615Z] CLI Version:   15.18.0
+[debug] [2026-05-20T07:43:05.615Z] Platform:      win32
+[debug] [2026-05-20T07:43:05.615Z] Node Version:  v25.6.1
+[debug] [2026-05-20T07:43:05.616Z] Time:          Wed May 20 2026 00:43:05 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T07:43:05.616Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T07:43:06.002Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T07:43:06.004Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T07:43:06.010Z] Checked if tokens are valid: false, expires at: 1779194300209
+[debug] [2026-05-20T07:43:06.010Z] Checked if tokens are valid: false, expires at: 1779194300209
+[debug] [2026-05-20T07:43:06.011Z] > refreshing access token with scopes: []
+[debug] [2026-05-20T07:43:06.016Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-20T07:43:06.016Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T07:43:07.115Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-20T07:43:07.116Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T07:43:07.143Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2026-05-20T07:43:08.477Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2026-05-20T07:43:08.477Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] ┌──────────────────────────────┬──────────────────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name         │ Project ID                   │ Project Number │ Resource Location ID │
+├──────────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ project-trendaryo            │ project-trendaryo            │ 1013540742624  │ [Not specified]      │
+├──────────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ trendaryo-automation-prod    │ trendaryo-automation-prod    │ 352820611099   │ [Not specified]      │
+├──────────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ trendaryo-automation-staging │ trendaryo-automation-staging │ 983396212246   │ [Not specified]      │
+└──────────────────────────────┴──────────────────────────────┴────────────────┴──────────────────────┘
+[info] 
+[info] 3 project(s) total.
+[debug] [2026-05-20T07:44:17.220Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T07:44:17.225Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js apps:list --project trendaryo-automation-staging
+[debug] [2026-05-20T07:44:17.226Z] CLI Version:   15.18.0
+[debug] [2026-05-20T07:44:17.226Z] Platform:      win32
+[debug] [2026-05-20T07:44:17.226Z] Node Version:  v25.6.1
+[debug] [2026-05-20T07:44:17.226Z] Time:          Wed May 20 2026 00:44:17 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T07:44:17.227Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T07:44:17.825Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T07:44:17.826Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T07:44:17.831Z] Checked if tokens are valid: true, expires at: 1779266586117
+[debug] [2026-05-20T07:44:17.831Z] Checked if tokens are valid: true, expires at: 1779266586117
+[debug] [2026-05-20T07:44:17.833Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/trendaryo-automation-staging:searchApps pageSize=100
+[debug] [2026-05-20T07:44:20.993Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/trendaryo-automation-staging:searchApps 200
+[debug] [2026-05-20T07:44:20.993Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/trendaryo-automation-staging:searchApps {"apps":[{"name":"projects/trendaryo-automation-staging/webApps/1:983396212246:web:1567b7e5055187f2ee9f37","displayName":"trendaryo-automation-web-staging","platform":"WEB","appId":"1:983396212246:web:1567b7e5055187f2ee9f37","namespace":"MTFhM2YzZDktZmI1Zi00OWU1LThlN2YtZmQzMTZlZTYxNjU2","apiKeyId":"4b520248-d75e-4bb8-91eb-5ce564c172a0","state":"ACTIVE","expireTime":"1970-01-01T00:00:00Z"},{"name":"projects/trendaryo-automation-staging/webApps/1:983396212246:web:d4e57f787f319d95ee9f37","displayName":"automation staging ","platform":"WEB","appId":"1:983396212246:web:d4e57f787f319d95ee9f37","namespace":"ZjViOGVmODQtMjkzNC00ZjY1LTk5YWMtNzM4Y2JmOGNiOTBh","apiKeyId":"4b520248-d75e-4bb8-91eb-5ce564c172a0","state":"ACTIVE","expireTime":"1970-01-01T00:00:00Z"}]}
+[info] ┌──────────────────────────────────┬───────────────────────────────────────────┬──────────┐
+│ App Display Name                 │ App ID                                    │ Platform │
+├──────────────────────────────────┼───────────────────────────────────────────┼──────────┤
+│ trendaryo-automation-web-staging │ 1:983396212246:web:1567b7e5055187f2ee9f37 │ WEB      │
+├──────────────────────────────────┼───────────────────────────────────────────┼──────────┤
+│ automation staging               │ 1:983396212246:web:d4e57f787f319d95ee9f37 │ WEB      │
+└──────────────────────────────────┴───────────────────────────────────────────┴──────────┘
+[info] 
+[info] 2 app(s) total.
+[debug] [2026-05-20T08:31:02.613Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T08:31:02.702Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js login --reauth
+[debug] [2026-05-20T08:31:02.709Z] CLI Version:   15.18.0
+[debug] [2026-05-20T08:31:02.709Z] Platform:      win32
+[debug] [2026-05-20T08:31:02.710Z] Node Version:  v25.6.1
+[debug] [2026-05-20T08:31:02.711Z] Time:          Wed May 20 2026 01:31:02 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T08:31:02.712Z] ----------------------------------------------------------------------
+[debug] 
+[error] 
+[error] Error: Cannot run login in non-interactive mode. See login:ci to generate a token for use in non-interactive environments.
+[debug] [2026-05-20T08:44:23.556Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T08:44:23.611Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project trendaryo-automation-staging
+[debug] [2026-05-20T08:44:23.616Z] CLI Version:   15.18.0
+[debug] [2026-05-20T08:44:23.616Z] Platform:      win32
+[debug] [2026-05-20T08:44:23.616Z] Node Version:  v25.6.1
+[debug] [2026-05-20T08:44:23.616Z] Time:          Wed May 20 2026 01:44:23 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T08:44:23.616Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T08:44:31.428Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T08:44:31.435Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T08:44:31.435Z] [iam] checking project trendaryo-automation-staging for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-20T08:44:31.436Z] Checked if tokens are valid: false, expires at: 1779266586117
+[debug] [2026-05-20T08:44:31.437Z] Checked if tokens are valid: false, expires at: 1779266586117
+[debug] [2026-05-20T08:44:31.437Z] > refreshing access token with scopes: []
+[debug] [2026-05-20T08:44:31.446Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-20T08:44:31.446Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T08:44:32.444Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-20T08:44:32.445Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T08:44:32.472Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-staging:testIamPermissions [none]
+[debug] [2026-05-20T08:44:32.472Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-staging:testIamPermissions  x-goog-user-project=trendaryo-automation-staging
+[debug] [2026-05-20T08:44:32.472Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-staging:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-20T08:44:35.143Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-staging:testIamPermissions 200
+[debug] [2026-05-20T08:44:35.143Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-staging:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'trendaryo-automation-staging'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-20T08:44:35.164Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:35.164Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:35.164Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-staging/databases/(default) [none]
+[debug] [2026-05-20T08:44:36.797Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-staging/databases/(default) 200
+[debug] [2026-05-20T08:44:36.798Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-staging/databases/(default) {"name":"projects/trendaryo-automation-staging/databases/(default)","uid":"a004d984-5372-4d39-bb12-7d91bbd027b6","createTime":"2026-05-16T13:59:13.026547Z","updateTime":"2026-05-16T13:59:13.026547Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-20T07:44:37.661620Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"INy7ofK8x5QDMOa86sqSwZQD"}
+[info] i  cloud.firestore: checking firebase/firestore.rules.staging for compilation errors... 
+[debug] [2026-05-20T08:44:36.804Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:36.805Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:36.805Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging:test [none]
+[debug] [2026-05-20T08:44:36.806Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging:test [omitted]
+[debug] [2026-05-20T08:44:38.875Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging:test 200
+[debug] [2026-05-20T08:44:38.875Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging:test {}
+[info] +  cloud.firestore: rules file firebase/firestore.rules.staging compiled successfully 
+[debug] [2026-05-20T08:44:38.877Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:38.877Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:38.877Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases pageSize=10&pageToken=
+[debug] [2026-05-20T08:44:39.880Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases 200
+[debug] [2026-05-20T08:44:39.881Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases {"releases":[{"name":"projects/trendaryo-automation-staging/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-staging/rulesets/33459a79-79ee-4279-8569-74007223abae","createTime":"2026-05-16T13:59:25.283673Z","updateTime":"2026-05-19T11:38:43.356136Z"}]}
+[debug] [2026-05-20T08:44:39.884Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:39.884Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:39.885Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets/33459a79-79ee-4279-8569-74007223abae [none]
+[debug] [2026-05-20T08:44:40.894Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets/33459a79-79ee-4279-8569-74007223abae 200
+[debug] [2026-05-20T08:44:40.895Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets/33459a79-79ee-4279-8569-74007223abae [omitted]
+[info] i  firestore: uploading rules firebase/firestore.rules.staging... 
+[debug] [2026-05-20T08:44:40.905Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:40.906Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:40.907Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets [none]
+[debug] [2026-05-20T08:44:40.907Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets [omitted]
+[debug] [2026-05-20T08:44:41.998Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets 200
+[debug] [2026-05-20T08:44:41.999Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/rulesets {"name":"projects/trendaryo-automation-staging/rulesets/d8986919-6a06-40bc-ac39-6295a01ee566","source":{"files":[{"content":"rules_version = '2';\r\nservice cloud.firestore {\r\n  match /databases/{database}/documents {\r\n    // Staging: Open rules for development and testing\r\n    // WARNING: Do NOT use these rules in production!\r\n    match /{document=**} {\r\n      allow read, write: if true;\r\n    }\r\n  }\r\n}\r\n","name":"firebase/firestore.rules.staging"}]},"createTime":"2026-05-20T08:44:42.885743Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-05-20T08:44:41.999Z] [rules] created ruleset projects/trendaryo-automation-staging/rulesets/d8986919-6a06-40bc-ac39-6295a01ee566
+[debug] [2026-05-20T08:44:42.001Z] [rules] releasing cloud.firestore with ruleset projects/trendaryo-automation-staging/rulesets/d8986919-6a06-40bc-ac39-6295a01ee566
+[debug] [2026-05-20T08:44:42.002Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:42.002Z] Checked if tokens are valid: true, expires at: 1779270271445
+[debug] [2026-05-20T08:44:42.003Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases/cloud.firestore [none]
+[debug] [2026-05-20T08:44:42.003Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases/cloud.firestore {"release":{"name":"projects/trendaryo-automation-staging/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-staging/rulesets/d8986919-6a06-40bc-ac39-6295a01ee566"}}
+[debug] [2026-05-20T08:44:43.066Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases/cloud.firestore 200
+[debug] [2026-05-20T08:44:43.067Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-staging/releases/cloud.firestore {"name":"projects/trendaryo-automation-staging/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-staging/rulesets/d8986919-6a06-40bc-ac39-6295a01ee566","createTime":"2026-05-16T13:59:25.283673Z","updateTime":"2026-05-20T08:44:43.951344Z"}
+[debug] [2026-05-20T08:44:43.068Z] [rules] updated release projects/trendaryo-automation-staging/releases/cloud.firestore
+[info] +  firestore: released rules firebase/firestore.rules.staging to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/trendaryo-automation-staging/overview
+[debug] [2026-05-20T11:05:34.734Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T11:05:34.753Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project trendaryo-automation-prod --force
+[debug] [2026-05-20T11:05:34.759Z] CLI Version:   15.18.0
+[debug] [2026-05-20T11:05:34.759Z] Platform:      win32
+[debug] [2026-05-20T11:05:34.759Z] Node Version:  v25.6.1
+[debug] [2026-05-20T11:05:34.759Z] Time:          Wed May 20 2026 04:05:34 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T11:05:34.759Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T11:05:42.204Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T11:05:42.205Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T11:05:42.205Z] [iam] checking project trendaryo-automation-prod for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-20T11:05:42.207Z] Checked if tokens are valid: false, expires at: 1779270271445
+[debug] [2026-05-20T11:05:42.207Z] Checked if tokens are valid: false, expires at: 1779270271445
+[debug] [2026-05-20T11:05:42.207Z] > refreshing access token with scopes: []
+[debug] [2026-05-20T11:05:42.215Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-20T11:05:42.215Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T11:05:43.179Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-20T11:05:43.180Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-20T11:05:43.201Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions [none]
+[debug] [2026-05-20T11:05:43.201Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions  x-goog-user-project=trendaryo-automation-prod
+[debug] [2026-05-20T11:05:43.201Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-20T11:05:46.332Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions 200
+[debug] [2026-05-20T11:05:46.332Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'trendaryo-automation-prod'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-20T11:05:46.339Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:46.339Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:46.339Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) [none]
+[debug] [2026-05-20T11:05:48.334Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) 200
+[debug] [2026-05-20T11:05:48.335Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) {"name":"projects/trendaryo-automation-prod/databases/(default)","uid":"72801f05-21a0-4c13-bb51-3198330d3915","createTime":"2026-05-16T13:59:47.289721Z","updateTime":"2026-05-16T13:59:47.289721Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-20T10:05:48.156591Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"INa5p7ncx5QDMM301biowpQD"}
+[info] i  cloud.firestore: checking firebase/firestore.rules.prod for compilation errors... 
+[debug] [2026-05-20T11:05:48.335Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:48.336Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:48.342Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [none]
+[debug] [2026-05-20T11:05:48.343Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [omitted]
+[debug] [2026-05-20T11:05:51.905Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test 200
+[debug] [2026-05-20T11:05:51.905Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test {}
+[info] +  cloud.firestore: rules file firebase/firestore.rules.prod compiled successfully 
+[debug] [2026-05-20T11:05:51.909Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:51.910Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:51.910Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases pageSize=10&pageToken=
+[debug] [2026-05-20T11:05:52.501Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases 200
+[debug] [2026-05-20T11:05:52.502Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases {"releases":[{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/9e333369-5a36-486e-8d50-597249a6b817","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-18T15:43:31.621557Z"}]}
+[debug] [2026-05-20T11:05:52.503Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:52.503Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:52.503Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/9e333369-5a36-486e-8d50-597249a6b817 [none]
+[debug] [2026-05-20T11:05:53.433Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/9e333369-5a36-486e-8d50-597249a6b817 200
+[debug] [2026-05-20T11:05:53.434Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/9e333369-5a36-486e-8d50-597249a6b817 [omitted]
+[info] i  firestore: uploading rules firebase/firestore.rules.prod... 
+[debug] [2026-05-20T11:05:53.435Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:53.435Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:53.436Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets [none]
+[debug] [2026-05-20T11:05:53.436Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets [omitted]
+[debug] [2026-05-20T11:05:54.574Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets 200
+[debug] [2026-05-20T11:05:54.574Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets {"name":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // ─── Helpers ──────────────────────────────────────────────────────────────\n\n    function isSignedIn() {\n      return request.auth != null;\n    }\n\n    function isOwner(uid) {\n      return isSignedIn() && request.auth.uid == uid;\n    }\n\n    // ─── dropease_users ───────────────────────────────────────────────────────\n    // Users own their own doc.  New users are created by an admin callable or\n    // the client directly after sign-up — allow the uid match to create the\n    // first version of their own doc.\n    match /dropease_users/{userId} {\n      allow read:  if isOwner(userId);\n      allow write: if isOwner(userId);\n    }\n\n    // ─── dropease_products ────────────────────────────────────────────────────\n    // Any signed-in user can CRUD their own records.\n    // Toggle `allow write` to `if isOwner(resource.data.ownerId)` for multi-tenant.\n    match /dropease_products/{productId} {\n      allow read:  if isSignedIn();\n      allow write: if isSignedIn();\n    }\n\n    // ─── dropease_suppliers ───────────────────────────────────────────────────\n    match /dropease_suppliers/{supplierId} {\n      allow read:  if isSignedIn();\n      allow write: if isSignedIn();\n    }\n\n    // ─── dropease_orders ──────────────────────────────────────────────────────\n    match /dropease_orders/{orderId} {\n      allow read:  if isSignedIn();\n      allow write: if isSignedIn();\n    }\n\n    // ─── dropease_automation_rules ─────────────────────────────────────────────\n    match /dropease_automation_rules/{ruleId} {\n      allow read:  if isSignedIn();\n      allow write: if isSignedIn();\n    }\n\n    // ─── dropease_notifications ────────────────────────────────────────────────\n    match /dropease_notifications/{notifId} {\n      allow read:  if isOwner(resource.data.uid);\n      allow write: if isSignedIn();\n    }\n\n    // ─── dropease_analytics ───────────────────────────────────────────────────\n    match /dropease_analytics/{analyticsId} {\n      allow read:  if isSignedIn();\n      allow write: if isSignedIn();\n    }\n\n    // ─── Default deny ─────────────────────────────────────────────────────────\n    match /{document=**} {\n      allow read, write: if false;\n    }\n  }\n}\n","name":"firebase/firestore.rules.prod"}]},"createTime":"2026-05-20T11:05:54.370591Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-05-20T11:05:54.575Z] [rules] created ruleset projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364
+[debug] [2026-05-20T11:05:54.576Z] [rules] releasing cloud.firestore with ruleset projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364
+[debug] [2026-05-20T11:05:54.576Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:54.577Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:05:54.577Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore [none]
+[debug] [2026-05-20T11:05:54.577Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"release":{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364"}}
+[debug] [2026-05-20T11:05:55.313Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore 200
+[debug] [2026-05-20T11:05:55.313Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-20T11:05:55.089155Z"}
+[debug] [2026-05-20T11:05:55.314Z] [rules] updated release projects/trendaryo-automation-prod/releases/cloud.firestore
+[info] +  firestore: released rules firebase/firestore.rules.prod to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/trendaryo-automation-prod/overview
+[debug] [2026-05-20T11:27:20.630Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T11:27:20.633Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project trendaryo-automation-prod --force
+[debug] [2026-05-20T11:27:20.634Z] CLI Version:   15.18.0
+[debug] [2026-05-20T11:27:20.634Z] Platform:      win32
+[debug] [2026-05-20T11:27:20.634Z] Node Version:  v25.6.1
+[debug] [2026-05-20T11:27:20.634Z] Time:          Wed May 20 2026 04:27:20 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T11:27:20.634Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T11:27:22.425Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T11:27:22.426Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T11:27:22.426Z] [iam] checking project trendaryo-automation-prod for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-20T11:27:22.427Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:22.428Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:22.428Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions [none]
+[debug] [2026-05-20T11:27:22.429Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions  x-goog-user-project=trendaryo-automation-prod
+[debug] [2026-05-20T11:27:22.429Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-20T11:27:24.524Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions 200
+[debug] [2026-05-20T11:27:24.525Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'trendaryo-automation-prod'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-20T11:27:24.529Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:24.530Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:24.530Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) [none]
+[debug] [2026-05-20T11:27:26.526Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) 200
+[debug] [2026-05-20T11:27:26.526Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) {"name":"projects/trendaryo-automation-prod/databases/(default)","uid":"72801f05-21a0-4c13-bb51-3198330d3915","createTime":"2026-05-16T13:59:47.289721Z","updateTime":"2026-05-16T13:59:47.289721Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-20T10:27:26.327115Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IPm5qaThx5QDMM301biowpQD"}
+[info] i  cloud.firestore: checking firebase/firestore.rules.prod for compilation errors... 
+[debug] [2026-05-20T11:27:26.528Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:26.528Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:26.528Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [none]
+[debug] [2026-05-20T11:27:26.528Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [omitted]
+[debug] [2026-05-20T11:27:28.102Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test 200
+[debug] [2026-05-20T11:27:28.102Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test {}
+[info] +  cloud.firestore: rules file firebase/firestore.rules.prod compiled successfully 
+[debug] [2026-05-20T11:27:28.105Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:28.105Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:28.105Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases pageSize=10&pageToken=
+[debug] [2026-05-20T11:27:29.010Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases 200
+[debug] [2026-05-20T11:27:29.010Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases {"releases":[{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-20T11:05:55.089155Z"}]}
+[debug] [2026-05-20T11:27:29.010Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:29.011Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:29.011Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 [none]
+[debug] [2026-05-20T11:27:29.918Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 200
+[debug] [2026-05-20T11:27:29.919Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 [omitted]
+[info] i  firestore: latest version of firebase/firestore.rules.prod already up to date, skipping upload... 
+[debug] [2026-05-20T11:27:29.920Z] [rules] releasing cloud.firestore with ruleset projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364
+[debug] [2026-05-20T11:27:29.920Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:29.920Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:27:29.920Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore [none]
+[debug] [2026-05-20T11:27:29.920Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"release":{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364"}}
+[debug] [2026-05-20T11:27:30.596Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore 200
+[debug] [2026-05-20T11:27:30.596Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-20T11:27:30.365046Z"}
+[debug] [2026-05-20T11:27:30.596Z] [rules] updated release projects/trendaryo-automation-prod/releases/cloud.firestore
+[info] +  firestore: released rules firebase/firestore.rules.prod to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/trendaryo-automation-prod/overview
+[debug] [2026-05-20T11:44:58.300Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T11:44:58.304Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js use --project trendaryo-automation-prod
+[debug] [2026-05-20T11:44:58.304Z] CLI Version:   15.18.0
+[debug] [2026-05-20T11:44:58.304Z] Platform:      win32
+[debug] [2026-05-20T11:44:58.304Z] Node Version:  v25.6.1
+[debug] [2026-05-20T11:44:58.304Z] Time:          Wed May 20 2026 04:44:58 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T11:44:58.304Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T11:44:58.306Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-05-20T11:44:58.542Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T11:44:58.543Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[info] trendaryo-automation-prod
+[debug] [2026-05-20T11:45:32.006Z] ----------------------------------------------------------------------
+[debug] [2026-05-20T11:45:32.009Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\trendaryo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project trendaryo-automation-prod
+[debug] [2026-05-20T11:45:32.009Z] CLI Version:   15.18.0
+[debug] [2026-05-20T11:45:32.009Z] Platform:      win32
+[debug] [2026-05-20T11:45:32.009Z] Node Version:  v25.6.1
+[debug] [2026-05-20T11:45:32.009Z] Time:          Wed May 20 2026 04:45:32 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-05-20T11:45:32.010Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-20T11:45:32.011Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-05-20T11:45:33.537Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-20T11:45:33.538Z] > authorizing via signed-in user (trendaryollc@gmail.com)
+[debug] [2026-05-20T11:45:33.538Z] [iam] checking project trendaryo-automation-prod for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-20T11:45:33.539Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:33.539Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:33.539Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions [none]
+[debug] [2026-05-20T11:45:33.540Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions  x-goog-user-project=trendaryo-automation-prod
+[debug] [2026-05-20T11:45:33.540Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-20T11:45:34.668Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-05-20T11:45:34.668Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-05-20T11:45:35.077Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions 200
+[debug] [2026-05-20T11:45:35.077Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/trendaryo-automation-prod:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'trendaryo-automation-prod'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-20T11:45:35.087Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:35.087Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:35.087Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) [none]
+[debug] [2026-05-20T11:45:37.388Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) 200
+[debug] [2026-05-20T11:45:37.388Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/trendaryo-automation-prod/databases/(default) {"name":"projects/trendaryo-automation-prod/databases/(default)","uid":"72801f05-21a0-4c13-bb51-3198330d3915","createTime":"2026-05-16T13:59:47.289721Z","updateTime":"2026-05-16T13:59:47.289721Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-20T10:45:37.193324Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"INnSvqzlx5QDMM301biowpQD"}
+[info] i  cloud.firestore: checking firebase/firestore.rules.prod for compilation errors... 
+[debug] [2026-05-20T11:45:37.390Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:37.390Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:37.391Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [none]
+[debug] [2026-05-20T11:45:37.391Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test [omitted]
+[debug] [2026-05-20T11:45:38.690Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test 200
+[debug] [2026-05-20T11:45:38.691Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod:test {}
+[info] +  cloud.firestore: rules file firebase/firestore.rules.prod compiled successfully 
+[debug] [2026-05-20T11:45:38.696Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:38.697Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:38.698Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases pageSize=10&pageToken=
+[debug] [2026-05-20T11:45:39.611Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases 200
+[debug] [2026-05-20T11:45:39.611Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases {"releases":[{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-20T11:27:30.365046Z"}]}
+[debug] [2026-05-20T11:45:39.613Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:39.613Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:39.613Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 [none]
+[debug] [2026-05-20T11:45:40.163Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 200
+[debug] [2026-05-20T11:45:40.164Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364 [omitted]
+[info] i  firestore: latest version of firebase/firestore.rules.prod already up to date, skipping upload... 
+[debug] [2026-05-20T11:45:40.165Z] [rules] releasing cloud.firestore with ruleset projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364
+[debug] [2026-05-20T11:45:40.165Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:40.165Z] Checked if tokens are valid: true, expires at: 1779278742180
+[debug] [2026-05-20T11:45:40.165Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore [none]
+[debug] [2026-05-20T11:45:40.166Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"release":{"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364"}}
+[debug] [2026-05-20T11:45:41.225Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore 200
+[debug] [2026-05-20T11:45:41.225Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/trendaryo-automation-prod/releases/cloud.firestore {"name":"projects/trendaryo-automation-prod/releases/cloud.firestore","rulesetName":"projects/trendaryo-automation-prod/rulesets/599895b6-fa72-4aa0-a0c9-981367b94364","createTime":"2026-05-16T13:59:52.809549Z","updateTime":"2026-05-20T11:45:41.021441Z"}
+[debug] [2026-05-20T11:45:41.225Z] [rules] updated release projects/trendaryo-automation-prod/releases/cloud.firestore
+[info] +  firestore: released rules firebase/firestore.rules.prod to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/trendaryo-automation-prod/overview
