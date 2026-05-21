@@ -48,16 +48,16 @@ export const useShippingStore = create<ShippingState>((set) => ({
       const connected = fromStorage.filter(c => c.connected)
       for (const c of connected) {
         const adapter = getAdapterForProvider(c.provider)
-        if (adapter) {
-          // call adapter implementation (may be sync mock)
-          try {
-            const rates = adapter.getRates(payload)
-            // if adapter returns rates, prefer them
-            return rates as unknown as import("@/types").ShippingRate[]
-          } catch (e) {
-            console.warn("Adapter getRates failed for", c.provider, e)
-          }
-        }
+            if (adapter) {
+              // call adapter implementation (may be sync mock)
+              try {
+                const rates = adapter.getRates(payload)
+                // if adapter returns rates, prefer them
+                return rates as ShippingRate[]
+              } catch (e) {
+                console.warn("Adapter getRates failed for", c.provider, e)
+              }
+            }
       }
     } catch (e) {
       console.warn("compareRates adapter path failed", e)

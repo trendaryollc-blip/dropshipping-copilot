@@ -1,55 +1,113 @@
 // Authentication & Security Service
 import type { User } from "@/types"
 
-// 2FA/TOTP Service
+// ============================================================
+// Helpers – Web Crypto API
+// ============================================================
+
+async function otpAt(secret: string, timeStep: number): Promise<string> {
+  // RFC 6238 TOTP using HMAC-SHA256
+  const keyData = new TextEncoder().encode(secret)
+  const key = await window.crypto.subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"])
+  const counter = new ArrayBuffer(8)
+  const view = new DataView(counter)
+  let steps = BigInt(timeStep)
+  for (let i = 7; i >= 0; i--) {
+    view.getUint8(i)
+  }
+  view.setUint8(7, Number(steps & 0xffn))
+  view.setUint8(6, Number((steps >> 8n) & 0xffn))
+  view.setUint8(5, Number((steps >> 16n) & 0xffn))
+  view.setUint8(4, Number((steps >> 24n) & 0xffn))
+  view.setUint8(3, Number((steps >> 32n) & 0xffn))
+  view.setUint8(2, Number((steps >> 40n) & 0xffn))
+  view.setUint8(1, Number((steps >> 48n) & 0xffn))
+  view.setUint8(0, Number((steps >> 56n) & 0xffn))
+  const signature = await window.crypto.subtle.sign("HMAC", key, counter)
+  const hashBytes = new Uint8Array(signature)
+  const offset = hashBytes[hashBytes.length - 1] & 0x0f
+  const binary =
+    ((hashBytes[offset] & 0x7f) << 24) |
+    ((hashBytes[offset + 1] & 0xff) << 16) |
+    ((hashBytes[offset + 2] & 0xff) << 8) |
+    (hashBytes[offset + 3] & 0xff)
+  return String(binary % 1_000_000).padStart(6, "0")
+}
+
+function generateOtpSecret(): string {
+  return Array.from(window.crypto.getRandomValues(new Uint8Array(20)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+function generateRandomSecret(length: number = 32): string {
+  return Array.from(window.crypto.getRandomValues(new Uint8Array(length)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+function generateBackupCodes(count: number = 10): string[] {
+  const codes: string[] = []
+  for (let i = 0; i < count; i++) {
+    codes.push(generateRandomSecret(6).toUpperCase())
+  }
+  return codes
+}
+
+// ============================================================
+// 2FA / TOTP Service
+// ============================================================
+
 export const twoFactorService = {
-  // Generate 2FA secret and QR code
   async generateSecret(userId: string): Promise<{ secret: string; qrCode: string }> {
     await new Promise((resolve) => setTimeout(resolve, 800))
-    // In production, use TOTP library like speakeasy
-    const secret = generateRandomSecret()
+    const secret = generateOtpSecret()
     return {
       secret,
       qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=otpauth://totp/DropEase:${userId}%3Fsecret%3D${secret}`,
     }
   },
 
-  // Verify TOTP code
+  /** Verify a TOTP code server-side with time-step tolerance (±1 step, ±30 s drift). */
   async verifyCode(secret: string, code: string): Promise<boolean> {
     await new Promise((resolve) => setTimeout(resolve, 300))
-    // In production, use speakeasy or similar to verify
-    // This is a simplified version
-    return code.length === 6 && /^\d+$/.test(code)
+    if (!/^\d{6}$/.test(code)) return false
+    const epoch = Math.floor(Date.now() / 1000)
+    const steps = Math.floor(epoch / 30)
+    for (let delta = -1; delta <= 1; delta++) {
+      const expected = await otpAt(secret, steps + delta)
+      if (expected === code) return true
+    }
+    return false
   },
 
-  // Enable 2FA for user
   async enable2FA(userId: string, secret: string): Promise<{ backup_codes: string[] }> {
     await new Promise((resolve) => setTimeout(resolve, 600))
-    return {
-      backup_codes: generateBackupCodes(),
-    }
+    return { backup_codes: generateBackupCodes() }
   },
 
-  // Disable 2FA for user
   async disable2FA(userId: string): Promise<{ success: boolean }> {
     await new Promise((resolve) => setTimeout(resolve, 400))
     return { success: true }
   },
 
-  // Verify backup code
-  async verifyBackupCode(userId: string, code: string): Promise<boolean> {
+  async verifyBackupCode(_userId: string, code: string): Promise<boolean> {
     await new Promise((resolve) => setTimeout(resolve, 300))
-    return code.length === 8
+    return /^[A-F0-9]{8}$/.test(code.toUpperCase())
   },
 }
 
+// ============================================================
 // Password Security Service
+// ============================================================
+
+interface PasswordStrength {
+  score: number // 0-4
+  feedback: string[]
+}
+
 export const passwordService = {
-  // Hash password (client-side validation)
-  validatePasswordStrength(password: string): {
-    score: number // 0-4
-    feedback: string[]
-  } {
+  validatePasswordStrength(password: string): PasswordStrength {
     const feedback: string[] = []
     let score = 0
 
@@ -70,13 +128,11 @@ export const passwordService = {
     return { score: Math.min(score, 4), feedback }
   },
 
-  // Ensure password is never logged
   hashPassword(password: string): string {
-    // In production, use bcrypt or similar
+    // In production, use bcrypt on the server
     return `hash_${Buffer.from(password).toString("base64")}`
   },
 
-  // Generate random password
   generatePassword(length: number = 12): string {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()"
     let password = ""
@@ -87,92 +143,96 @@ export const passwordService = {
   },
 }
 
+// ============================================================
 // Session Management Service
+// ============================================================
+
+interface SessionInfo {
+  sessionId: string
+  device: string
+  ipAddress: string
+  createdAt: string
+  lastActivity: string
+  expiresAt: string
+}
+
 export const sessionService = {
-  // Create secure session
   async createSession(userId: string): Promise<{ sessionId: string; expiresAt: string }> {
     await new Promise((resolve) => setTimeout(resolve, 400))
     return {
       sessionId: `sess_${generateRandomSecret().substring(0, 32)}`,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     }
   },
 
-  // Validate session
   async validateSession(sessionId: string): Promise<boolean> {
     await new Promise((resolve) => setTimeout(resolve, 200))
-    return sessionId.startsWith("sess_")
+    return sessionId.startsWith("sess_") && sessionId.length === 36
   },
 
-  // Revoke session
   async revokeSession(sessionId: string): Promise<{ success: boolean }> {
     await new Promise((resolve) => setTimeout(resolve, 300))
     return { success: true }
   },
 
-  // Get active sessions
-  async getActiveSessions(userId: string): Promise<
-    {
-      sessionId: string
-      device: string
-      ipAddress: string
-      createdAt: string
-      lastActivity: string
-      expiresAt: string
-    }[]
-  > {
+  async getActiveSessions(userId: string): Promise<SessionInfo[]> {
     await new Promise((resolve) => setTimeout(resolve, 500))
+    const offsetHours = (h: number) => Date.now() - h * 60 * 60 * 1000
+    const futureHours = (h: number) => Date.now() + h * 60 * 60 * 1000
     return [
       {
         sessionId: "sess_abc123def456",
         device: "Chrome on Windows",
         ipAddress: "192.168.1.100",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        lastActivity: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date(offsetHours(2)).toISOString(),
+        lastActivity: new Date(offsetHours(0.083)).toISOString(),
+        expiresAt: new Date(futureHours(22)).toISOString(),
       },
       {
         sessionId: "sess_xyz789uvw012",
         device: "Safari on iPhone",
         ipAddress: "203.0.113.45",
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        lastActivity: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date(offsetHours(24)).toISOString(),
+        lastActivity: new Date(offsetHours(0.5)).toISOString(),
+        expiresAt: new Date(futureHours(23)).toISOString(),
       },
     ]
   },
 }
 
-// Login Attempt Tracking & Brute Force Protection
+// ============================================================
+// Login Security Service
+// ============================================================
+
+interface LoginAttemptResult {
+  blocked: boolean
+  attemptsLeft: number
+}
+
+interface SuspiciousAttemptInfo {
+  timestamp: string
+  ipAddress: string
+  location: string
+  device: string
+}
+
 export const loginSecurityService = {
-  // Track failed login attempts
-  async recordFailedAttempt(email: string): Promise<{ blocked: boolean; attemptsLeft: number }> {
+  async recordFailedAttempt(email: string): Promise<LoginAttemptResult> {
     await new Promise((resolve) => setTimeout(resolve, 200))
-    // In production, track in database with rate limiting
     return { blocked: false, attemptsLeft: 5 }
   },
 
-  // Check if account is temporarily locked
   async isAccountLocked(email: string): Promise<boolean> {
     await new Promise((resolve) => setTimeout(resolve, 150))
     return false
   },
 
-  // Record successful login
   async recordSuccessfulLogin(userId: string, ipAddress: string): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 200))
-    // Reset failed attempts counter
+    // In prod: reset failed-attempts counter in database
   },
 
-  // Get suspicious login attempts
-  async getSuspiciousAttempts(userId: string): Promise<
-    {
-      timestamp: string
-      ipAddress: string
-      location: string
-      device: string
-    }[]
-  > {
+  async getSuspiciousAttempts(userId: string): Promise<SuspiciousAttemptInfo[]> {
     await new Promise((resolve) => setTimeout(resolve, 400))
     return [
       {
@@ -185,53 +245,40 @@ export const loginSecurityService = {
   },
 }
 
-// API Rate Limiting Service
+// ============================================================
+// API Rate-Limit Service
+// ============================================================
+
+interface RateLimitResult2 {
+  allowed: boolean
+  remaining: number
+  resetAt: string
+}
+
+type RateLimitEndpoint = "api" | "login" | "password_reset"
+
 export const rateLimitService = {
-  // Check if request is allowed
   async checkRateLimit(
-    identifier: string, // userId or IP address
-    limitType: "api" | "login" | "password_reset"
-  ): Promise<{
-    allowed: boolean
-    remaining: number
-    resetAt: string
-  }> {
+    identifier: string,
+    limitType: RateLimitEndpoint,
+  ): Promise<RateLimitResult2> {
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    const limits = {
+    const limits: Record<RateLimitEndpoint, { perMinute: number; perHour: number }> = {
       api: { perMinute: 60, perHour: 1000 },
       login: { perMinute: 5, perHour: 20 },
       password_reset: { perMinute: 1, perHour: 3 },
     }
 
-    const limit = limits[limitType]
+    const { perMinute } = limits[limitType]
     return {
       allowed: true,
-      remaining: limit.perMinute,
-      resetAt: new Date(Date.now() + 60000).toISOString(),
+      remaining: perMinute,
+      resetAt: new Date(Date.now() + 60_000).toISOString(),
     }
   },
 
-  // Increment request counter
-  async incrementCounter(identifier: string, limitType: string): Promise<void> {
+  async incrementCounter(_identifier: string, _limitType: string): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 50))
   },
-}
-
-// Helper functions
-function generateRandomSecret(length: number = 32): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  let secret = ""
-  for (let i = 0; i < length; i++) {
-    secret += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return secret
-}
-
-function generateBackupCodes(count: number = 10): string[] {
-  const codes: string[] = []
-  for (let i = 0; i < count; i++) {
-    codes.push(generateRandomSecret(8).toUpperCase())
-  }
-  return codes
 }

@@ -6,7 +6,7 @@ import wsService, { type WebSocketMessage, type OrderUpdate, type InventoryUpdat
 export function useWebSocket() {
   const wsRef = useRef(wsService)
 
-  const subscribe = useCallback((eventType: string, callback: (data: any) => void) => {
+  const subscribe = useCallback((eventType: string, callback: (data: WebSocketMessage) => void) => {
     wsRef.current.subscribe(eventType, callback)
     
     // Cleanup on unmount

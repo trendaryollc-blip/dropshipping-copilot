@@ -1,100 +1,229 @@
 // Encryption & Data Security Service
+// ─── encryptionService uses AES-GCM-256 via the Web Crypto API ─────────────
+// ─── apiSecurityService, dataProtectionService, auditLogService follow below
+
+// ============================================================
+// Helpers – Web Crypto API (AES-GCM-256)
+// ============================================================
+
+interface EncryptedPayload {
+  v: string
+  alg: string
+  iv: string
+  data: string
+}
+
+async function deriveKey(password: string): Promise<CryptoKey> {
+  const enc = new TextEncoder()
+  const rawKey = await window.crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveKey"],
+  )
+  return window.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: enc.encode("dropease-salt-v1"),
+      iterations: 100_000,
+      hash: "SHA-256",
+    },
+    rawKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"],
+  )
+}
+
+async function aesGcmEncrypt(plaintext: string, password: string): Promise<string> {
+  const key = await deriveKey(password)
+  const iv = window.crypto.getRandomValues(new Uint8Array(12))
+  const enc = new TextEncoder()
+  const cipherBuffer = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    enc.encode(plaintext),
+  )
+  return JSON.stringify({
+    v: "1",
+    alg: "AES-GCM",
+    iv: arrayBufferToBase64(iv),
+    data: arrayBufferToBase64(new Uint8Array(cipherBuffer)),
+  } satisfies EncryptedPayload)
+}
+
+async function aesGcmDecrypt(envelope: string, password: string): Promise<string> {
+  const payload: EncryptedPayload = JSON.parse(envelope)
+  if (payload.v !== "1" || payload.alg !== "AES-GCM") {
+    throw new Error("Unsupported encryption envelope")
+  }
+  const key = await deriveKey(password)
+  const iv = base64ToArrayBuffer(payload.iv)
+  const data = base64ToArrayBuffer(payload.data)
+  const plainBuffer = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
+    key,
+    data,
+  )
+  return new TextDecoder().decode(plainBuffer)
+}
+
+function arrayBufferToBase64(buf: Uint8Array): string {
+  let binary = ""
+  for (let i = 0; i < buf.length; i++) binary += String.fromCharCode(buf[i])
+  return btoa(binary)
+}
+
+function base64ToArrayBuffer(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const buf = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) buf[i] = binary.charCodeAt(i)
+  return buf
+}
+
+// ============================================================
+// encryptionService – AES-GCM-256
+// ============================================================
+
+const SENSITIVE_FIELDS = new Set<string>([
+  "password",
+  "api_key",
+  "api_secret",
+  "credit_card",
+  "ssn",
+  "bank_account",
+])
+
 export const encryptionService = {
-  // Encrypt sensitive data (client-side)
-  encrypt(data: string, encryptionKey?: string): string {
-    // In production, use TweetNaCl.js or libsodium.js
-    // This is a simplified version for demonstration
+  /**
+   * Encrypt arbitrary text with AES-GCM-256.
+   * @param data  Plain text to encrypt
+   * @param key   Encryption password (defaults to app-level key)
+   * @returns     AES-GCM JSON envelope string
+   */
+  async encrypt(data: string, key: string = "dropease-default-key"): Promise<string> {
+    if (!data) return ""
     try {
-      const encoded = Buffer.from(data).toString("base64")
-      return `encrypted_${encoded}`
+      return await aesGcmEncrypt(data, key)
     } catch (error) {
       console.error("Encryption failed:", error)
       return ""
     }
   },
 
-  // Decrypt sensitive data (client-side)
-  decrypt(encryptedData: string, encryptionKey?: string): string {
+  /** Decrypt an AES-GCM envelope back to plain text. */
+  async decrypt(encryptedData: string, key: string = "dropease-default-key"): Promise<string> {
+    if (!encryptedData) return ""
     try {
-      const data = encryptedData.replace("encrypted_", "")
-      return Buffer.from(data, "base64").toString("utf-8")
-    } catch (error) {
-      console.error("Decryption failed:", error)
+      return await aesGcmDecrypt(encryptedData, key)
+    } catch {
+      console.error("Decryption failed: invalid data or wrong key")
       return ""
     }
   },
 
-  // Encrypt field-level data for sensitive information
-  encryptField(fieldName: string, value: any): string {
-    // Fields to encrypt: passwords, API keys, payment info
-    const sensitiveFields = ["password", "api_key", "api_secret", "credit_card", "ssn", "bank_account"]
-
-    if (sensitiveFields.includes(fieldName.toLowerCase())) {
-      return this.encrypt(JSON.stringify(value))
+  /**
+   * Encrypt a single field value.
+   * Sensitive fields (password, api_key, …) are AES-GCM encrypted.
+   * Other fields are JSON-stringified as-is.
+   */
+  async encryptField(fieldName: string, value: unknown, key: string = "dropease-default-key"): Promise<string> {
+    if (SENSITIVE_FIELDS.has(fieldName.toLowerCase())) {
+      return this.encrypt(JSON.stringify(value), key)
     }
     return JSON.stringify(value)
   },
 
-  // Decrypt field-level data
-  decryptField(fieldName: string, encryptedValue: string): any {
-    const sensitiveFields = ["password", "api_key", "api_secret", "credit_card", "ssn", "bank_account"]
-
-    if (sensitiveFields.includes(fieldName.toLowerCase()) && encryptedValue.startsWith("encrypted_")) {
-      return JSON.parse(this.decrypt(encryptedValue))
+  /**
+   * Decrypt a previously encrypted field value.
+   * @param fieldName     Must match the name used during encryption
+   * @param encryptedValue String returned by `encryptField()`
+   * @param key           Same key used during encryption
+   */
+  async decryptField(fieldName: string, encryptedValue: string, key: string = "dropease-default-key"): Promise<unknown> {
+    if (SENSITIVE_FIELDS.has(fieldName.toLowerCase()) && encryptedValue.startsWith("{")) {
+      try {
+        return JSON.parse(await this.decrypt(encryptedValue, key))
+      } catch {
+        return null
+      }
     }
-    return JSON.parse(encryptedValue)
-  },
-
-  // Hash sensitive data for comparison (one-way)
-  hash(data: string): string {
-    // In production, use crypto-js or similar
-    return `hash_${Buffer.from(data).toString("base64")}`
-  },
-
-  // Generate encryption key
-  generateKey(length: number = 32): string {
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    let key = ""
-    for (let i = 0; i < length; i++) {
-      key += chars.charAt(Math.floor(Math.random() * chars.length))
+    try {
+      return JSON.parse(encryptedValue)
+    } catch {
+      return encryptedValue
     }
-    return key
   },
 
-  // Encrypt whole database backups
-  async encryptBackup(backupData: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    return this.encrypt(backupData)
+  /** One-way SHA-256 hash (not reversible). */
+  async hash(data: string): Promise<string> {
+    const enc = new TextEncoder()
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", enc.encode(data))
+    return "sha256:" + arrayBufferToBase64(new Uint8Array(hashBuffer))
   },
 
-  // Decrypt database backups
-  async decryptBackup(encryptedBackup: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    return this.decrypt(encryptedBackup)
+  /** Generate a cryptographically random hex key.  @param length  Number of bytes (default 32 = 256 bits). */
+  async generateKey(length: number = 32): Promise<string> {
+    const buf = window.crypto.getRandomValues(new Uint8Array(length))
+    return Array.from(buf).map((b) => b.toString(16).padStart(2, "0")).join("")
+  },
+
+  async encryptBackup(backupData: string, key: string = "dropease-default-key"): Promise<string> {
+    return this.encrypt(backupData, key)
+  },
+
+  async decryptBackup(encryptedBackup: string, key: string = "dropease-default-key"): Promise<string> {
+    return this.decrypt(encryptedBackup, key)
   },
 }
 
-// API Rate Limiting & DDoS Protection
+// ============================================================
+// apiSecurityService – Rate-limit & threat detection
+// ============================================================
+
+interface RateLimitResult {
+  allowed: boolean
+  remaining: number
+  resetAt: string
+  retryAfter?: number
+}
+
+interface SuspiciousActivityResult {
+  flagged: boolean
+  score: number
+  reason?: string
+  recommendedAction?: "warn" | "limit" | "block"
+}
+
+interface ThrottleResult {
+  delayed: boolean
+  delayMs: number
+}
+
+interface RateLimitStatus {
+  apiCalls: { used: number; limit: number; resetAt: string }
+  search: { used: number; limit: number; resetAt: string }
+  download: { used: number; limit: number; resetAt: string }
+  export: { used: number; limit: number; resetAt: string }
+}
+
+type RequestLimitType = "api_calls" | "search" | "download" | "export"
+type ActivityType = "rapid_requests" | "bulk_data_access" | "unusual_pattern"
+type Priority = "low" | "normal" | "high"
+
 export const apiSecurityService = {
-  // Track API requests per user
   userRequestTracker: new Map<string, { count: number; resetTime: number }>(),
   ipRequestTracker: new Map<string, { count: number; resetTime: number }>(),
 
-  // Check if request should be rate limited
   async shouldRateLimit(
     identifier: string,
-    limitType: "api_calls" | "search" | "download" | "export" = "api_calls",
-    ipAddress?: string
-  ): Promise<{
-    allowed: boolean
-    remaining: number
-    resetAt: string
-    retryAfter?: number
-  }> {
+    limitType: RequestLimitType = "api_calls",
+    _ipAddress?: string,
+  ): Promise<RateLimitResult> {
     await new Promise((resolve) => setTimeout(resolve, 50))
 
-    // Rate limit configurations (per minute)
-    const limits = {
+    const limits: Record<RequestLimitType, number> = {
       api_calls: 100,
       search: 30,
       download: 10,
@@ -103,12 +232,14 @@ export const apiSecurityService = {
 
     const limit = limits[limitType]
     const now = Date.now()
-    const tracker = this.userRequestTracker.get(identifier) || { count: 0, resetTime: now + 60000 }
+    const tracker = this.userRequestTracker.get(identifier) || {
+      count: 0,
+      resetTime: now + 60_000,
+    }
 
-    // Reset if window has passed
     if (now > tracker.resetTime) {
       tracker.count = 0
-      tracker.resetTime = now + 60000
+      tracker.resetTime = now + 60_000
     }
 
     tracker.count++
@@ -126,20 +257,13 @@ export const apiSecurityService = {
     }
   },
 
-  // Track suspicious API patterns
   async detectSuspiciousActivity(
     userId: string,
-    activity: "rapid_requests" | "bulk_data_access" | "unusual_pattern"
-  ): Promise<{
-    flagged: boolean
-    score: number
-    reason?: string
-    recommendedAction?: "warn" | "limit" | "block"
-  }> {
+    activity: ActivityType,
+  ): Promise<SuspiciousActivityResult> {
     await new Promise((resolve) => setTimeout(resolve, 200))
 
-    // Scoring system (0-100)
-    const scores: Record<string, number> = {
+    const scores: Record<ActivityType, number> = {
       rapid_requests: 45,
       bulk_data_access: 60,
       unusual_pattern: 35,
@@ -150,23 +274,15 @@ export const apiSecurityService = {
     return {
       flagged: score > 50,
       score,
-      reason:
-        score > 50
-          ? `Suspicious ${activity.replace(/_/g, " ")} detected`
-          : undefined,
+      reason: score > 50 ? `Suspicious ${activity.replace(/_/g, " ")} detected` : undefined,
       recommendedAction: score > 70 ? "limit" : score > 50 ? "warn" : undefined,
     }
   },
 
-  // Implement request throttling
-  async throttleRequest(userId: string, priority: "low" | "normal" | "high" = "normal"): Promise<{
-    delayed: boolean
-    delayMs: number
-  }> {
+  async throttleRequest(userId: string, priority: Priority = "normal"): Promise<ThrottleResult> {
     await new Promise((resolve) => setTimeout(resolve, 30))
 
-    // Higher priority = less delay
-    const delays = {
+    const delays: Record<Priority, number> = {
       high: 0,
       normal: Math.random() * 100,
       low: Math.random() * 500,
@@ -179,17 +295,13 @@ export const apiSecurityService = {
     }
   },
 
-  // Get rate limit status
-  async getRateLimitStatus(userId: string): Promise<{
-    apiCalls: { used: number; limit: number; resetAt: string }
-    search: { used: number; limit: number; resetAt: string }
-    download: { used: number; limit: number; resetAt: string }
-    export: { used: number; limit: number; resetAt: string }
-  }> {
+  async getRateLimitStatus(
+    userId: string,
+  ): Promise<RateLimitStatus> {
     await new Promise((resolve) => setTimeout(resolve, 100))
 
     const now = new Date()
-    const nextReset = new Date(now.getTime() + 60000)
+    const nextReset = new Date(now.getTime() + 60_000)
 
     return {
       apiCalls: { used: 34, limit: 100, resetAt: nextReset.toISOString() },
@@ -199,7 +311,6 @@ export const apiSecurityService = {
     }
   },
 
-  // Whitelist IP addresses
   ipWhitelist: new Set<string>(),
 
   async addToWhitelist(ipAddress: string): Promise<void> {
@@ -218,17 +329,18 @@ export const apiSecurityService = {
   },
 }
 
-// Data Protection & Privacy
-export const dataProtectionService = {
-  // Anonymize user data for analytics
-  anonymizeUserData(userData: Record<string, any>): Record<string, any> {
-    const anonymized = { ...userData }
+// ============================================================
+// dataProtectionService
+// ============================================================
 
-    // Remove personally identifiable information
+export const dataProtectionService = {
+  anonymizeUserData(userData: Record<string, unknown>): Record<string, unknown> {
+    const anonymized: Record<string, unknown> = { ...userData }
+
     const piiFields = ["email", "phone", "address", "ssn", "credit_card"]
-    piiFields.forEach((field) => {
+    piiFields.forEach((field: string) => {
       if (field in anonymized) {
-        const value = anonymized[field]
+        const value: unknown = anonymized[field]
         if (typeof value === "string") {
           anonymized[field] = `***${value.slice(-4)}`
         }
@@ -238,26 +350,24 @@ export const dataProtectionService = {
     return anonymized
   },
 
-  // Generate anonymous user ID
   generateAnonymousId(): string {
     return `anon_${Math.random().toString(36).substring(2, 11)}`
   },
 
-  // Purge old user data
-  async purgeUserData(userId: string, daysSinceLastActivity: number = 365): Promise<{
-    purged: boolean
-    recordsDeleted: number
-  }> {
+  async purgeUserData(
+    userId: string,
+    daysSinceLastActivity: number = 365,
+  ): Promise<{ purged: boolean; recordsDeleted: number }> {
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    // In production, this would delete old records from database
     return {
       purged: true,
       recordsDeleted: 247,
     }
   },
 
-  // Request user data export (GDPR right to data portability)
-  async exportUserData(userId: string): Promise<{ exportId: string; expiresAt: string }> {
+  async exportUserData(
+    userId: string,
+  ): Promise<{ exportId: string; expiresAt: string }> {
     await new Promise((resolve) => setTimeout(resolve, 2000))
     return {
       exportId: `export_${userId}_${Date.now()}`,
@@ -265,8 +375,9 @@ export const dataProtectionService = {
     }
   },
 
-  // Request account deletion (GDPR right to be forgotten)
-  async deleteUserAccount(userId: string): Promise<{ scheduled: boolean; deletionDate: string }> {
+  async deleteUserAccount(
+    userId: string,
+  ): Promise<{ scheduled: boolean; deletionDate: string }> {
     await new Promise((resolve) => setTimeout(resolve, 500))
     return {
       scheduled: true,
@@ -275,25 +386,31 @@ export const dataProtectionService = {
   },
 }
 
-// Audit Logging Service
-export const auditLogService = {
-  logs: [] as Array<{
-    id: string
-    userId: string
-    action: string
-    resource: string
-    timestamp: string
-    ipAddress: string
-    changes?: Record<string, { old: any; new: any }>
-  }>,
+// ============================================================
+// auditLogService
+// ============================================================
 
-  // Record user action
+type AuditChange = Record<string, unknown>
+
+interface AuditLogEntry {
+  id: string
+  userId: string
+  action: string
+  resource: string
+  timestamp: string
+  ipAddress: string
+  changes?: AuditChange
+}
+
+export const auditLogService = {
+  logs: [] as AuditLogEntry[],
+
   async logAction(
     userId: string,
     action: string,
     resource: string,
     ipAddress: string,
-    changes?: Record<string, { old: any; new: any }>
+    changes?: AuditChange,
   ): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 100))
 
@@ -307,23 +424,15 @@ export const auditLogService = {
       changes,
     })
 
-    // Keep only last 10000 logs in memory
-    if (this.logs.length > 10000) {
-      this.logs = this.logs.slice(-10000)
+    if (this.logs.length > 10_000) {
+      this.logs = this.logs.slice(-10_000)
     }
   },
 
-  // Get audit log
-  async getAuditLog(userId?: string, limit: number = 50): Promise<
-    Array<{
-      id: string
-      userId: string
-      action: string
-      resource: string
-      timestamp: string
-      ipAddress: string
-    }>
-  > {
+  async getAuditLog(
+    userId?: string,
+    limit: number = 50,
+  ): Promise<Array<Omit<AuditLogEntry, "changes">>> {
     await new Promise((resolve) => setTimeout(resolve, 200))
 
     let logs = this.logs
@@ -331,13 +440,9 @@ export const auditLogService = {
       logs = logs.filter((log) => log.userId === userId)
     }
 
-    return logs.slice(-limit).reverse().map((log) => ({
-      id: log.id,
-      userId: log.userId,
-      action: log.action,
-      resource: log.resource,
-      timestamp: log.timestamp,
-      ipAddress: log.ipAddress,
-    }))
+    return logs
+      .slice(-limit)
+      .reverse()
+      .map(({ changes: _c, ...rest }) => rest)
   },
 }

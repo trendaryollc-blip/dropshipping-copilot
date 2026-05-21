@@ -1,5 +1,5 @@
 import { getFirestoreClient, isFirestoreConfigured } from './firebase-client'
-import type { DocumentData, Query, QueryConstraint } from 'firebase/firestore'
+import type { DocumentData, Query, QueryConstraint, DocumentSnapshot } from 'firebase/firestore'
 import {
   collection,
   doc,
@@ -17,7 +17,7 @@ import {
   Unsubscribe,
   serverTimestamp,
   Timestamp,
-  writeBatch
+  writeBatch,
 } from 'firebase/firestore'
 import { products, suppliers, orders, dashboardStats } from './mock-data'
 import type { User } from '@/types'
@@ -35,7 +35,8 @@ class FirestoreError extends Error {
 
 function handleFirestoreError(error: unknown, operation: string): never {
   if (error instanceof Error) {
-    throw new FirestoreError(`Firestore ${operation} failed: ${error.message}`, (error as any).code)
+    const firebaseError = error as { code?: string }
+    throw new FirestoreError(`Firestore ${operation} failed: ${error.message}`, firebaseError.code)
   }
   throw new FirestoreError(`Firestore ${operation} failed with unknown error`)
 }
@@ -51,43 +52,48 @@ const mockUsers: User[] = [
     email: "demo@dropease.com",
     plan: "pro",
     createdAt: "2024-01-01",
-    isOnboarded: true
-  }
+    isOnboarded: true,
+  },
 ]
 
-const mockCollections: Record<string, any[]> = {
-  'dropease_products': products,
-  'dropease_suppliers': suppliers,
-  'dropease_orders': orders,
-  'dropease_users': mockUsers,
+const mockCollections: Record<string, unknown[]> = {
+  dropease_products: products,
+  dropease_suppliers: suppliers,
+  dropease_orders: orders,
+  dropease_users: mockUsers,
 }
 
 // ============================================================================
 // DOCUMENT OPERATIONS
 // ============================================================================
 
-export async function getDocument(path: string): Promise<DocumentData | null> {
+export async function getDocument<D extends DocumentData = DocumentData>(
+  path: string,
+): Promise<D | null> {
   if (!isFirestoreConfigured()) {
-    // Mock fallback
-    const [collectionName, docId] = path.split('/')
+    const [collectionName, docId] = path.split("/")
     if (collectionName && docId && mockCollections[collectionName]) {
-      return mockCollections[collectionName].find((item: any) => item.id === docId) || null
+      return (mockCollections[collectionName].find((item) => item.id === docId) || null) as D | null
     }
-    return { mock: true, path }
+    return { mock: true, path } as D | null
   }
   try {
     const db = getFirestoreClient()!
     const dref = doc(db, path)
     const snap = await getDoc(dref)
-    return snap.exists() ? snap.data() : null
+    return (snap.exists() ? snap.data() : null) as D | null
   } catch (error) {
-    handleFirestoreError(error, 'getDocument')
+    handleFirestoreError(error, "getDocument")
   }
 }
 
-export async function setDocument(path: string, data: any, merge: boolean = true): Promise<void> {
+export async function setDocument<D extends DocumentData = DocumentData>(
+  path: string,
+  data: D,
+  merge: boolean = true,
+): Promise<void> {
   if (!isFirestoreConfigured()) {
-    console.warn('Firestore not configured; setDocument no-op for', path)
+    console.warn(`Firestore not configured; setDocument no-op for ${path}`)
     return
   }
   try {
@@ -95,13 +101,16 @@ export async function setDocument(path: string, data: any, merge: boolean = true
     const dref = doc(db, path)
     await setDoc(dref, { ...data, updatedAt: serverTimestamp() }, { merge })
   } catch (error) {
-    handleFirestoreError(error, 'setDocument')
+    handleFirestoreError(error, "setDocument")
   }
 }
 
-export async function addDocument(collectionName: string, data: any): Promise<string> {
+export async function addDocument<D extends DocumentData = DocumentData>(
+  collectionName: string,
+  data: D,
+): Promise<string> {
   if (!isFirestoreConfigured()) {
-    console.warn('Firestore not configured; addDocument no-op for', collectionName)
+    console.warn(`Firestore not configured; addDocument no-op for ${collectionName}`)
     return `mock-${Date.now()}`
   }
   try {
@@ -110,17 +119,20 @@ export async function addDocument(collectionName: string, data: any): Promise<st
     const docRef = await addDoc(colRef, {
       ...data,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     })
     return docRef.id
   } catch (error) {
-    handleFirestoreError(error, 'addDocument')
+    handleFirestoreError(error, "addDocument")
   }
 }
 
-export async function updateDocument(path: string, data: any): Promise<void> {
+export async function updateDocument<D extends DocumentData = DocumentData>(
+  path: string,
+  data: Partial<D>,
+): Promise<void> {
   if (!isFirestoreConfigured()) {
-    console.warn('Firestore not configured; updateDocument no-op for', path)
+    console.warn(`Firestore not configured; updateDocument no-op for ${path}`)
     return
   }
   try {
@@ -128,7 +140,7 @@ export async function updateDocument(path: string, data: any): Promise<void> {
     const dref = doc(db, path)
     await updateDoc(dref, { ...data, updatedAt: serverTimestamp() })
   } catch (error) {
-    handleFirestoreError(error, 'updateDocument')
+    handleFirestoreError(error, "updateDocument")
   }
 }
 
@@ -150,34 +162,34 @@ export async function deleteDocument(path: string): Promise<void> {
 // COLLECTION OPERATIONS
 // ============================================================================
 
-export async function getCollection(collectionName: string): Promise<DocumentData[]> {
+export async function getCollection<D extends DocumentData = DocumentData>(
+  collectionName: string,
+): Promise<D[]> {
   if (!isFirestoreConfigured()) {
-    // Mock fallback
-    return mockCollections[collectionName] || []
+    return (mockCollections[collectionName] as D[] | undefined) || []
   }
   try {
     const db = getFirestoreClient()!
     const colRef = collection(db, collectionName)
     const snap = await getDocs(colRef)
-    return snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }))
+    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as D[]
   } catch (error) {
-    handleFirestoreError(error, 'getCollection')
+    handleFirestoreError(error, "getCollection")
   }
 }
 
-export async function queryCollection(
+export async function queryCollection<D extends DocumentData = DocumentData>(
   collectionName: string,
-  constraints: QueryConstraint[]
-): Promise<DocumentData[]> {
+  constraints: QueryConstraint[],
+): Promise<D[]> {
   if (!isFirestoreConfigured()) {
-    // Mock fallback with basic filtering
-    let results = mockCollections[collectionName] || []
-    constraints.forEach(constraint => {
-      if (constraint.type === 'where') {
-        const whereConstraint = constraint as any
-        results = results.filter((item: any) => item[whereConstraint.field] === whereConstraint.value)
+    let results = (mockCollections[collectionName] as D[] | undefined) || []
+    for (const constraint of constraints) {
+      if (constraint.type === "where") {
+        const wc = constraint as QueryConstraint & { field: string; value: unknown }
+        results = results.filter((item) => item[wc.field as keyof D] === wc.value) as D[]
       }
-    })
+    }
     return results
   }
   try {
@@ -185,35 +197,36 @@ export async function queryCollection(
     const colRef = collection(db, collectionName)
     const q = query(colRef, ...constraints)
     const snap = await getDocs(q)
-    return snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }))
+    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as D[]
   } catch (error) {
-    handleFirestoreError(error, 'queryCollection')
+    handleFirestoreError(error, "queryCollection")
   }
 }
 
-export async function getCollectionWhere(
+export async function getCollectionWhere<D extends DocumentData = DocumentData>(
   collectionName: string,
   field: string,
-  operator: any,
-  value: any
-): Promise<DocumentData[]> {
-  return queryCollection(collectionName, [where(field, operator, value)])
+  operator: unknown,
+  value: unknown,
+): Promise<D[]> {
+  return queryCollection<D>(collectionName, [where(field, operator as any, value)])
 }
 
 // ============================================================================
 // REAL-TIME LISTENERS
 // ============================================================================
 
-export function listenToDocument(
+export function listenToDocument<D extends DocumentData = DocumentData>(
   path: string,
-  callback: (data: DocumentData | null) => void,
-  errorCallback?: (error: Error) => void
+  callback: (data: D | null) => void,
+  errorCallback?: (error: Error) => void,
 ): Unsubscribe {
   if (!isFirestoreConfigured()) {
-    // Mock fallback - call callback once with mock data
-    const [collectionName, docId] = path.split('/')
+    const [collectionName, docId] = path.split("/")
     if (collectionName && docId && mockCollections[collectionName]) {
-      const mockData = mockCollections[collectionName].find((item: any) => item.id === docId) || null
+      const mockData = (mockCollections[collectionName] as D[] | undefined)?.find(
+        (item) => item.id === docId,
+      ) || null
       callback(mockData)
     }
     return () => {}
@@ -223,8 +236,9 @@ export function listenToDocument(
     const dref = doc(db, path)
     return onSnapshot(
       dref,
-      (snap: any) => callback(snap.exists() ? { id: snap.id, ...snap.data() } : null),
-      (error: any) => errorCallback?.(error)
+      (snap: DocumentSnapshot<D>) =>
+        callback(snap.exists() ? ({ id: snap.id, ...snap.data() } as D) : null),
+      (error: Error) => errorCallback?.(error),
     )
   } catch (error) {
     errorCallback?.(error as Error)
@@ -232,15 +246,15 @@ export function listenToDocument(
   }
 }
 
-export function listenToCollection(
+export function listenToCollection<D extends DocumentData = DocumentData>(
   collectionName: string,
-  callback: (data: DocumentData[]) => void,
+  callback: (data: D[]) => void,
   errorCallback?: (error: Error) => void,
-  constraints: QueryConstraint[] = []
+  constraints: QueryConstraint[] = [],
 ): Unsubscribe {
   if (!isFirestoreConfigured()) {
-    // Mock fallback - call callback once with mock data
-    callback(mockCollections[collectionName] || [])
+    const mockData = (mockCollections[collectionName] as D[] | undefined) || []
+    callback(mockData)
     return () => {}
   }
   try {
@@ -249,8 +263,9 @@ export function listenToCollection(
     const q = constraints.length > 0 ? query(colRef, ...constraints) : colRef
     return onSnapshot(
       q,
-      (snap: any) => callback(snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }))),
-      (error: any) => errorCallback?.(error)
+      (snap: { docs: DocumentSnapshot<D>[] }) =>
+        callback(snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as D))),
+      (error: Error) => errorCallback?.(error),
     )
   } catch (error) {
     errorCallback?.(error as Error)
@@ -279,11 +294,13 @@ export function isFirestoreReady(): boolean {
 // BATCH OPERATIONS
 // ============================================================================
 
-export async function batchWrite(operations: {
-  type: 'set' | 'update' | 'delete'
-  path: string
-  data?: any
-}[]): Promise<void> {
+export async function batchWrite<D extends DocumentData = DocumentData>(
+  operations: Array<{
+    type: 'set' | 'update' | 'delete'
+    path: string
+    data?: Partial<D>
+  }>,
+): Promise<void> {
   if (!isFirestoreConfigured()) {
     console.warn('Firestore not configured; batchWrite no-op')
     return
@@ -291,8 +308,8 @@ export async function batchWrite(operations: {
   try {
     const db = getFirestoreClient()!
     const batch = writeBatch(db)
-    
-    operations.forEach(op => {
+
+    for (const op of operations) {
       const dref = doc(db, op.path)
       switch (op.type) {
         case 'set':
@@ -305,8 +322,8 @@ export async function batchWrite(operations: {
           batch.delete(dref)
           break
       }
-    })
-    
+    }
+
     await batch.commit()
   } catch (error) {
     handleFirestoreError(error, 'batchWrite')

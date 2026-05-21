@@ -14,8 +14,8 @@ import type { CompetitorProduct } from '@/types'
  * Generate a SWOT-style competitor strategy brief using DeepSeek
  */
 export async function generateCompetitorAnalysisWithDeepSeek(
-  competitors: CompetitorProduct[]
-) {
+  competitors: CompetitorProduct[],
+): Promise<string> {
   const key = process.env.DEEPSEEK_API_KEY
   if (!key) throw new Error('DEEPSEEK_API_KEY not configured')
 

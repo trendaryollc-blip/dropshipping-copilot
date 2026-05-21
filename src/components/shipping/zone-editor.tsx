@@ -15,7 +15,7 @@ export default function ZoneEditor() {
     } catch (e) { /* ignore */ }
   }, [])
 
-  function save(zs: any) {
+  function save(zs: { id: string; name: string; countries: string[] }) {
     setZones(zs)
     try { localStorage.setItem('dropease_shipping_zones_v1', JSON.stringify(zs)) } catch (e) { }
   }

@@ -8,14 +8,15 @@
  * Google Gemini - High-Quality Product Description Generation
   * Best for: Long-form, persuasive, SEO-optimised product content
   */
-let genAI: any = null
+let genAI: unknown = null
 
-function getGeminiClient() {
+function getGeminiClient(): { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string }> }> } } {
   if (!genAI) {
-    const GAI = require('@google/generative-ai') as any
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const GAI = require('@google/generative-ai') as { GoogleGenerativeAI: new (cfg: { apiKey: string }) => { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string } > } } } }
     genAI = new GAI.GoogleGenerativeAI({ apiKey: String(process.env.GOOGLE_AI_API_KEY ?? '') })
   }
-  return genAI as any
+  return genAI as { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string } > } } }
 }
 
 interface ProductDescriptionInput {

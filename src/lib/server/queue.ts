@@ -1,7 +1,9 @@
+export type JobPayload = Record<string, unknown>
+
 export interface QueueJob {
   id: string
   type: string
-  payload: any
+  payload: JobPayload
   status: 'pending' | 'running' | 'failed' | 'completed'
   attempts: number
   lastError?: string
@@ -9,7 +11,7 @@ export interface QueueJob {
 
 const jobs: QueueJob[] = []
 
-export function enqueueJob(type: string, payload: any) {
+export function enqueueJob(type: string, payload: JobPayload = {}) {
   const job: QueueJob = { id: crypto.randomUUID(), type, payload, status: 'pending', attempts: 0 }
   jobs.push(job)
   return job

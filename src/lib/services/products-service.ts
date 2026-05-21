@@ -74,7 +74,7 @@ export function listenToProduct(
   return listenToCollection(
     COLLECTION_NAME,
     (data) => {
-      const product = data.find((p: any) => p.id === id)
+      const product = data.find((p: { id: string }) => p.id === id)
       callback(product as Product | null)
     },
     errorCallback

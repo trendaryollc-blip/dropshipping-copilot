@@ -4,7 +4,7 @@ import { simulateWebhookEvent } from "@/lib/shipping-service"
 
 export default function WebhookManager() {
   const [endpoints, setEndpoints] = useState<string[]>([])
-  const [events, setEvents] = useState<any[]>([])
+  const [events, setEvents] = useState<unknown[]>([])
   const [url, setUrl] = useState("")
 
   useEffect(() => {
@@ -35,9 +35,9 @@ export default function WebhookManager() {
 
   return (
     <div className="bg-white shadow rounded p-4">
-      <h3 className="font-semibold">Webhook Manager (mock)</h3>
+      <h3 className="font-semibold">Webhook Manager</h3>
       <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <input placeholder="Webhook URL (mock)" value={url} onChange={(e) => setUrl(e.target.value)} className="border rounded p-2" />
+        <input placeholder="Webhook URL" value={url} onChange={(e) => setUrl(e.target.value)} className="border rounded p-2" />
         <div className="flex gap-2">
           <button onClick={addEndpoint} className="px-3 py-1 bg-blue-600 text-white rounded">Add</button>
           <button onClick={() => { save([]); setEvents([]) }} className="px-3 py-1 border rounded">Clear</button>

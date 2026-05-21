@@ -87,7 +87,7 @@ export function listenToUser(
   return listenToCollection(
     COLLECTION_NAME,
     (data) => {
-      const user = data.find((u: any) => u.id === id)
+      const user = data.find((u: { id: string }) => u.id === id)
       callback(user as User | null)
     },
     errorCallback

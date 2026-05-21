@@ -20,46 +20,58 @@
  * Env vars live in .env  (git-ignored).
  * Template guide  : .env.example  (safe to keep in git / PRs / docs).
  */
-import { TASK_AI_MAPPING, type AutomationTask, type AIProvider } from './config'
-export type { AutomationTask, AIProvider }
-import { processOrderWithGroq } from './groq-order-processing'
-import { generateProductDescriptionWithGemini } from './gemini-description'
-import { optimizeSEOWithDeepSeek } from './deepseek-seo'
-import { getDynamicPricingWithOpenRouter } from './openrouter-pricing'
-import { detectFraudWithCloudflare } from './cloudflare-fraud'
-import { analyzeProductImageWithHuggingFace } from './huggingface-image'
+import type { CompetitorProduct } from '@/types'
+import { TASK_AI_MAPPING, type AIProvider } from './config'
+export type { AIProvider }
+import { processOrderWithGroq, type OrderProcessingInput } from './groq-order-processing'
+import { generateProductDescriptionWithGemini, type ProductDescriptionInput } from './gemini-description'
+import { optimizeSEOWithDeepSeek, type SEOInput } from './deepseek-seo'
+import { getDynamicPricingWithOpenRouter, type PricingInput } from './openrouter-pricing'
+import { detectFraudWithCloudflare, type FraudInput } from './cloudflare-fraud'
+import { analyzeProductImageWithHuggingFace, type ImageAnalysisInput } from './huggingface-image'
 import { generateCompetitorAnalysisWithDeepSeek } from './deepseek-competitor'
 import { reviewReturnsWithOpenRouter } from './openrouter-returns'
+
+/**
+ * Discriminated union of all runTask input shapes, keyed by task name.
+ */
+type TaskInput =
+  | { task: 'order_processing'; input: OrderProcessingInput }
+  | { task: 'product_description'; input: ProductDescriptionInput }
+  | { task: 'seo_optimization'; input: SEOInput }
+  | { task: 'dynamic_pricing'; input: PricingInput }
+  | { task: 'fraud_detection'; input: FraudInput }
+  | { task: 'image_analysis'; input: ImageAnalysisInput }
+  | { task: 'competitor_analysis'; input: { competitors: CompetitorProduct[] } }
+  | { task: 'returns_review'; input: { returns?: unknown[]; competitors?: unknown[] } }
 
 export const AI = {
   /**
    * Automatically routes to the best AI for the given task
    */
-  async runTask(task: AutomationTask, input: any) {
+  async runTask(task: AutomationTask, input: TaskInput["task"] extends typeof task ? TaskInput["input"] : never) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const anyInput: any = input
     const provider = TASK_AI_MAPPING[task]
     const competitors =
-      task === 'competitor_analysis' && Array.isArray(input?.competitors)
-        ? input.competitors
+      task === 'competitor_analysis' && Array.isArray(anyInput?.competitors)
+        ? anyInput.competitors
         : []
 
-    switch (provider) {
-      case 'groq':
-        return processOrderWithGroq(input)
-      case 'google':
-        return generateProductDescriptionWithGemini(input)
-      case 'deepseek':
-        if (task === 'competitor_analysis') return generateCompetitorAnalysisWithDeepSeek(competitors)
-        return optimizeSEOWithDeepSeek(input)
-      case 'openrouter':
-        if (task === 'returns_review') return reviewReturnsWithOpenRouter(input.returns || input.competitors || [])
-        return getDynamicPricingWithOpenRouter(input)
-      case 'cloudflare':
-        return detectFraudWithCloudflare(input)
-      case 'huggingface':
-        return analyzeProductImageWithHuggingFace(input)
-      default:
-        throw new Error(`No AI provider configured for task: ${task}`)
-    }
+    const result: unknown =
+      provider === 'groq' ? processOrderWithGroq(anyInput) :
+      provider === 'google' ? generateProductDescriptionWithGemini(anyInput) :
+      provider === 'deepseek' ? (
+        task === 'competitor_analysis' ? generateCompetitorAnalysisWithDeepSeek(competitors) : optimizeSEOWithDeepSeek(anyInput)
+      ) :
+      provider === 'openrouter' ? (
+        task === 'returns_review' ? reviewReturnsWithOpenRouter(anyInput.returns || anyInput.competitors || []) : getDynamicPricingWithOpenRouter(anyInput)
+      ) :
+      provider === 'cloudflare' ? detectFraudWithCloudflare(anyInput) :
+      provider === 'huggingface' ? analyzeProductImageWithHuggingFace(anyInput) :
+      (() => { throw new Error(`No AI provider configured for task: ${task}`) })()
+
+    return result
   },
 
   // Direct access to individual AIs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

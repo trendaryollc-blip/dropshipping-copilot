@@ -3,16 +3,15 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, Sparkles } from "lucide-react"
-import { AI, type AutomationTask } from "@/lib/ai"
-import { toast } from "sonner"
+import { AI } from "@/lib/ai"
 
 interface AIActionProps {
   task: AutomationTask
-  input: any
+  input: unknown
   label?: string
   variant?: "default" | "outline" | "secondary"
   size?: "sm" | "default" | "lg"
-  onSuccess?: (result: any) => void
+  onSuccess?: (result: unknown) => void
 }
 
 export function AIActionButton({
@@ -28,7 +27,7 @@ export function AIActionButton({
   const handleClick = async () => {
     setLoading(true)
     try {
-      const result = await AI.runTask(task, input)
+      const result = await AI.runTask(task, input as Parameters<typeof AI.runTask>[1])
       toast.success(`${task.replace("_", " ")} completed successfully`)
       onSuccess?.(result)
     } catch (error) {

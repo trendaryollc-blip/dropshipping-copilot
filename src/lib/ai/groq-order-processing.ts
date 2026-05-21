@@ -9,9 +9,9 @@
  */
 import Groq from 'groq-sdk'
 
-let groq: any = null
+let groq: Groq | null = null
 
-function getGroqClient() {
+function getGroqClient(): Groq {
   if (!groq) {
     groq = new Groq({
       apiKey: process.env.GROQ_API_KEY ?? '',

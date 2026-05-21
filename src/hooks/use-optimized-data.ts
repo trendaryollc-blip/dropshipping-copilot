@@ -44,7 +44,7 @@ const mockApi = {
     }
   },
 
-  updateProduct: async (id: string, data: any) => {
+  updateProduct: async (id: string, data: unknown) => {
     await new Promise(resolve => setTimeout(resolve, 200))
     return { id, ...data }
   }
@@ -82,7 +82,7 @@ export function useUpdateProduct() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => mockApi.updateProduct(id, data),
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => mockApi.updateProduct(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
     },

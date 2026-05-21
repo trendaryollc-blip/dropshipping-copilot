@@ -46,6 +46,7 @@ const STEPS = [
 export function OnboardingWizard() {
   const { user, completeOnboarding } = useAuthStore()
   const [step, setStep] = useState(0)
+  const [open, setOpen] = useState(true)
 
   // Only show for authenticated, non-onboarded users
   const shouldShow = user !== null && !user.isOnboarded
@@ -59,13 +60,19 @@ export function OnboardingWizard() {
   function handleNext() {
     if (isLast) {
       completeOnboarding()
+      setOpen(false)
     } else {
       setStep((s) => s + 1)
     }
   }
 
+  function handleSkip() {
+    completeOnboarding()
+    setOpen(false)
+  }
+
   return (
-    <Dialog open={true} onOpenChange={() => {}} modal={false}>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) handleSkip() }} modal={false}>
       <DialogContent showCloseButton={false} showOverlay={false} className="sm:max-w-md">
         <DialogHeader>
           <div className={`mx-auto flex size-14 items-center justify-center rounded-2xl text-2xl mb-2 ${current.color}`}>
@@ -89,7 +96,7 @@ export function OnboardingWizard() {
 
         <DialogFooter className="-mx-4 -mb-4 rounded-b-xl border-t bg-muted/50 p-4">
           <div className="flex w-full items-center justify-between">
-            <Button variant="ghost" size="sm" className="text-xs" onClick={completeOnboarding}>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={handleSkip}>
               Skip tour
             </Button>
             <div className="flex gap-2">

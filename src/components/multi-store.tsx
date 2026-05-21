@@ -166,7 +166,7 @@ export function MultiStore() {
                 <Label htmlFor="name">Store Name *</Label>
                 <Input
                   id="name"
-                  placeholder="My Awesome Store"
+                  placeholder="Your Store Name"
                   value={newStore.name}
                   onChange={(e) => setNewStore({ ...newStore, name: e.target.value })}
                 />
@@ -190,7 +190,7 @@ export function MultiStore() {
                 <Label htmlFor="url">Store URL *</Label>
                 <Input
                   id="url"
-                  placeholder="https://mystore.com"
+                  placeholder="https://your-store.com"
                   value={newStore.url}
                   onChange={(e) => setNewStore({ ...newStore, url: e.target.value })}
                 />
