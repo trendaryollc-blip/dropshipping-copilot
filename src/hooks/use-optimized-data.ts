@@ -46,7 +46,7 @@ const mockApi = {
 
   updateProduct: async (id: string, data: unknown) => {
     await new Promise(resolve => setTimeout(resolve, 200))
-    return { id, ...data }
+    return { id, ...(data as Record<string, unknown>) }
   }
 }
 

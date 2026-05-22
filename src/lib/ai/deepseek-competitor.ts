@@ -51,7 +51,10 @@ Return ONLY the analysis as plain text.`
     }),
   })
 
-  if (!res.ok) throw new Error('DeepSeek API error')
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({})))
+    throw new Error(`DeepSeek API ${res.status}: ${body.error?.message || 'unknown error'}`)
+  }
 
   const data = await res.json()
   return data.choices?.[0]?.message?.content ?? 'No analysis returned.'

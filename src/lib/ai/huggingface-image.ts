@@ -1,4 +1,4 @@
-interface ImageAnalysisInput {
+export interface ImageAnalysisInput {
   imageUrl: string;
   productName?: string;
 }

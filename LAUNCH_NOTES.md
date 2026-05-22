@@ -1,5 +1,7 @@
 Launch Ready — Notes & Checklist
 
+**New — Non-developer guide:** See **`BEGINNER-SETUP-GUIDE.md`** for plain-English steps on every API key, what is still mock, and how to connect Trendaryo. Copy **`.env.example`** → **`.env.local`** and fill it in using that guide.
+
 This branch contains the set of changes prepared to make the project ready for launch (local testing, CI, and Firestore integration mock-ready).
 
 What was added/changed:

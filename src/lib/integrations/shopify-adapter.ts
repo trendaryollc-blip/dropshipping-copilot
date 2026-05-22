@@ -20,6 +20,12 @@ export default function createShopifyAdapter() {
     },
     async pushOrder(order: Order) {
       return { ok: true, remoteId: `sh_order_${order.id}` }
-    }
+    },
+    async pullProducts() {
+      return this.fetchProducts()
+    },
+    async pullOrders() {
+      return this.fetchOrders()
+    },
   }
 }

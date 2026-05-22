@@ -5,31 +5,38 @@
  * Task              AI Provider  Key var                   Pages
  * ───────────────── ──────────── ───────────────────────── ───────────────
  * order_processing     GROQ         GROQ_API_KEY            /orders
- * product_description  GOOGLE       GOOGLE_AI_API_KEY       /products
+ * product_description  ZAI          ZAI_API_KEY              /products
  *                                                                 /bulk-edit
  *                                                                 /business
- * seo_optimization     DEEPSEEK     DEEPSEEK_API_KEY        /seo
+ * seo_optimization     ZAI          ZAI_API_KEY              /seo
  * dynamic_pricing      OPENROUTER   OPENROUTER_API_KEY      /calculator
  *                                                                 /business
  * fraud_detection      CLOUDFLARE   CLOUDFLARE_AI_API_KEY   /orders
  * image_analysis       HUGGINGFACE  HUGGINGFACE_API_KEY     pdts upload
- * competitor_analysis  DEEPSEEK     DEEPSEEK_API_KEY        /competitors
- * returns_review       OPENROUTER   OPENROUTER_API_KEY      /returns
+ * competitor_analysis  ZAI          ZAI_API_KEY              /competitors
+ * returns_review       ZAI          ZAI_API_KEY              /returns
  * ───────────────── ──────────── ───────────────────────── ───────────────
  *
  * Env vars live in .env  (git-ignored).
  * Template guide  : .env.example  (safe to keep in git / PRs / docs).
  */
 import type { CompetitorProduct } from '@/types'
-import { TASK_AI_MAPPING, type AIProvider } from './config'
-export type { AIProvider }
+import type { AutomationTask, AIProvider } from './config'
+import { TASK_AI_MAPPING } from './config'
 import { processOrderWithGroq, type OrderProcessingInput } from './groq-order-processing'
-import { generateProductDescriptionWithGemini, type ProductDescriptionInput } from './gemini-description'
-import { optimizeSEOWithDeepSeek, type SEOInput } from './deepseek-seo'
+import {
+  generateProductDescriptionWithZAI,
+  optimizeSEOWithZAI,
+  generateCompetitorAnalysisWithZAI,
+  reviewReturnsWithZAI,
+  pingZAI,
+  type ProductDescriptionInput,
+  type SEOInput,
+  type ReturnRequest,
+} from './zai'
 import { getDynamicPricingWithOpenRouter, type PricingInput } from './openrouter-pricing'
 import { detectFraudWithCloudflare, type FraudInput } from './cloudflare-fraud'
 import { analyzeProductImageWithHuggingFace, type ImageAnalysisInput } from './huggingface-image'
-import { generateCompetitorAnalysisWithDeepSeek } from './deepseek-competitor'
 import { reviewReturnsWithOpenRouter } from './openrouter-returns'
 
 /**
@@ -43,7 +50,7 @@ type TaskInput =
   | { task: 'fraud_detection'; input: FraudInput }
   | { task: 'image_analysis'; input: ImageAnalysisInput }
   | { task: 'competitor_analysis'; input: { competitors: CompetitorProduct[] } }
-  | { task: 'returns_review'; input: { returns?: unknown[]; competitors?: unknown[] } }
+  | { task: 'returns_review'; input: { returns?: ReturnRequest[]; competitors?: unknown[] } }
 
 export const AI = {
   /**
@@ -60,9 +67,12 @@ export const AI = {
 
     const result: unknown =
       provider === 'groq' ? processOrderWithGroq(anyInput) :
-      provider === 'google' ? generateProductDescriptionWithGemini(anyInput) :
-      provider === 'deepseek' ? (
-        task === 'competitor_analysis' ? generateCompetitorAnalysisWithDeepSeek(competitors) : optimizeSEOWithDeepSeek(anyInput)
+      provider === 'zai' ? (
+        task === 'product_description' ? generateProductDescriptionWithZAI(anyInput) :
+        task === 'seo_optimization'    ? optimizeSEOWithZAI(anyInput) :
+        task === 'competitor_analysis' ? generateCompetitorAnalysisWithZAI(competitors) :
+        task === 'returns_review'      ? reviewReturnsWithZAI(anyInput.returns || [])
+        : generateProductDescriptionWithZAI(anyInput)
       ) :
       provider === 'openrouter' ? (
         task === 'returns_review' ? reviewReturnsWithOpenRouter(anyInput.returns || anyInput.competitors || []) : getDynamicPricingWithOpenRouter(anyInput)
@@ -76,9 +86,14 @@ export const AI = {
 
   // Direct access to individual AIs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   groq: { processOrder: processOrderWithGroq },
-  google: { generateDescription: generateProductDescriptionWithGemini },
-  deepseek: { optimizeSEO: optimizeSEOWithDeepSeek, analyzeCompetitors: generateCompetitorAnalysisWithDeepSeek },
-  openrouter: { getPricing: getDynamicPricingWithOpenRouter, reviewReturns: reviewReturnsWithOpenRouter },
+  zai: {
+    generateDescription:      generateProductDescriptionWithZAI,
+    optimizeSEO:              optimizeSEOWithZAI,
+    analyzeCompetitors:       generateCompetitorAnalysisWithZAI,
+    reviewReturns:            reviewReturnsWithZAI,
+    ping:                     pingZAI,
+  },
+  openrouter: { getPricing: getDynamicPricingWithOpenRouter, reviewReturns: reviewReturnsWithOpenRouter as typeof reviewReturnsWithZAI },
   cloudflare: { detectFraud: detectFraudWithCloudflare },
   huggingface: { analyzeImage: analyzeProductImageWithHuggingFace },
 }

@@ -1,48 +1,57 @@
-# Environment Variables for DropEase Integrations
+# Trendaryo ↔ DropEase API key setup
 
-## Trendaryo Live Store Integration
+## Keys (must match on both apps)
 
-Add these variables to your `.env.local` or `.env` file:
+| App | Env variable | Purpose |
+|-----|----------------|---------|
+| **DropEase** (this repo) | `TRENDARYO_API_KEY` | Sends `x-api-key` when calling Trendaryo |
+| **Trendaryo** (trendaryo.com) | `DROPEASE_API_KEY` | Validates incoming `x-api-key` |
+
+Use the **same secret string** for both. Current key is stored in:
+
+- `.env.local` → `TRENDARYO_API_KEY`
+- `secrets/dropease-trendaryo-api-key.txt` (git-ignored)
+
+Regenerate anytime:
+
+```bash
+npm run setup:trendaryo-key
+```
+
+## DropEase `.env.local`
 
 ```env
-# Trendaryo API Configuration
-TRENDARYO_API_URL=https://your-trendaryo-site.vercel.app
-TRENDARYO_API_KEY=your-strong-secret-key-here
+TRENDARYO_API_URL=https://trendaryo.com
+TRENDARYO_API_KEY=<same-as-DROPEASE_API_KEY-on-trendaryo>
 ```
 
-### How to get the values:
+## Trendaryo (Vercel)
 
-1. **TRENDARYO_API_URL**
-   - This is the base URL of your deployed Trendaryo site
-   - Example: `https://trendaryo.vercel.app`
+1. Project → **Settings** → **Environment Variables**
+2. Add `DROPEASE_API_KEY` = value from `secrets/dropease-trendaryo-api-key.txt`
+3. Deploy API routes from `trendaryo-bridge/` (see `trendaryo-bridge/README.md`)
+4. Redeploy
 
-2. **TRENDARYO_API_KEY**
-   - Must match the `DROPEASE_API_KEY` you set in Trendaryo's `.env` file
-   - Use a strong random string (minimum 32 characters recommended)
+## Test connection
 
----
+With DropEase running (`npm run dev`):
 
-## Usage Example
-
-```typescript
-import { createTrendaryoAPI } from '@/lib/integrations/trendaryo-api';
-
-const trendaryo = createTrendaryoAPI();
-
-// Get all products
-const products = await trendaryo.getAllProducts();
-
-// Update price and stock
-await trendaryo.updateProduct('PRD-FTB-001', {
-  price: 1199,
-  stock: 140,
-});
-
-// Create a new order
-await trendaryo.createOrder({
-  userId: 'firebase_uid_here',
-  items: [{ productId: 'PRD-FTB-001', quantity: 2, unitPrice: 1299 }],
-  total: 2598,
-  shippingAddress: { ... },
-});
 ```
+GET http://localhost:3000/api/trendaryo/test-connection
+```
+
+Or:
+
+```bash
+curl -H "x-api-key: YOUR_KEY" https://trendaryo.com/api/automation-sync/products
+```
+
+## API endpoints (on Trendaryo)
+
+| Method | Path |
+|--------|------|
+| GET | `/api/automation-sync/products` |
+| PATCH | `/api/automation-sync/products/:id` |
+| GET | `/api/automation-sync/orders` |
+| POST | `/api/automation-sync/orders` |
+| PATCH | `/api/automation-sync/orders/:id` |

@@ -74,7 +74,7 @@ export function listenToSupplier(
   return listenToCollection(
     COLLECTION_NAME,
     (data) => {
-      const supplier = data.find((s: { id: string }) => s.id === id)
+      const supplier = (data as Supplier[]).find((s) => s.id === id)
       callback(supplier as Supplier | null)
     },
     errorCallback

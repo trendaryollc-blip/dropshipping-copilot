@@ -62,9 +62,9 @@ async function aesGcmDecrypt(envelope: string, password: string): Promise<string
   const iv = base64ToArrayBuffer(payload.iv)
   const data = base64ToArrayBuffer(payload.data)
   const plainBuffer = await window.crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
+    { name: "AES-GCM", iv: iv as BufferSource },
     key,
-    data,
+    data as BufferSource,
   )
   return new TextDecoder().decode(plainBuffer)
 }

@@ -23,6 +23,11 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  Contact,
+  Truck,
+  Star,
+  DollarSign,
+  Plug,
 } from "lucide-react"
 import {
   Sidebar,
@@ -63,6 +68,16 @@ const navGroups = [
     items: [
       { href: "/orders", label: "Order Tracker", icon: ShoppingCart },
       { href: "/returns", label: "Returns & Refunds", icon: RotateCcw },
+      { href: "/customers", label: "CRM", icon: Contact },
+      { href: "/shipping", label: "Shipping Hub", icon: Truck },
+      { href: "/reviews", label: "Reviews", icon: Star },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { href: "/finance/pnl", label: "Profit & Loss", icon: DollarSign },
+      { href: "/integrations", label: "Integrations", icon: Plug },
     ],
   },
   {

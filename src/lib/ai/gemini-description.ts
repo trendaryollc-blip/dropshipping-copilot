@@ -1,25 +1,12 @@
 /**
  * ──────────────────────────────────────────────────────────────────────
- * AI Helper: Google Gemini  →  Product Description Generator
- * Used by: Products page · Bulk Edit page · Business page
- * Env var required: GOOGLE_AI_API_KEY
- * Get key: https://aistudio.google.com/apikey
+ * AI Helper: AIMLAPI + Google Gemini  →  Product Description Generator
+ * Used in: Products page · Bulk Edit page · Business page
+ * Env var: GOOGLE_AI_API_KEY holds the AIMLAPI key
+ * Get key: https://aimlapi.com/app/keys
  * ──────────────────────────────────────────────────────────────────────
- * Google Gemini - High-Quality Product Description Generation
-  * Best for: Long-form, persuasive, SEO-optimised product content
-  */
-let genAI: unknown = null
-
-function getGeminiClient(): { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string }> }> } } {
-  if (!genAI) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const GAI = require('@google/generative-ai') as { GoogleGenerativeAI: new (cfg: { apiKey: string }) => { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string } > } } } }
-    genAI = new GAI.GoogleGenerativeAI({ apiKey: String(process.env.GOOGLE_AI_API_KEY ?? '') })
-  }
-  return genAI as { getGenerativeModel: (cfg: { model: string }) => { generateContent: (prompt: string) => Promise<{ response: { text: () => string } > } } }
-}
-
-interface ProductDescriptionInput {
+ */
+export interface ProductDescriptionInput {
   productName: string
   niche: string
   features: string[]
@@ -35,16 +22,17 @@ interface GeneratedDescription {
   seoKeywords: string[]
 }
 
-/**
- * Generate a full product description pack using Gemini
- */
+const API_URL = 'https://api.aimlapi.com/v1/chat/completions'
+/** AIMLAPI routes `google/gemini-2.0-flash` through their own gateway. */
+const MODEL   = 'google/gemini-2.0-flash'
+
 export async function generateProductDescriptionWithGemini(
   input: ProductDescriptionInput
 ): Promise<GeneratedDescription> {
-  try {
-    const model = getGeminiClient().getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const key = String(process.env.GOOGLE_AI_API_KEY ?? '')
+  if (!key) throw new Error('GOOGLE_AI_API_KEY (AIMLAPI key) is not set')
 
-    const prompt = `You are an expert e-commerce copywriter. Create a high-converting product description for this item.
+  const prompt = `You are an expert e-commerce copywriter. Create a high-converting product description for this item.
 
 Product: ${input.productName}
 Niche: ${input.niche}
@@ -52,7 +40,7 @@ Key Features: ${input.features.join(', ')}
 Price Range: $${input.priceRange.min} - $${input.priceRange.max}
 Target Audience: ${input.targetAudience || 'General consumers'}
 
-Return ONLY valid JSON:
+Return ONLY valid JSON — no markdown fences, no extra text:
 {
   "title": "SEO-optimised product title (max 70 chars)",
   "shortDescription": "Compelling 1-2 sentence summary",
@@ -60,18 +48,32 @@ Return ONLY valid JSON:
   "bulletPoints": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"],
   "seoKeywords": ["keyword1", "keyword2", "keyword3", "keyword4"]
 }`
-    const result = await model.generateContent(prompt)
-    const response = result.response.text()
-    const cleaned = response.replace(/```json|```/g, '').trim()
-    return JSON.parse(cleaned) as GeneratedDescription
-  } catch (error) {
-    console.error('Gemini Description Error:', error)
-    return {
-      title: input.productName,
-      shortDescription: `Premium ${input.niche.toLowerCase()} solution.`,
-      longDescription: `Discover the perfect ${input.productName}. Designed for those who value quality and performance.`,
-      bulletPoints: input.features.slice(0, 5),
-      seoKeywords: [input.niche.toLowerCase(), input.productName.toLowerCase()],
-    }
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + key,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.4,
+      max_tokens: 1024,
+    }),
+  })
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({})))
+    const msg = body.error?.message || body.message || 'unknown error'
+    throw new Error(`AIMLAPI ${res.status}: ${msg}`)
   }
+
+  const data  = await res.json()
+  const text  = data.choices?.[0]?.message?.content
+  if (!text) throw new Error('Empty response from model')
+  const cleaned = text.replace(/```json|```/g, '').trim()
+  return JSON.parse(cleaned) as GeneratedDescription
 }

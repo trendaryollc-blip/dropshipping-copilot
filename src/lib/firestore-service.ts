@@ -57,10 +57,10 @@ const mockUsers: User[] = [
 ]
 
 const mockCollections: Record<string, unknown[]> = {
-  dropease_products: products,
-  dropease_suppliers: suppliers,
-  dropease_orders: orders,
-  dropease_users: mockUsers,
+  dropease_products: products as unknown[],
+  dropease_suppliers: suppliers as unknown[],
+  dropease_orders: orders as unknown[],
+  dropease_users: mockUsers as unknown[],
 }
 
 // ============================================================================
@@ -73,9 +73,11 @@ export async function getDocument<D extends DocumentData = DocumentData>(
   if (!isFirestoreConfigured()) {
     const [collectionName, docId] = path.split("/")
     if (collectionName && docId && mockCollections[collectionName]) {
-      return (mockCollections[collectionName].find((item) => item.id === docId) || null) as D | null
+      const items = mockCollections[collectionName] as Array<{ id: string }>
+      const found = items.find((it: { id: string }) => it.id === docId)
+      return (found || null) as D | null
     }
-    return { mock: true, path } as D | null
+    return { mock: true, path } as unknown as D | null
   }
   try {
     const db = getFirestoreClient()!
@@ -172,7 +174,7 @@ export async function getCollection<D extends DocumentData = DocumentData>(
     const db = getFirestoreClient()!
     const colRef = collection(db, collectionName)
     const snap = await getDocs(colRef)
-    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as D[]
+    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as unknown as D[]
   } catch (error) {
     handleFirestoreError(error, "getCollection")
   }
@@ -197,7 +199,7 @@ export async function queryCollection<D extends DocumentData = DocumentData>(
     const colRef = collection(db, collectionName)
     const q = query(colRef, ...constraints)
     const snap = await getDocs(q)
-    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as D[]
+    return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as unknown as D[]
   } catch (error) {
     handleFirestoreError(error, "queryCollection")
   }
@@ -224,10 +226,10 @@ export function listenToDocument<D extends DocumentData = DocumentData>(
   if (!isFirestoreConfigured()) {
     const [collectionName, docId] = path.split("/")
     if (collectionName && docId && mockCollections[collectionName]) {
-      const mockData = (mockCollections[collectionName] as D[] | undefined)?.find(
-        (item) => item.id === docId,
+      const mockData = (mockCollections[collectionName] as unknown as Array<{ id: string }>).find(
+        (item: { id: string }) => item.id === docId,
       ) || null
-      callback(mockData)
+      callback(mockData as unknown as D)
     }
     return () => {}
   }
@@ -236,9 +238,9 @@ export function listenToDocument<D extends DocumentData = DocumentData>(
     const dref = doc(db, path)
     return onSnapshot(
       dref,
-      (snap: DocumentSnapshot<D>) =>
-        callback(snap.exists() ? ({ id: snap.id, ...snap.data() } as D) : null),
-      (error: Error) => errorCallback?.(error),
+      (snap) =>
+        callback(snap.exists() ? ({ id: snap.id, ...snap.data() } as unknown as D) : null),
+      (error) => errorCallback?.(error),
     )
   } catch (error) {
     errorCallback?.(error as Error)
@@ -253,7 +255,7 @@ export function listenToCollection<D extends DocumentData = DocumentData>(
   constraints: QueryConstraint[] = [],
 ): Unsubscribe {
   if (!isFirestoreConfigured()) {
-    const mockData = (mockCollections[collectionName] as D[] | undefined) || []
+    const mockData = (mockCollections[collectionName] as unknown as D[] | undefined) || []
     callback(mockData)
     return () => {}
   }
@@ -263,9 +265,9 @@ export function listenToCollection<D extends DocumentData = DocumentData>(
     const q = constraints.length > 0 ? query(colRef, ...constraints) : colRef
     return onSnapshot(
       q,
-      (snap: { docs: DocumentSnapshot<D>[] }) =>
-        callback(snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as D))),
-      (error: Error) => errorCallback?.(error),
+      (snap) =>
+        callback(snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() } as unknown as D))),
+      (error) => errorCallback?.(error),
     )
   } catch (error) {
     errorCallback?.(error as Error)

@@ -40,6 +40,28 @@ export function generateMockCarriers(): CarrierConfig[] {
   ]
 }
 
+export async function getRatesByZone({ origin, destination, weight, zone = 'domestic', packages = 1 }: { origin: string; destination: string; weight: number; zone?: string; packages?: number }): Promise<ShippingRate[]> {
+  const cacheKey = `${zone}:${origin}:${destination}:${weight}:${packages}`
+  const cached = getCachedRates(cacheKey)
+  if (cached) return cached
+
+  try {
+    const res = await fetch('/api/shipping/rates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ origin, destination, weight, zone, packages }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const rates = data.rates as ShippingRate[]
+      cacheRates(cacheKey, rates, 300)
+      return rates
+    }
+  } catch { /* fallback to local */ }
+
+  return getRatesForShipment({ origin, destination, weight })
+}
+
 export function getRatesForShipment({ origin, destination, weight }: { origin: string; destination: string; weight: number }): ShippingRate[] {
   // Mocked rate comparison logic
   const base = Math.max(3, Math.round(weight * 2 + Math.random() * 10))

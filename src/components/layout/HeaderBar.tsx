@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { NotificationsPopover } from "@/components/notifications-popover"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LocaleSwitcher } from "@/components/locale-switcher"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
 
@@ -65,6 +66,7 @@ export function HeaderBar() {
            </div>
 
            <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-2 py-2 shadow-md">
+             <LocaleSwitcher />
              <ThemeToggle />
              <NotificationsPopover />
            </div>

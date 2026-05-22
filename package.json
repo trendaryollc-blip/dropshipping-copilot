@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "setup:trendaryo-key": "node scripts/generate-trendaryo-key.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

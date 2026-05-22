@@ -143,8 +143,9 @@ export default function SEOPage() {
                 }}
                 label="AI"
                 onSuccess={(result) => {
-                  if (result.optimizedTitle) setMetaTitle(result.optimizedTitle)
-                  if (result.metaDescription) setMetaDesc(result.metaDescription)
+                  const seoResult = result as { optimizedTitle: string; metaDescription: string }
+                  if (seoResult.optimizedTitle) setMetaTitle(seoResult.optimizedTitle)
+                  if (seoResult.metaDescription) setMetaDesc(seoResult.metaDescription)
                 }}
               />
             </div>

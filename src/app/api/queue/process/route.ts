@@ -8,7 +8,12 @@ export async function GET() {
     // For any completed sync jobs, trigger webhooks if payload includes provider
     for (const job of processed) {
       if (job.type === 'sync' && job.status === 'completed' && job.payload?.provider) {
-        await webhooksStore.deliverWebhookToProvider(job.payload.provider, 'integration.sync', { info: 'background sync completed', payload: job.payload })
+        const payload = job.payload as Record<string, unknown>
+        await webhooksStore.deliverWebhookToProvider(
+          String(payload.provider),
+          'integration.sync',
+          { info: 'background sync completed', payload },
+        )
       }
     }
     return NextResponse.json({ processed })

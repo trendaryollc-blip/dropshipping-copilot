@@ -64,7 +64,10 @@ Return ONLY valid JSON array.`
     }),
   })
 
-  if (!res.ok) throw new Error('DeepSeek API error')
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({})))
+    throw new Error(`DeepSeek API ${res.status}: ${body.error?.message || 'unknown error'}`)
+  }
 
   const data = await res.json()
   const raw = data.choices?.[0]?.message?.content ?? '[]'

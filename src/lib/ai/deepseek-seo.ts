@@ -9,7 +9,7 @@
  * Best for: Keyword-driven SEO output, content strategy suggestions
  */
 
-interface SEOInput {
+export interface SEOInput {
   productName: string
   niche: string
   currentDescription?: string
@@ -63,8 +63,14 @@ Return ONLY valid JSON:
     }),
   })
 
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({})))
+    throw new Error(`DeepSeek API ${res.status}: ${body.error?.message || 'unknown error'}`)
+  }
+
   const data = await res.json()
-  const content = data.choices[0].message.content
+  const content = data.choices?.[0]?.message?.content
+  if (!content) throw new Error('DeepSeek returned no content in response')
   const parsed = JSON.parse(content.replace(/```json|```/g, '').trim())
   return parsed as SEOOptimization
 }

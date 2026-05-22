@@ -112,7 +112,7 @@ export function listenToAutomationRule(
   return listenToCollection(
     COLLECTION_NAME,
     (data) => {
-      const rule = data.find((r: { id: string }) => r.id === id)
+      const rule = (data as AutomationRule[]).find((r) => r.id === id)
       callback(rule as AutomationRule | null)
     },
     errorCallback

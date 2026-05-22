@@ -3,7 +3,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 import { AI } from "@/lib/ai"
+import type { AutomationTask } from "@/lib/ai/config"
 
 interface AIActionProps {
   task: AutomationTask

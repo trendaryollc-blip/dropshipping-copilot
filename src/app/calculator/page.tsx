@@ -227,7 +227,7 @@ export default function CalculatorPage() {
               label="Get AI Pricing Recommendation"
               variant="default"
               onSuccess={(result) => {
-                toast.success(`Recommended price: $${result.recommendedPrice}`)
+                toast.success(`Recommended price: $${(result as { recommendedPrice: number }).recommendedPrice}`)
               }}
             />
           </CardContent>

@@ -17,6 +17,7 @@ export default [
       "db-migrate/**",
       "server-seed.js",
       "vercel-cache-clear.js",
+      "src/lib/ai/verify-keys.ts",
     ],
   },
   js.configs.recommended,
@@ -48,5 +49,12 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/no-unused-expressions": "off",
     },
-  }
+  },
+  {
+    files: ["src/lib/ai/verify-keys.ts", "src/lib/ai/zai.ts"],
+    rules: {
+      "no-var": "off",
+      "no-useless-catch": "off",
+    },
+  },
 ];

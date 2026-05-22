@@ -85,7 +85,7 @@ export function listenToOrder(
   return listenToCollection(
     COLLECTION_NAME,
     (data) => {
-      const order = data.find((o: { id: string }) => o.id === id)
+      const order = (data as Order[]).find((o) => o.id === id)
       callback(order as Order | null)
     },
     errorCallback

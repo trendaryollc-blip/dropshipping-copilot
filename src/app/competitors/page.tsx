@@ -275,7 +275,7 @@ export default function CompetitorsPage() {
                             const height = ((h.price - min) / range) * 24 + 8
                             const isLatest = i === comp.priceHistory.length - 1
                             return (
-                              <div className="flex flex-col items-center">
+                              <div className="flex flex-col items-center" key={i}>
                                 <div className={cn("w-6 rounded-t", isLatest ? "bg-primary" : "bg-muted")} style={{ height: `${height}px` }} />
                                 <p className="text-[9px] text-muted-foreground mt-0.5">${h.price}</p>
                               </div>

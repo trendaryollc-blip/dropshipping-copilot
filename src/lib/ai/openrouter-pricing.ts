@@ -10,7 +10,7 @@
  */
 import type { CompetitorProduct } from '@/types'
 
-interface PricingInput {
+export interface PricingInput {
   productName: string
   currentPrice: number
   competitorPrices: number[]

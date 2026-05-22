@@ -6,6 +6,8 @@ import {
   Search,
   FileText,
   Truck,
+  Bot,
+  RotateCcw,
 } from "lucide-react"
 import Link from "next/link"
 import { dashboardStats, recentActivity } from "@/lib/mock-data"
@@ -28,6 +30,8 @@ const activityAccent = {
   order: "bg-cyan-400",
   supplier: "bg-violet-400",
   description: "bg-fuchsia-400",
+  automation: "bg-amber-400",
+  return: "bg-rose-400",
 }
 
 const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
@@ -35,6 +39,8 @@ const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
   order: <ShoppingCart className="size-5" />,
   supplier: <Users className="size-5" />,
   description: <FileText className="size-5" />,
+  automation: <Bot className="size-5" />,
+  return: <RotateCcw className="size-5" />,
 }
 
 export default function DashboardPage() {

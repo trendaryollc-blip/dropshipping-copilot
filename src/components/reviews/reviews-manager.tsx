@@ -1,7 +1,15 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { useReviewsStore } from "@/store/useReviewsStore"
-import { detectDuplicates } from "@/lib/reviews-service"
+import {
+  detectDuplicates,
+  fetchReviewsFromPlatform,
+  bulkReplyToReviews,
+  getReviewAlerts,
+  generateReviewWidgetEmbed,
+  sendReviewSolicitationEmail,
+  type ReviewPlatform,
+} from "@/lib/reviews-service"
 
 export default function ReviewsManager() {
   const reviews = useReviewsStore(s => s.reviews)
@@ -14,6 +22,10 @@ export default function ReviewsManager() {
   const exportCSV = useReviewsStore(s => s.exportCSV)
 
   const [replyText, setReplyText] = useState("")
+  const [bulkTemplate, setBulkTemplate] = useState("Thank you for your review!")
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [widgetCode, setWidgetCode] = useState("")
+  const alerts = getReviewAlerts(reviews)
 
   useEffect(() => { load() }, [load])
   useEffect(() => {
@@ -22,8 +34,55 @@ export default function ReviewsManager() {
     if (dups.length) console.info('Potential duplicate review groups:', dups.map(g => g.map(r=>r.id)))
   }, [reviews])
 
+  const importPlatform = async (platform: ReviewPlatform) => {
+    const imported = await fetchReviewsFromPlatform(platform)
+    const next = [...imported, ...reviews]
+    useReviewsStore.setState({ reviews: next })
+    const { saveReviewsToLocal } = await import("@/lib/reviews-service")
+    saveReviewsToLocal(next)
+  }
+
   return (
     <div className="space-y-4">
+      {alerts.length > 0 && (
+        <div className="rounded border border-yellow-300 bg-yellow-50 p-3 text-sm">
+          {alerts.length} alert(s): low ratings or flagged reviews need attention.
+        </div>
+      )}
+
+      <div className="bg-white shadow rounded p-4">
+        <h3 className="font-semibold">Platform Import</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {(['shopify', 'amazon', 'ebay', 'trustpilot'] as ReviewPlatform[]).map((p) => (
+            <button key={p} onClick={() => importPlatform(p)} className="px-3 py-1 border rounded text-sm capitalize">{p}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white shadow rounded p-4">
+        <h3 className="font-semibold">Bulk Reply</h3>
+        <input value={bulkTemplate} onChange={(e) => setBulkTemplate(e.target.value)} className="border rounded p-2 w-full mt-2" />
+        <button
+          onClick={() => {
+            const updated = bulkReplyToReviews(selectedIds.length ? selectedIds : reviews.map((r) => r.id), bulkTemplate, reviews)
+            useReviewsStore.setState({ reviews: updated })
+            import("@/lib/reviews-service").then(({ saveReviewsToLocal }) => saveReviewsToLocal(updated))
+          }}
+          className="mt-2 px-3 py-1 bg-blue-600 text-white rounded text-sm"
+        >Reply to {selectedIds.length || reviews.length} reviews</button>
+      </div>
+
+      <div className="bg-white shadow rounded p-4">
+        <h3 className="font-semibold">Storefront Widget</h3>
+        <button onClick={() => setWidgetCode(generateReviewWidgetEmbed())} className="px-3 py-1 border rounded text-sm">Generate embed code</button>
+        {widgetCode && <pre className="mt-2 text-xs bg-gray-100 p-2 overflow-x-auto">{widgetCode}</pre>}
+      </div>
+
+      <div className="bg-white shadow rounded p-4">
+        <h3 className="font-semibold">Review Solicitation</h3>
+        <button onClick={() => sendReviewSolicitationEmail('customer@example.com', 'Sample Product')} className="px-3 py-1 bg-green-600 text-white rounded text-sm">Send sample request email</button>
+      </div>
+
       <div className="bg-white shadow rounded p-4">
         <h3 className="font-semibold">Import Reviews (CSV)</h3>
         <input type="file" accept="text/csv" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await importCSV(f) }} />
@@ -38,6 +97,12 @@ export default function ReviewsManager() {
         <ul className="mt-2 space-y-2">
           {reviews.map(r => (
             <li key={r.id} className="p-2 border rounded">
+              <input
+                type="checkbox"
+                className="mr-2"
+                checked={selectedIds.includes(r.id)}
+                onChange={(e) => setSelectedIds((prev) => e.target.checked ? [...prev, r.id] : prev.filter((id) => id !== r.id))}
+              />
               <div className="flex justify-between items-start">
                 <div>
                   <div className="font-medium">{r.productName || 'Product'} — {r.rating}★</div>

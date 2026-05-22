@@ -1,3 +1,5 @@
+import { getDataStore } from './data-store'
+
 type Provider = string
 
 interface WebhookSubscription {
@@ -9,24 +11,28 @@ interface WebhookSubscription {
   lastEventAt?: string
 }
 
-const subscriptions: WebhookSubscription[] = []
-
 export function listSubscriptions() {
-  return [...subscriptions]
+  return [...getDataStore().webhooks]
 }
 
 export function addSubscription(provider: Provider, url: string) {
-  const sub: WebhookSubscription = { id: crypto.randomUUID(), provider, url, active: true, createdAt: new Date().toISOString() }
-  subscriptions.push(sub)
+  const sub: WebhookSubscription = {
+    id: crypto.randomUUID(),
+    provider,
+    url,
+    active: true,
+    createdAt: new Date().toISOString(),
+  }
+  getDataStore().webhooks.push(sub)
   return sub
 }
 
 export function getSubscriptionsByProvider(provider: Provider) {
-  return subscriptions.filter(s => s.provider === provider && s.active)
+  return getDataStore().webhooks.filter((s) => s.provider === provider && s.active)
 }
 
 export function touchSubscription(id: string) {
-  const s = subscriptions.find(x => x.id === id)
+  const s = getDataStore().webhooks.find((x) => x.id === id)
   if (!s) return null
   s.lastEventAt = new Date().toISOString()
   return s
@@ -37,10 +43,14 @@ export async function deliverWebhookToProvider(provider: Provider, event: string
   const results: Array<{ id: string; url: string; ok: boolean; status?: number }> = []
   for (const s of subs) {
     try {
-      const res = await fetch(s.url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ event, payload, deliveredAt: new Date().toISOString() }) })
+      const res = await fetch(s.url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ event, payload, deliveredAt: new Date().toISOString() }),
+      })
       s.lastEventAt = new Date().toISOString()
       results.push({ id: s.id, url: s.url, ok: res.ok, status: res.status })
-    } catch (e) {
+    } catch {
       results.push({ id: s.id, url: s.url, ok: false })
     }
   }

@@ -52,8 +52,7 @@ export const useShippingStore = create<ShippingState>((set) => ({
               // call adapter implementation (may be sync mock)
               try {
                 const rates = adapter.getRates(payload)
-                // if adapter returns rates, prefer them
-                return rates as ShippingRate[]
+                if (Array.isArray(rates)) return rates
               } catch (e) {
                 console.warn("Adapter getRates failed for", c.provider, e)
               }

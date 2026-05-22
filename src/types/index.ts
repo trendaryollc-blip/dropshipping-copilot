@@ -111,7 +111,7 @@ export interface Order {
 
 export interface ActivityItem {
   id: string
-  type: "import" | "order" | "supplier" | "description"
+  type: "import" | "order" | "supplier" | "description" | "automation" | "return"
   message: string
   time: string
 }
@@ -340,13 +340,81 @@ export interface CustomerProfile {
   id: string
   name: string
   email: string
+  phone?: string
   segment: string
   lifetimeValue: number
   orders: number
   lastOrderDate: string
   status: "active" | "inactive"
   lastContacted: string
+  leadScore?: number
+  tags?: string[]
+  consent?: CustomerConsent
+  enrichedAt?: string
+  unsubscribed?: boolean
 }
+
+export interface CustomerConsent {
+  marketing: boolean
+  sms: boolean
+  analytics: boolean
+  updatedAt: string
+}
+
+export interface CrmActivity {
+  id: string
+  customerId: string
+  type: "email" | "sms" | "note" | "order" | "call" | "automation" | "merge" | "import"
+  title: string
+  body?: string
+  createdAt: string
+  metadata?: Record<string, string | number>
+}
+
+export interface SegmentRule {
+  id: string
+  field: "lifetimeValue" | "orders" | "segment" | "leadScore" | "lastOrderDate" | "status"
+  operator: "eq" | "gt" | "lt" | "gte" | "lte" | "contains"
+  value: string | number
+}
+
+export interface CustomerSegmentDefinition {
+  id: string
+  name: string
+  rules: SegmentRule[]
+  matchMode: "all" | "any"
+  createdAt: string
+}
+
+export interface CrmAutomation {
+  id: string
+  name: string
+  trigger: "new_customer" | "inactive_30d" | "high_ltv" | "segment_match"
+  action: "send_email" | "send_sms" | "add_tag" | "assign_segment"
+  enabled: boolean
+  templateId?: string
+  segmentId?: string
+}
+
+export interface CrmAuditEntry {
+  id: string
+  customerId?: string
+  action: string
+  actor: string
+  changes?: Record<string, unknown>
+  createdAt: string
+}
+
+export interface GdprRequest {
+  id: string
+  customerId: string
+  type: "export" | "delete"
+  status: "pending" | "processing" | "completed"
+  requestedAt: string
+  completedAt?: string
+}
+
+export type CrmRole = "owner" | "admin" | "agent" | "viewer"
 
 export interface CustomerSegment {
   id: string

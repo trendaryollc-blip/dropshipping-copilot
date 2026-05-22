@@ -20,7 +20,7 @@ function getGroqClient(): Groq {
   return groq
 }
 
-interface OrderProcessingInput {
+export interface OrderProcessingInput {
   orderId: string
   customerName: string
   totalAmount: number
@@ -59,9 +59,9 @@ Respond ONLY with valid JSON:
   "recommendedAction": "what to do next"
 }`
 
-    const completion = await getGroqClient().chat.completions.create({
+     const completion = await getGroqClient().chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.1,
       max_tokens: 300,
     })

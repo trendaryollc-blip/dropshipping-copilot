@@ -9,7 +9,7 @@
  * Best for: Instant risk flags without reaching a third-party LLM
  */
 
-interface FraudInput {
+export interface FraudInput {
   orderAmount: number
   customerEmail: string
   shippingCountry: string

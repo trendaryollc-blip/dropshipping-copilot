@@ -19,5 +19,11 @@ export default function createAmazonAdapter() {
     async pushOrder(order: Order) {
       return { ok: true, remoteId: `amz_order_${order.id}` }
     },
+    async pullProducts() {
+      return this.fetchProducts()
+    },
+    async pullOrders() {
+      return this.fetchOrders()
+    },
   }
 }

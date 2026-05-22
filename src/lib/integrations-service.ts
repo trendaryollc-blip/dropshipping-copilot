@@ -87,7 +87,7 @@ export async function connectIntegration(provider: IntegrationProvider, config: 
 export async function fetchIntegrationProducts(provider: IntegrationProvider): Promise<Product[]> {
   const adapter = integrationAdapters[provider]
   if (adapter && typeof adapter.fetchProducts === 'function') {
-    return adapter.fetchProducts()
+    return adapter.fetchProducts() as Promise<Product[]>
   }
   return []
 }
@@ -95,7 +95,7 @@ export async function fetchIntegrationProducts(provider: IntegrationProvider): P
 export async function fetchIntegrationOrders(provider: IntegrationProvider): Promise<Order[]> {
   const adapter = integrationAdapters[provider]
   if (adapter && typeof adapter.fetchOrders === 'function') {
-    return adapter.fetchOrders()
+    return adapter.fetchOrders() as Promise<Order[]>
   }
   return []
 }
@@ -130,6 +130,7 @@ export async function syncIntegrationData(provider: IntegrationProvider, localPr
   const remoteProducts = await fetchIntegrationProducts(provider)
   const remoteOrders = await fetchIntegrationOrders(provider)
 
+  // Two-way sync: push local → remote, pull remote → local
   for (const product of localProducts) {
     if (typeof adapter.pushProduct === 'function') {
       await adapter.pushProduct(product)
@@ -144,13 +145,36 @@ export async function syncIntegrationData(provider: IntegrationProvider, localPr
     }
   }
 
-  if (remoteProducts.length === 0) warnings.push('No remote products found')
-  if (remoteOrders.length === 0) warnings.push('No remote orders found')
+  let pulledProducts = 0
+  let pulledOrders = 0
+  if (typeof adapter.pullProducts === 'function') {
+    const pulled = await adapter.pullProducts()
+    pulledProducts = pulled?.length ?? 0
+    productsSynced += pulledProducts
+  } else {
+    pulledProducts = remoteProducts.length
+    productsSynced += remoteProducts.length
+  }
+
+  if (typeof adapter.pullOrders === 'function') {
+    const pulled = await adapter.pullOrders()
+    pulledOrders = pulled?.length ?? 0
+    ordersSynced += pulledOrders
+  } else {
+    pulledOrders = remoteOrders.length
+    ordersSynced += remoteOrders.length
+  }
+
+  if (remoteProducts.length === 0 && pulledProducts === 0) warnings.push('No remote products found')
+  if (remoteOrders.length === 0 && pulledOrders === 0) warnings.push('No remote orders found')
 
   const result = {
     provider,
     productsSynced,
     ordersSynced,
+    pulledProducts,
+    pulledOrders,
+    twoWay: true,
     updatedAt: new Date().toISOString(),
     warnings,
   }

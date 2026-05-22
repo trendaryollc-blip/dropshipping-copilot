@@ -1,6 +1,6 @@
 import type { ActivityItem } from "@/types"
 import Link from "next/link"
-import { Package2, Users, ShoppingCart, FileText, ArrowLeft } from "lucide-react"
+import { Package2, Users, ShoppingCart, FileText, RotateCcw, Bot, ArrowLeft } from "lucide-react"
 import { recentActivity } from "@/lib/mock-data"
 
 const activityAccent: Record<ActivityItem["type"], string> = {
@@ -8,6 +8,8 @@ const activityAccent: Record<ActivityItem["type"], string> = {
   order: "bg-cyan-400",
   supplier: "bg-violet-400",
   description: "bg-fuchsia-400",
+  automation: "bg-amber-400",
+  return: "bg-rose-400",
 }
 
 const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
@@ -15,6 +17,8 @@ const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
   order: <ShoppingCart className="size-5" />,
   supplier: <Users className="size-5" />,
   description: <FileText className="size-5" />,
+  automation: <Bot className="size-5" />,
+  return: <RotateCcw className="size-5" />,
 }
 
 export default function ActivityPage() {
