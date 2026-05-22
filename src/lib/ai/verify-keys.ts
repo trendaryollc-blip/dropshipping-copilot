@@ -320,7 +320,7 @@ async function main() {
     (async function () {
       /* @ts-expect-error */
       var mod = await import('@/lib/scrapers/trendaryo')
-      var d = await mod.trendaryoScraper.scrapePrice('/')
+      var d = await mod.trendaryoScraper().scrapePrice('/')
       if (d.success && d.price != null) {
         p('Trendaryo scraper', (d.currency || '') + ' ' + d.price + '  ts=' + d.timestamp)
       } else {

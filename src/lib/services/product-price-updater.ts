@@ -34,7 +34,7 @@ export async function updateProductPricesFromTrendaryo(): Promise<{
     const productUrls = trendaryoProducts.map(p => p.trendaryoUrl);
     
     // Scrape prices from Trendaryo
-    const priceResults = await trendaryoScraper.scrapeMultiplePrices(productUrls);
+    const priceResults = await trendaryoScraper().scrapeMultiplePrices(productUrls);
     
     // Update products with new prices
     let updatedCount = 0;
@@ -99,7 +99,7 @@ export async function updateSingleProductPriceFromTrendaryo(
   trendaryoUrl: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const priceResult = await trendaryoScraper.scrapePrice(trendaryoUrl);
+    const priceResult = await trendaryoScraper().scrapePrice(trendaryoUrl);
     
     if (priceResult.success && priceResult.price !== undefined) {
       await updateDocument(

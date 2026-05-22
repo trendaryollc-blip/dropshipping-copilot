@@ -9,7 +9,7 @@ async function exampleUsage() {
   
   // Example 1: Scrape a single product price (using relative path)
   console.log('1. Scraping single product price:');
-  const singleResult = await trendaryoScraper.scrapePrice('/products/example-product');
+  const singleResult = await trendaryoScraper().scrapePrice('/products/example-product');
   console.log('Result:', JSON.stringify(singleResult, null, 2));
   
   // Example 2: Scrape multiple product prices
@@ -20,7 +20,7 @@ async function exampleUsage() {
     '/products/product-3'
   ];
   
-  const multipleResults = await trendaryoScraper.scrapeMultiplePrices(productUrls);
+  const multipleResults = await trendaryoScraper().scrapeMultiplePrices(productUrls);
   console.log('Results:');
   multipleResults.forEach((result, index) => {
     console.log(`  Product ${index + 1}:`, JSON.stringify(result, null, 4));
@@ -28,7 +28,7 @@ async function exampleUsage() {
   
   // Example 3: Using with full URL
   console.log('\n3. Scraping with full URL:');
-  const fullUrlResult = await trendaryoScraper.scrapePrice('https://trendaryo.com/products/another-product');
+  const fullUrlResult = await trendaryoScraper().scrapePrice('https://trendaryo.com/products/another-product');
   console.log('Result:', JSON.stringify(fullUrlResult, null, 2));
 }
 
