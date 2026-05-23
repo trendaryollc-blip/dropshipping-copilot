@@ -9,6 +9,7 @@ import {
   onAuthChange,
   updateAuthProfile,
   getAuthInstance,
+  isFirebaseAuthConfigured,
 } from "@/lib/firebase-auth"
 import { setDocument } from "@/lib/firestore-service"
 
@@ -108,19 +109,23 @@ export const useAuthStore = create<AuthState>()(
 
 // ── Bootstrap: subscribe to Firebase Auth on first client mount ────────────────
 if (typeof window !== "undefined") {
-  onAuthChange((user) => {
-    // Also upsert the Firestore user doc so it exists on every silent re-auth
-    if (user) {
-      setDocument(
-        `dropease_users/${user.id}`,
-        { id: user.id, name: user.name, email: user.email, plan: "free", isOnboarded: false },
-        true,
-      ).catch(() => {})
-    }
-    useAuthStore.setState({
-      user,
-      isAuthenticated: !!user,
-      isInitialised: true,
+  if (!isFirebaseAuthConfigured()) {
+    useAuthStore.setState({ isInitialised: true })
+  } else {
+    onAuthChange((user) => {
+      // Also upsert the Firestore user doc so it exists on every silent re-auth
+      if (user) {
+        setDocument(
+          `dropease_users/${user.id}`,
+          { id: user.id, name: user.name, email: user.email, plan: "free", isOnboarded: false },
+          true,
+        ).catch(() => {})
+      }
+      useAuthStore.setState({
+        user,
+        isAuthenticated: !!user,
+        isInitialised: true,
+      })
     })
-  })
+  }
 }

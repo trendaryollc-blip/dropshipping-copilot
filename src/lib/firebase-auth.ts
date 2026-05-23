@@ -14,11 +14,13 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider,
-  User as FBUser,
+  type Auth,
+  type User as FBUser,
 } from "firebase/auth"
-import { initializeApp, getApps } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
+import { getFirestore, type Firestore } from "firebase/firestore"
 import type { User } from "@/types"
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -28,15 +30,38 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-let fbApp: ReturnType<typeof initializeApp> | null = null
-let db: ReturnType<typeof getFirestore> | null = null
+let fbApp: FirebaseApp | null = null
+let db: Firestore | null = null
+let auth: Auth | null = null
 
-if (!getApps().length) {
-  fbApp = initializeApp(firebaseConfig as any)
-  db = getFirestore(fbApp)
+export function isFirebaseAuthConfigured(): boolean {
+  const { apiKey, projectId } = firebaseConfig
+  return Boolean(
+    apiKey &&
+      projectId &&
+      !String(apiKey).startsWith("your_") &&
+      !String(projectId).startsWith("your_"),
+  )
 }
 
-const auth = getAuth()
+function requireAuth(): Auth {
+  if (!isFirebaseAuthConfigured()) {
+    throw new Error(
+      "Firebase Auth is not configured. Set NEXT_PUBLIC_FIREBASE_* in .env.local or Vercel.",
+    )
+  }
+  if (!auth) {
+    if (!getApps().length) {
+      fbApp = initializeApp(firebaseConfig)
+      db = getFirestore(fbApp)
+    } else {
+      fbApp = getApps()[0]!
+      db = getFirestore(fbApp)
+    }
+    auth = getAuth(fbApp)
+  }
+  return auth
+}
 
 // ── Konverters ────────────────────────────────────────────────────────────────
 
@@ -59,7 +84,7 @@ function fbUserToUser(fbUser: FBUser): User {
  * Throws on invalid credentials. Always throws on any auth error.
  */
 export async function signIn(email: string, password: string): Promise<User> {
-  const cred = await signInWithEmailAndPassword(auth, email, password)
+  const cred = await signInWithEmailAndPassword(requireAuth(), email, password)
   return fbUserToUser(cred.user)
 }
 
@@ -72,7 +97,7 @@ export async function signUp(
   password: string,
   displayName?: string,
 ): Promise<User> {
-  const cred = await createUserWithEmailAndPassword(auth, email, password)
+  const cred = await createUserWithEmailAndPassword(requireAuth(), email, password)
   if (displayName) {
     await fbUpdateProfile(cred.user, { displayName })
   }
@@ -83,22 +108,23 @@ export async function signUp(
  * Sign out the currently authenticated user.
  */
 export async function signOut(): Promise<void> {
-  await fbSignOut(auth)
+  await fbSignOut(requireAuth())
 }
 
 /**
  * Send a password-reset email to `email`.
  */
 export async function resetPassword(email: string): Promise<void> {
-  await sendPasswordResetEmail(auth, email)
+  await sendPasswordResetEmail(requireAuth(), email)
 }
 
 /**
  * Send an email-verification link to the currently signed-in user.
  */
 export async function sendVerification(): Promise<void> {
-  if (auth.currentUser) {
-    await sendEmailVerification(auth.currentUser)
+  const instance = requireAuth()
+  if (instance.currentUser) {
+    await sendEmailVerification(instance.currentUser)
   }
 }
 
@@ -108,7 +134,11 @@ export async function sendVerification(): Promise<void> {
  * Fires synchronously on subscription with the current state (null if logged out).
  */
 export function onAuthChange(callback: (user: User | null) => void): () => void {
-  return onAuthStateChanged(auth, (fbUser) => {
+  if (!isFirebaseAuthConfigured()) {
+    callback(null)
+    return () => {}
+  }
+  return onAuthStateChanged(requireAuth(), (fbUser) => {
     callback(fbUser ? fbUserToUser(fbUser) : null)
   })
 }
@@ -120,9 +150,10 @@ export async function updateAuthProfile(data: {
   displayName?: string
   photoURL?: string
 }): Promise<User> {
-  if (!auth.currentUser) throw new Error("No authenticated user")
-  await fbUpdateProfile(auth.currentUser, data)
-  return fbUserToUser(auth.currentUser)
+  const instance = requireAuth()
+  if (!instance.currentUser) throw new Error("No authenticated user")
+  await fbUpdateProfile(instance.currentUser, data)
+  return fbUserToUser(instance.currentUser)
 }
 
 /**
@@ -144,23 +175,17 @@ let googleRedirectInFlight = false
  */
 export async function googleSignIn(mode: "popup" | "redirect" = "redirect"): Promise<void> {
   const provider = new GoogleAuthProvider()
-  // Never force a prompt — Google returns silently (or closes the popup)
-  // when the user is already signed in.
-  // provider.setCustomParameters({ prompt: "select_account" })  ← removed
+  const instance = requireAuth()
 
-  // Use redirect as default: blocks the page but survives popup blockers
-  // because the browser treats it as a top-level navigation, not a popup.
   if (mode === "redirect") {
     googleRedirectInFlight = true
-    await signInWithRedirect(auth, provider)
-    // If we get here, Google did NOT redirect back (OAuth aborted).
+    await signInWithRedirect(instance, provider)
     googleRedirectInFlight = false
     return
   }
 
-  // ─── popup mode ──────────────────────────────────────────────────────────
   try {
-    await signInWithPopup(auth, provider)
+    await signInWithPopup(instance, provider)
   } finally {
     googleRedirectInFlight = false
   }
@@ -189,11 +214,10 @@ export function clearGoogleRedirectFlag() {
  * was pending and is now resolved, `false` otherwise.
  */
 export async function handleGoogleRedirect(): Promise<boolean> {
+  if (!isFirebaseAuthConfigured()) return false
   try {
-    const result = await getRedirectResult(auth)
+    const result = await getRedirectResult(requireAuth())
     if (result) {
-      // User returned from Google OAuth redirect — onAuthStateChanged will pick
-      // up the new session.  Resolve the redirect flag.
       googleRedirectInFlight = false
       return true
     }
@@ -206,8 +230,8 @@ export async function handleGoogleRedirect(): Promise<boolean> {
 /**
  * Get the raw Firebase Auth instance for advanced use-cases (token refresh, etc.).
  */
-export function getAuthInstance() {
-  return auth
+export function getAuthInstance(): Auth {
+  return requireAuth()
 }
 
 /**
@@ -215,12 +239,11 @@ export function getAuthInstance() {
  * when Firebase envs are present — no need to keep a separate wrapper.
  */
 export function isFirestoreConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
-      !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID.startsWith("your_"),
-  )
+  return isFirebaseAuthConfigured()
 }
 
 export function getFirestoreClient() {
+  if (!isFirebaseAuthConfigured()) return null
+  requireAuth()
   return db
 }

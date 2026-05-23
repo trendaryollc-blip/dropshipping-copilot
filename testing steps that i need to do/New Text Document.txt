@@ -1,0 +1,143 @@
+Since you're using Next.js, you can test much more efficiently with a mix of manual testing + automated end-to-end tests.
+
+A practical testing stack:
+
+* Unit tests → Jest + React Testing Library
+* API route tests → Jest
+* End-to-end testing → [Playwright](https://playwright.dev?utm_source=chatgpt.com) (recommended)
+* Optional component testing → Cypress or Playwright
+
+For your dropshipping app, prioritize these flows:
+
+### Critical flow #1: Authentication
+
+Test:
+
+* Sign up
+* Login/logout
+* Wrong password
+* Expired session
+* Protected pages redirect correctly
+
+Example:
+
+* Open app
+* Login
+* Refresh page
+* Confirm user stays logged in
+
+---
+
+### Critical flow #2: Supplier connection
+
+If your app uses supplier APIs:
+
+Test:
+
+* Valid API key
+* Invalid API key
+* Expired token
+* Disconnect/reconnect
+* Multiple supplier accounts
+
+---
+
+### Critical flow #3: Product import
+
+Scenarios:
+
+* Import one product
+* Import hundreds
+* Duplicate products
+* Missing image
+* Missing SKU
+* Variants (size/color)
+
+Check database after import:
+
+* Title saved
+* Images saved
+* Inventory synced
+* Pricing rules applied
+
+---
+
+### Critical flow #4: Automation engine
+
+Example workflow:
+
+Customer order → supplier order → tracking → notification
+
+Break it deliberately:
+
+* Supplier API timeout
+* Supplier unavailable
+* Partial order failure
+
+---
+
+### Critical flow #5: Background jobs
+
+If using:
+
+* Cron jobs
+* Queue workers
+* Webhooks
+
+Test:
+
+* Delayed jobs
+* Duplicate webhooks
+* Retries
+* Failed jobs
+
+---
+
+For a Next.js app, Playwright can automate most of this.
+
+Install:
+
+```bash
+npm init playwright@latest
+```
+
+Create a test:
+
+```ts
+import { test, expect } from '@playwright/test';
+
+test('user login', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  await page.fill('#email', 'test@example.com');
+  await page.fill('#password', 'password123');
+
+  await page.click('button[type=submit]');
+
+  await expect(page).toHaveURL('/dashboard');
+});
+```
+
+Run:
+
+```bash
+npx playwright test
+```
+
+Also test production mode, not only dev:
+
+```bash
+npm run build
+npm start
+```
+
+Many Next.js apps work in development and then break after build because of SSR, environment variables, or API route differences.
+
+Tell me:
+
+* Next.js version
+* Database (Supabase, PostgreSQL, MongoDB, etc.)
+* Auth provider
+* Supplier APIs used
+
+…and I can create a QA checklist specifically for your architecture.
