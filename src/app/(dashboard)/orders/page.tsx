@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { exportToCSV } from "@/lib/utils/export";
+import { toast } from "@/components/Toast";
 
 interface OrderItem { id: string; productName: string; quantity: number; unitPrice: number; supplier?: string }
 interface Order {
@@ -24,18 +25,61 @@ interface ReturnRequest {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [status, setStatus] = useState("all");
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Order | null>(null);
   const [returnRequest, setReturnRequest] = useState<ReturnRequest>({ orderId: "", reason: "", resolution: "refund" });
   const [template, setTemplate] = useState("Thanks for your order. Your tracking details will be updated shortly.");
 
   useEffect(() => {
-    fetch("/api/orders").then((response) => response.json()).then((data) => setOrders(data.orders ?? []));
-  }, []);
+    fetchOrders();
+  }, [status]);
+
+  async function fetchOrders() {
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (search.trim()) params.set("search", search.trim());
+    const response = await fetch(`/api/orders?${params.toString()}`);
+    const data = await response.json();
+    setOrders(data.orders ?? []);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearch(value);
+  }
+
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    fetchOrders();
+  }
+
+  function bulkUpdateStatus(nextStatus: string) {
+    const ids = filtered.map((o) => o.id);
+    if (!ids.length) return;
+    fetch("/api/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderIds: ids, updates: { status: nextStatus } }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setOrders((current) =>
+          current.map((order) => (ids.includes(order.id) ? { ...order, status: nextStatus } : order))
+        );
+        if (selected && ids.includes(selected.id)) {
+          setSelected({ ...selected, status: nextStatus });
+        }
+      });
+  }
 
   async function updateOrder(id: string, nextStatus: string) {
-    await fetch("/api/orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, updates: { status: nextStatus } }) });
-    setOrders((current) => current.map((order) => order.id === id ? { ...order, status: nextStatus } : order));
-    setSelected((current) => current?.id === id ? { ...current, status: nextStatus } : current);
+    const response = await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: nextStatus }),
+    });
+    if (!response.ok) return;
+    setOrders((current) => current.map((order) => (order.id === id ? { ...order, status: nextStatus } : order)));
+    setSelected((current) => (current?.id === id ? { ...current, status: nextStatus } : current));
   }
 
   function splitBySupplier(order: Order) {
@@ -50,12 +94,47 @@ export default function OrdersPage() {
     setReturnRequest({ orderId: order.id, reason: order.refundReason ?? "Customer requested return/refund.", resolution: "refund" });
   }
 
-  function saveReturnRequest() {
-    updateOrder(returnRequest.orderId, returnRequest.resolution === "replacement" ? "processing" : "refund_requested");
-    setReturnRequest({ orderId: "", reason: "", resolution: "refund" });
+  function bulkDeleteOrders() {
+    const ids = filtered.map((o) => o.id);
+    if (!ids.length || !confirm(`Delete ${ids.length} orders? This cannot be undone.`)) return;
+    Promise.all(ids.map((id) => fetch(`/api/orders/${id}`, { method: "DELETE" })))
+      .then(() => {
+        setOrders((current) => current.filter((order) => !ids.includes(order.id)));
+        toast("Orders deleted.", "success");
+      })
+      .catch(() => toast("Failed to delete orders.", "error"));
   }
 
-  const filtered = status === "all" ? orders : orders.filter((order) => order.status === status);
+  function saveReturnRequest() {
+    if (!returnRequest.orderId) return;
+    fetch(`/api/orders/${returnRequest.orderId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: returnRequest.resolution === "replacement" ? "processing" : "refund_requested",
+        refundReason: returnRequest.reason,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setOrders((current) =>
+          current.map((order) =>
+            order.id === returnRequest.orderId
+              ? {
+                  ...order,
+                  status: returnRequest.resolution === "replacement" ? "processing" : "refund_requested",
+                  refundReason: returnRequest.reason,
+                }
+              : order
+          )
+        );
+        setSelected(null);
+        setReturnRequest({ orderId: "", reason: "", resolution: "refund" });
+        toast("Return request saved.", "success");
+      });
+  }
+
+  const filtered = orders;
 
   return (
     <div className="space-y-8">
@@ -65,9 +144,20 @@ export default function OrdersPage() {
       </header>
 
       <section className="flex flex-wrap gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-        <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"><option value="all">All statuses</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="refund_requested">Refund requested</option><option value="refunded">Refunded</option></select>
-        <button onClick={() => filtered.forEach((order) => updateOrder(order.id, "processing"))} className="rounded-lg border border-zinc-700 px-3 py-2 text-sm">Bulk process</button>
-        <button onClick={() => filtered.forEach((order) => updateOrder(order.id, "shipped"))} className="rounded-lg border border-zinc-700 px-3 py-2 text-sm">Bulk mark shipped</button>
+        <form onSubmit={handleSearchSubmit} className="flex gap-2 flex-1 min-w-[260px]">
+          <input
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search by order #, customer, or product..."
+            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2 text-sm"
+          />
+          <button type="submit" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm hover:bg-zinc-800">Search</button>
+          {search && <button type="button" onClick={() => { setSearch(""); fetchOrders(); }} className="rounded-lg border border-zinc-700 px-3 py-2 text-sm hover:bg-zinc-800">Clear</button>}
+        </form>
+        <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"><option value="all">All statuses</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option><option value="refund_requested">Refund requested</option><option value="refunded">Refunded</option></select>
+        <button onClick={() => bulkUpdateStatus("processing")} className="rounded-lg border border-zinc-700 px-3 py-2 text-sm">Bulk process</button>
+        <button onClick={() => bulkUpdateStatus("shipped")} className="rounded-lg border border-zinc-700 px-3 py-2 text-sm">Bulk mark shipped</button>
+        <button onClick={bulkDeleteOrders} className="rounded-lg border border-red-800 px-3 py-2 text-sm text-red-300 hover:bg-red-950/30">Bulk delete</button>
       </section>
 
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">

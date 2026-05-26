@@ -303,6 +303,43 @@ export async function deleteOrder(orderId: string): Promise<void> {
   return deleteDocument("orders", orderId);
 }
 
+export async function getOrder(orderId: string): Promise<Order | null> {
+  return getDocument<Order>("orders", orderId);
+}
+
+export async function searchOrders(
+  userId: string,
+  searchText: string,
+  status?: string
+): Promise<Order[]> {
+  const db = getDb();
+  if (!db) throw new Error("Database not initialized");
+
+  let query: import("firebase-admin/firestore").Query = db
+    .collection("orders")
+    .where("userId", "==", userId)
+    .orderBy("createdAt", "desc");
+
+  if (status && status !== "all") {
+    query = query.where("status", "==", status);
+  }
+
+  const snapshot = await query.get();
+  const searchLower = searchText.toLowerCase();
+
+  return snapshot.docs
+    .map((doc) => doc.data() as Order)
+    .filter(
+      (order) =>
+        order.orderNumber.toLowerCase().includes(searchLower) ||
+        order.customer.name.toLowerCase().includes(searchLower) ||
+        order.customer.email.toLowerCase().includes(searchLower) ||
+        order.items.some((item) =>
+          item.productName.toLowerCase().includes(searchLower)
+        )
+    );
+}
+
 // Audit log operations
 export async function createAuditLog(
   log: Omit<AuditLog, "id" | "createdAt">

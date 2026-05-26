@@ -3,12 +3,24 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ============================================================
+    // SHARED HELPER FUNCTIONS
+    // ============================================================
+
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isOwner(uid) {
       return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function resourceOwner() {
+      return resource.data.userId;
+    }
+
+    function incomingOwner() {
+      return request.resource.data.userId;
     }
 
     function isValidString(val, maxLen) {
@@ -19,60 +31,202 @@ service cloud.firestore {
       return val is number;
     }
 
-    function isValidArray(val) {
-      return val is list;
-    }
+    // ============================================================
+    // SECTION 1: USERS & AUTHENTICATION
+    // ============================================================
 
-    // Users can read/write their own document only
     match /users/{uid} {
-      allow read: if isOwner(uid);
-      allow write: if isOwner(uid);
+      allow read:   if isOwner(uid);
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.email, 320);
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid) && resource.data.role == "owner";
     }
 
-    // API keys — owner only, fields are non-sensitive server-side
     match /api_keys/{uid} {
-      allow read: if isOwner(uid);
+      allow read:  if isOwner(uid);
       allow write: if isOwner(uid);
     }
 
-    // Automations — owner can read/write all their runs
-    match /automations/{docId} {
-      allow read: if isOwner(resource.data.userId);
-      allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid
-        && isValidString(request.resource.data.moduleId, 50);
-      allow delete: if isOwner(resource.data.userId);
-    }
+    // ============================================================
+    // SECTION 2: PRODUCTS & SUPPLIERS
+    // ============================================================
 
-    // Products — owner only
-    match /products/{docId} {
-      allow read: if isOwner(resource.data.userId);
-      allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid
+    match /products/{productId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
         && isValidString(request.resource.data.name, 300)
         && (request.resource.data.score == null || isValidNumber(request.resource.data.score));
-      allow update: if isOwner(resource.data.userId)
-        // Prevent escalating ownership
-        && resource.data.userId == request.resource.data.userId;
-      allow delete: if isOwner(resource.data.userId);
+      allow update: if isOwner(resourceOwner())
+        && resourceOwner() == incomingOwner();
+      allow delete: if isOwner(resourceOwner());
     }
 
-    // Suppliers — owner only
-    match /suppliers/{docId} {
-      allow read: if isOwner(resource.data.userId);
-      allow write: if isOwner(resource.data.userId);
+    match /suppliers/{supplierId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.name, 200);
+      allow update: if isOwner(resourceOwner())
+        && resourceOwner() == incomingOwner();
+      allow delete: if isOwner(resourceOwner());
     }
 
-    // Orders — owner only
-    match /orders/{docId} {
-      allow read: if isOwner(resource.data.userId);
-      allow write: if isOwner(resource.data.userId);
+    // ============================================================
+    // SECTION 3: ORDERS & FULFILLMENT
+    // ============================================================
+
+    match /orders/{orderId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.orderNumber, 64);
+      allow update: if isOwner(resourceOwner())
+        && resourceOwner() == incomingOwner();
+      allow delete: if isOwner(resourceOwner());
     }
 
-    // Settings — owner only
+    // ============================================================
+    // SECTION 4: AUTOMATIONS
+    // ============================================================
+
+    match /automations/{automationId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.moduleId, 50);
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    // ============================================================
+    // SECTION 5: WORKFLOWS & RUNS
+    // ============================================================
+
+    match /workflows/{workflowId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.name, 200);
+      allow update: if isOwner(resourceOwner())
+        && resourceOwner() == incomingOwner();
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    match /workflow_runs/{runId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isAuthenticated()
+        && request.resource.data.workflowId != null
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    // ============================================================
+    // SECTION 6: TEAM MANAGEMENT
+    // ============================================================
+
+    match /team_members/{memberId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.email, 320);
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    match /team_invitations/{invitationId} {
+      allow read:   if isAuthenticated();
+      allow create: if isAuthenticated()
+        && isValidString(request.resource.data.email, 320)
+        && request.resource.data.role in ["admin", "editor", "viewer"];
+      allow update: if isAuthenticated();
+      allow delete: if isOwner(request.resource.data.invitedBy);
+    }
+
+    // ============================================================
+    // SECTION 7: SETTINGS & PREFERENCES
+    // ============================================================
+
     match /settings/{uid} {
-      allow read: if isOwner(uid);
+      allow read:  if isOwner(uid);
       allow write: if isOwner(uid);
+    }
+
+    // ============================================================
+    // SECTION 8: NOTIFICATIONS
+    // ============================================================
+
+    match /notifications/{notificationId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.title, 200)
+        && request.resource.data.type in ["order", "product", "automation", "system", "billing"];
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    // ============================================================
+    // SECTION 9: PROMPT TEMPLATES
+    // ============================================================
+
+    match /prompt_templates/{templateId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.name, 100)
+        && isValidString(request.resource.data.moduleId, 50);
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    // ============================================================
+    // SECTION 10: WEBHOOKS
+    // ============================================================
+
+    match /webhooks/{webhookId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.name, 200)
+        && isValidString(request.resource.data.url, 2048);
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    match /webhook_deliveries/{deliveryId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resourceOwner());
+      allow delete: if isOwner(resourceOwner());
+    }
+
+    // ============================================================
+    // SECTION 11: AUDIT LOGS
+    // ============================================================
+
+    match /audit_logs/{logId} {
+      allow read:   if isOwner(resourceOwner());
+      allow create: if isOwner(incomingOwner())
+        && isValidString(request.resource.data.action, 100);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // SECTION 12: ANALYTICS
+    // ============================================================
+
+    match /analytics/{docId} {
+      allow read:  if isOwner(resourceOwner());
+      allow write: if isOwner(incomingOwner());
+    }
+
+    // ============================================================
+    // SECTION 13: BILLING & SUBSCRIPTIONS
+    // ============================================================
+
+    match /billing_usage/{docId} {
+      allow read:  if isOwner(resourceOwner());
+      allow write: if isOwner(incomingOwner());
+    }
+
+    match /subscriptions/{subscriptionId} {
+      allow read:  if isOwner(resourceOwner());
+      allow write: if isOwner(incomingOwner());
     }
   }
 }
