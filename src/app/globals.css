@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* ============================================
+   THEME: Dark (default — cyber grid)
+   ============================================ */
+[data-theme="dark"],
+:root {
+  --background: #030712;
+  --foreground: #f3f4f6;
+  --glow-emerald: rgba(16, 185, 129, 0.15);
+  --glow-cyan: rgba(6, 182, 212, 0.1);
+  --accent: #10b981;
+  --accent-foreground: #064e3b;
+  --card: #0f172a;
+  --card-border: #1e293b;
+  --border: #1e293b;
+  --input-bg: #0f172a;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+}
+
+/* ============================================
+   THEME: Synthwave (neon magenta/cyan)
+   ============================================ */
+[data-theme="synthwave"] {
+  --background: #0d0221;
+  --foreground: #f5d0fe;
+  --glow-emerald: rgba(232, 21, 228, 0.2);
+  --glow-cyan: rgba(0, 255, 255, 0.15);
+  --accent: #e815e4;
+  --accent-foreground: #581c87;
+  --card: #1a0533;
+  --card-border: #3b0575;
+  --border: #3b0575;
+  --input-bg: #1a0533;
+  --muted: #4c1d6b;
+  --muted-foreground: #c084fc;
+}
+
+/* ============================================
+   THEME: Forest (deep greens)
+   ============================================ */
+[data-theme="forest"] {
+  --background: #051402;
+  --foreground: #dcfce7;
+  --glow-emerald: rgba(34, 197, 94, 0.2);
+  --glow-cyan: rgba(6, 182, 212, 0.08);
+  --accent: #22c55e;
+  --accent-foreground: #14532d;
+  --card: #0a2010;
+  --card-border: #166534;
+  --border: #166534;
+  --input-bg: #0a2010;
+  --muted: #166534;
+  --muted-foreground: #86efac;
+}
+
+/* ============================================
+   THEME: Ocean (deep blue)
+   ============================================ */
+[data-theme="ocean"] {
+  --background: #010205;
+  --foreground: #e0f2fe;
+  --glow-emerald: rgba(14, 165, 233, 0.15);
+  --glow-cyan: rgba(6, 182, 212, 0.15);
+  --accent: #0ea5e9;
+  --accent-foreground: #0c4a6e;
+  --card: #0c1a2e;
+  --card-border: #1e3a5f;
+  --border: #1e3a5f;
+  --input-bg: #0c1a2e;
+  --muted: #1e3a5f;
+  --muted-foreground: #7dd3fc;
+}
+
+/* ============================================
+   THEME: Midnight (minimal — warm dark)
+   ============================================ */
+[data-theme="midnight"] {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --glow-emerald: rgba(39, 39, 42, 0);
+  --glow-cyan: rgba(39, 39, 42, 0);
+  --accent: #52525b;
+  --accent-foreground: #27272a;
+  --card: #111113;
+  --card-border: #27272a;
+  --border: #27272a;
+  --input-bg: #111113;
+  --muted: #27272a;
+  --muted-foreground: #71717a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans), Inter, system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(at 0% 0%, var(--glow-emerald) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, var(--glow-cyan) 0px, transparent 50%),
+    linear-gradient(rgba(17, 24, 39, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.5) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Theme-aware scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Glassmorphism card animation utility */
+.glass-panel {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--card) 60%, transparent);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-panel:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Premium Neon Glow Buttons */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -50%;
+  width: 200%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: skewX(-25deg);
+  transition: 0.75s;
+}
+.btn-glow:hover::after { left: 120%; }
