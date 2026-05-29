@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/components/Toast";
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { validateEnv } from "@/lib/utils/env-validation";
 import "./globals.css";
 
@@ -47,7 +48,9 @@ export default function RootLayout({
       <body className="min-h-full bg-zinc-950 text-zinc-100">
         <ThemeProvider>
           <AuthProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
