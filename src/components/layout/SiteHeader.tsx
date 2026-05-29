@@ -82,23 +82,23 @@ export function SiteHeader() {
       <header className="sticky top-0 z-50 hidden border-b border-zinc-800/80 bg-zinc-950/95 backdrop-blur-md md:block">
         <div className="flex items-stretch">
           {/* Logo Section */}
-          <div className="flex w-64 shrink-0 items-center border-r border-zinc-800/80 px-5 py-4">
-            <div className="flex items-center gap-3">
+          <div className="flex w-72 shrink-0 items-center border-r border-zinc-800/80 px-6 py-5">
+            <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-lg font-bold text-zinc-950 shadow-lg shadow-emerald-500/25">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-xl font-bold text-zinc-950 shadow-xl shadow-emerald-500/30">
                   D
                 </div>
-                <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-zinc-950" />
+                <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-zinc-950" />
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-widest text-emerald-400/80">Dropship</p>
-                <h1 className="text-sm font-bold leading-tight text-zinc-100">Autopilot</h1>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-emerald-400/80">Dropship</p>
+                <h1 className="text-lg font-bold leading-tight text-zinc-100">Autopilot</h1>
               </div>
             </div>
           </div>
 
           {/* Nav Links */}
-          <nav className="flex flex-1 items-center overflow-x-auto px-2 scrollbar-thin">
+          <nav className="flex flex-1 items-center overflow-x-auto px-3 scrollbar-thin">
             {NAV_ITEMS.map((item, index) => {
               const active = isActive(item.href);
               const hovered = hoveredIndex === index;
@@ -110,7 +110,7 @@ export function SiteHeader() {
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={`
-                    group relative flex shrink-0 items-center gap-2 px-4 py-4 text-xs font-medium
+                    group relative flex shrink-0 items-center gap-2.5 px-4 py-5 text-sm font-medium
                     transition-all duration-200 ease-out
                     ${active ? "text-emerald-400" : colors.text}
                     ${hovered ? `${colors.bg} ${colors.border}` : "text-zinc-400 hover:text-zinc-200"}
@@ -124,7 +124,7 @@ export function SiteHeader() {
                   {hovered && !active && (
                     <div className={`absolute inset-0 rounded-lg ${colors.glow.replace("hover:", "")} opacity-10`} />
                   )}
-                  <span className="text-base transition-transform duration-200 group-hover:scale-110">
+                  <span className="text-xl transition-transform duration-200 group-hover:scale-110">
                     {item.icon}
                   </span>
                   <span className="relative">
@@ -145,20 +145,20 @@ export function SiteHeader() {
           </nav>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3 border-l border-zinc-800/80 px-5">
+          <div className="flex items-center gap-4 border-l border-zinc-800/80 px-6">
             {/* Theme Picker */}
             <div className="relative group">
-              <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/50 bg-zinc-900/50 text-xs transition-all hover:border-emerald-500/50 hover:bg-zinc-800">
+              <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-900/50 text-sm transition-all hover:border-emerald-500/50 hover:bg-zinc-800">
                 🎨
               </button>
-              <div className="absolute right-0 top-full mt-2 hidden group-hover:block">
-                <div className="flex gap-1.5 rounded-xl border border-zinc-700/50 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-md">
+              <div className="absolute right-0 top-full mt-3 hidden group-hover:block">
+                <div className="flex gap-2 rounded-2xl border border-zinc-700/50 bg-zinc-900/95 p-3 shadow-2xl backdrop-blur-md">
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setTheme(t.id)}
                       title={t.label}
-                      className="h-7 w-7 rounded-lg text-[9px] font-bold uppercase transition-all hover:scale-110"
+                      className="h-9 w-9 rounded-xl text-xs font-bold uppercase transition-all hover:scale-110"
                       style={{
                         backgroundColor: theme === t.id ? t.color + "30" : "transparent",
                         color: t.color,
@@ -174,31 +174,31 @@ export function SiteHeader() {
 
             {/* User Menu */}
             {loading ? (
-              <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-800" />
+              <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-800" />
             ) : demoMode || !authConfigured ? (
               <Link
                 href="/login"
-                className="flex items-center gap-2 rounded-lg bg-emerald-500/20 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-all hover:bg-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10"
+                className="flex items-center gap-2 rounded-xl bg-emerald-500/20 px-4 py-2.5 text-sm font-semibold text-emerald-400 transition-all hover:bg-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10"
               >
                 Sign in
               </Link>
             ) : user ? (
               <div className="relative group">
-                <button className="flex items-center gap-2 rounded-lg px-2 py-1 transition-all hover:bg-zinc-800/50">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 text-sm font-medium text-emerald-300 ring-1 ring-emerald-500/30">
+                <button className="flex items-center gap-3 rounded-xl px-3 py-2 transition-all hover:bg-zinc-800/50">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 text-base font-semibold text-emerald-300 ring-1 ring-emerald-500/30">
                     {(user.displayName || user.email || "?")[0]?.toUpperCase()}
                   </span>
-                  <span className="text-sm text-zinc-300">{user.displayName || "Account"}</span>
+                  <span className="text-base font-medium text-zinc-200">{user.displayName || "Account"}</span>
                 </button>
-                <div className="absolute right-0 top-full mt-2 hidden group-hover:block">
-                  <div className="w-48 rounded-xl border border-zinc-700/50 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-md">
-                    <div className="border-b border-zinc-800/50 px-3 py-2">
-                      <p className="text-xs text-zinc-400">{user.email}</p>
+                <div className="absolute right-0 top-full mt-3 hidden group-hover:block">
+                  <div className="w-56 rounded-2xl border border-zinc-700/50 bg-zinc-900/95 p-3 shadow-2xl backdrop-blur-md">
+                    <div className="border-b border-zinc-800/50 px-4 py-3">
+                      <p className="text-sm text-zinc-400">{user.email}</p>
                     </div>
                     <button
                       onClick={handleSignOut}
                       disabled={signingOut}
-                      className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-400 transition-all hover:bg-zinc-800 hover:text-red-400"
+                      className="w-full rounded-xl px-4 py-3 text-left text-sm text-zinc-400 transition-all hover:bg-zinc-800 hover:text-red-400"
                     >
                       {signingOut ? "Signing out..." : "Sign out"}
                     </button>
@@ -208,7 +208,7 @@ export function SiteHeader() {
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-2 rounded-lg bg-emerald-500/20 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-all hover:bg-emerald-500/30"
+                className="flex items-center gap-2 rounded-xl bg-emerald-500/20 px-4 py-2.5 text-sm font-semibold text-emerald-400 transition-all hover:bg-emerald-500/30"
               >
                 Sign in
               </Link>
@@ -219,19 +219,19 @@ export function SiteHeader() {
 
       {/* Mobile Header */}
       <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/95 backdrop-blur-md md:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-sm font-bold text-zinc-950">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-base font-bold text-zinc-950">
               D
             </div>
             <div>
-              <p className="text-[9px] font-medium uppercase tracking-widest text-emerald-400/80">Dropship</p>
-              <p className="text-xs font-bold text-zinc-100">Autopilot</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/80">Dropship</p>
+              <p className="text-sm font-bold text-zinc-100">Autopilot</p>
             </div>
           </div>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-700/50 bg-zinc-900/50 text-lg transition-all hover:bg-zinc-800"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-900/50 text-lg transition-all hover:bg-zinc-800"
           >
             {mobileMenuOpen ? "✕" : "☰"}
           </button>
@@ -239,8 +239,8 @@ export function SiteHeader() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <nav className="max-h-96 overflow-y-auto border-t border-zinc-800/50 bg-zinc-950/98 p-3">
-            <div className="grid grid-cols-3 gap-2">
+          <nav className="max-h-96 overflow-y-auto border-t border-zinc-800/50 bg-zinc-950/98 p-4">
+            <div className="grid grid-cols-3 gap-3">
               {NAV_ITEMS.map((item) => {
                 const active = isActive(item.href);
                 const colors = COLOR_MAP[item.color] || COLOR_MAP.gray;
@@ -250,12 +250,12 @@ export function SiteHeader() {
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`
-                      flex flex-col items-center gap-1 rounded-xl px-3 py-3 text-center transition-all
+                      flex flex-col items-center gap-2 rounded-2xl px-4 py-4 text-center transition-all
                       ${active ? "bg-emerald-500/20 text-emerald-400" : "text-zinc-400 hover:bg-zinc-800/50"}
                     `}
                   >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-[10px] font-medium">{item.label}</span>
+                    <span className="text-2xl">{item.icon}</span>
+                    <span className="text-xs font-medium">{item.label}</span>
                   </Link>
                 );
               })}
