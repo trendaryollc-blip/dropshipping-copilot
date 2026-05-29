@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -114,7 +114,7 @@ const COLOR_MAP: Record<string, { bg: string; border: string; text: string; glow
 export function SiteHeader() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const { user, loading, demoMode, authConfigured, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [headerVisible, setHeaderVisible] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -324,6 +324,7 @@ export function SiteHeader() {
                   Sign in
                 </Link>
               ) : (
+                <div className="relative">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     onMouseEnter={() => setUserMenuOpen(true)}
@@ -354,6 +355,7 @@ export function SiteHeader() {
                       </button>
                     </div>
                   )}
+                </div>
               )}
             </div>
           </div>
