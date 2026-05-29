@@ -18,7 +18,7 @@ export function IntegrationStatusBanner() {
       .catch(() => setStatus(null));
   }, []);
 
-  if (!status) return null;
+  if (!status || !status.integrations) return null;
 
   const connected = Object.entries(status.integrations).filter(([, v]) => v);
 
