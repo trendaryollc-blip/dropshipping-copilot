@@ -1,203 +1,317 @@
-# Firebase Database Structure
+# Firebase Setup Guide — Dropship Autopilot
 
-This document explains the Firestore database structure for the Dropship Autopilot application.
+## Prerequisites
 
-## Collections
+- Firebase CLI: `npm install -g firebase-tools`
+- Login: `firebase login`
+- Select project: `firebase projects:select new-automation-app-7dd33`
 
-### 1. `users`
-Stores user account information.
+---
 
-```typescript
+## Step 1: Create Firestore Database
+
+1. Go to [Firebase Console](https://console.firebase.google.com/project/new-automation-app-7dd33/firestore)
+2. Click **Create database**
+3. Choose **Production mode** → Next
+4. Select a location (e.g., `us-central`) → Done
+
+---
+
+## Step 2: Deploy Firestore Security Rules
+
+From the project root:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+The rules are already defined in `firestore.rules` at the project root.
+
+---
+
+## Step 3: Create Composite Indexes
+
+Go to **Firestore → Indexes** in Firebase Console and add these composite indexes:
+
+### Products collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| products | userId (Asc), createdAt (Desc) | Collection |
+| products | userId (Asc), status (Asc) | Collection |
+| products | userId (Asc), score (Desc) | Collection |
+| products | userId (Asc), niche (Asc) | Collection |
+| products | userId (Asc), source (Asc) | Collection |
+
+### Orders collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| orders | userId (Asc), createdAt (Desc) | Collection |
+| orders | userId (Asc), status (Asc) | Collection |
+| orders | userId (Asc), orderNumber (Asc) | Collection |
+
+### Automations collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| automations | userId (Asc), createdAt (Desc) | Collection |
+| automations | userId (Asc), status (Asc) | Collection |
+| automations | userId (Asc), moduleId (Asc) | Collection |
+
+### Workflow runs collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| workflow_runs | workflowId (Asc), startedAt (Desc) | Collection |
+| workflow_runs | userId (Asc), startedAt (Desc) | Collection |
+
+### Team invitations
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| team_invitations | email (Asc), status (Asc) | Collection |
+| team_invitations | invitedBy (Asc), status (Asc) | Collection |
+
+### Suppliers collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| suppliers | userId (Asc), isActive (Asc) | Collection |
+| suppliers | userId (Asc), platform (Asc) | Collection |
+
+### Users collection
+| Collection | Fields | Query scope |
+|------------|--------|-------------|
+| users | email (Asc) | Collection |
+| users | createdAt (Desc) | Collection |
+
+**Or deploy via CLI** — create `firestore.indexes.json` at project root:
+
+```json
 {
-  id: string;              // Firebase Auth UID
-  email: string;
-  displayName?: string;
-  photoURL?: string;
-  provider: "email" | "google";
-  createdAt: string;       // ISO timestamp
-  updatedAt: string;       // ISO timestamp
-  isActive: boolean;
+  "indexes": [
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "score", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "niche", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "source", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "orderNumber", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "automations",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "automations",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "automations",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "moduleId", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "workflow_runs",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "workflowId", "order": "ASCENDING" }, { "fieldPath": "startedAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "workflow_runs",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "startedAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "team_invitations",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "email", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "team_invitations",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "invitedBy", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "suppliers",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "isActive", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "suppliers",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "platform", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "email", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
+    }
+  ]
 }
 ```
 
-### 2. `api_keys`
-Stores API keys for third-party integrations. One document per user.
+Then deploy with:
 
-```typescript
-{
-  id: string;              // User ID (document ID)
-  userId: string;
-  trendaryo_api_url?: string;
-  trendaryo_api_key?: string;
-  openrouter_api_key?: string;
-  openrouter_model?: string;
-  cj_api_key?: string;
-  zendrop_api_key?: string;
-  aliexpress_app_key?: string;
-  meta_api_key?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+```bash
+firebase deploy --only firestore:indexes
 ```
 
-### 3. `automations`
-Stores automation run history and results.
+---
 
-```typescript
-{
-  id: string;              // Auto-generated
-  userId: string;
-  moduleId: "product-research" | "suppliers" | "copywriting" | "orders" | "full-pipeline";
-  status: "running" | "completed" | "failed";
-  input: Record<string, unknown>;
-  output: Record<string, unknown>;
-  steps: AutomationStep[];
-  message: string;
-  startedAt: string;
-  completedAt?: string;
-  createdAt: string;
-}
+## Step 4: Enable Firebase Authentication
+
+1. Go to **Authentication** → **Sign-in method**
+2. Enable **Email/Password**
+   - Enable "Email link (passwordless sign-in)" if you want magic link login
+3. Enable **Google**
+   - Select the same Firebase project Web app from Step 5
+4. Click **Save**
+
+---
+
+## Step 5: Add Authorized Domains
+
+In **Authentication → Settings → Authorized domains**, add:
+
+- `localhost`
+- `127.0.0.1`
+- Your network IP (e.g., `192.168.x.x`) — only if accessing via LAN
+- Your deployed domain (e.g., `your-app.vercel.app`) after deployment
+
+Direct link: https://console.firebase.google.com/project/new-automation-app-7dd33/authentication/settings
+
+---
+
+## Step 6: Verify Web App Configuration
+
+1. Go to **Project Settings → General**
+2. Scroll to **Your apps** — you should see a Web app (`1:1042435665365:web:f6b46f682cf02be389615c`)
+3. If not, click **Add app → Web** and register it
+
+---
+
+## Step 7: Environment Variables Check
+
+Your `.env.local` should have these values (already set with the new Firebase key):
+
+```env
+# Firebase Web (client — login/register UI)
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAVRpf4TdRWdrLVqAXr5D4bhCVgDLMhXkA
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=new-automation-app-7dd33.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=new-automation-app-7dd33
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=new-automation-app-7dd33.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1042435665365
+NEXT_PUBLIC_FIREBASE_APP_ID=1:1042435665365:web:f6b46f682cf02be389615c
+
+# Firebase Admin (server — Firestore + session cookies)
+FIREBASE_PROJECT_ID=new-automation-app-7dd33
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@new-automation-app-7dd33.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 ```
 
-### 4. `products`
-Stores product research results.
+---
 
-```typescript
-{
-  id: string;              // Auto-generated
-  userId: string;
-  name: string;
-  niche?: string;
-  trend?: string;
-  estimatedMargin?: string;
-  score?: number;          // 0-100
-  whyItWins?: string;
-  supplierId?: string;
-  supplierName?: string;
-  unitCost?: number;
-  retailPrice?: number;
-  images?: string[];
-  tags?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+## Step 8: Deploy Security Rules & Indexes via CLI
+
+```bash
+# Login to Firebase
+firebase login
+
+# Initialize (if not done)
+firebase init firestore
+
+# Deploy rules and indexes
+firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### 5. `suppliers`
-Stores supplier information.
+---
 
-```typescript
-{
-  id: string;              // Auto-generated
-  userId: string;
-  name: string;
-  platform: "cj" | "zendrop" | "aliexpress" | "custom";
-  apiCredentials?: {
-    apiKey?: string;
-    appId?: string;
-    appSecret?: string;
-  };
-  rating?: number;
-  shippingDays?: string;
-  minOrderQuantity?: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-```
+## Step 9: Test Sign-In
 
-### 6. `orders`
-Stores order fulfillment information.
+1. Run `npm run dev`
+2. Go to `http://localhost:3000/login`
+3. Try registering a new account or signing in with Google
 
-```typescript
-{
-  id: string;              // Auto-generated
-  userId: string;
-  orderId: string;         // Store order ID
-  customerEmail: string;
-  customerName: string;
-  items: OrderItem[];
-  totalAmount: number;
-  currency: string;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "failed";
-  supplierOrderId?: string;
-  trackingNumber?: string;
-  trackingUrl?: string;
-  supplierId?: string;
-  createdAt: string;
-  updatedAt: string;
-  shippedAt?: string;
-  deliveredAt?: string;
-}
-```
+If you see "Firebase login is not active yet", check that `.env.local` exists and restart the dev server.
 
-### 7. `settings`
-Stores user preferences and notification settings. One document per user.
+---
 
-```typescript
-{
-  id: string;              // User ID (document ID)
-  userId: string;
-  notifications: {
-    email: boolean;
-    slack: boolean;
-    slackWebhook?: string;
-  };
-  automation: {
-    autoFulfillOrders: boolean;
-    autoSyncTracking: boolean;
-    scheduledScans: boolean;
-    scanFrequency: "daily" | "weekly" | "monthly";
-  };
-  preferences: {
-    defaultCurrency: string;
-    timezone: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-```
+## Collection Reference
 
-## Security Notes
+| Collection | Purpose |
+|------------|---------|
+| `users` | User profiles (keyed by Firebase UID) |
+| `api_keys` | Encrypted third-party API keys |
+| `products` | Product catalog and research results |
+| `suppliers` | Supplier integrations and configs |
+| `orders` | Customer orders and tracking |
+| `automations` | Automation run history |
+| `workflows` | Visual workflow definitions |
+| `workflow_runs` | Workflow execution logs |
+| `team_members` | Active team memberships |
+| `team_invitations` | Pending team invitations |
+| `settings` | User preferences (keyed by UID) |
+| `notifications` | In-app notification feed |
+| `prompt_templates` | AI prompt templates |
+| `webhooks` | Outbound webhook endpoints |
+| `webhook_deliveries` | Webhook delivery logs |
+| `audit_logs` | Immutable activity logs |
+| `analytics` | Daily aggregated stats |
+| `billing_usage` | Usage metering |
+| `subscriptions` | Subscription plan records |
 
-- All API keys are stored encrypted in Firestore
-- User data is isolated by `userId` field
-- Authentication is handled by Firebase Auth (email/password and Google)
-- Server-side operations use Firebase Admin SDK with service account credentials
+---
 
-## Client Auth Setup
+## Troubleshooting
 
-1. Firebase Console → **Authentication** → enable **Email/Password** and **Google**
-2. **Authentication** → **Settings** → **Authorized domains** — ensure these exist:
-   - `localhost` (for `http://localhost:3000`)
-   - `127.0.0.1` (if you use that URL)
-   - Your PC’s network IP (e.g. `192.168.x.x`) only if you open the app via that IP
-   - Direct link: [Authorized domains](https://console.firebase.google.com/project/new-automation-app-7dd33/authentication/settings)
-2. Firebase Console → **Project settings** → Your apps → add **Web app**
-3. Copy web config into `.env.local` as `NEXT_PUBLIC_FIREBASE_*` (see `.env.example`)
-4. Keep Admin SDK vars (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`) for server/session cookies
+### "Firebase Auth is not configured"
+- Ensure `NEXT_PUBLIC_FIREBASE_API_KEY` is set in `.env.local`
+- Restart the dev server after modifying `.env.local`
+- Check **Authentication → Sign-in method** to ensure Email/Password and Google are enabled
 
-Users sign in at `/login` or `/register`. API keys and automations are scoped by Firebase UID.
+### "Server Firebase Admin misconfigured"
+- Check `FIREBASE_PRIVATE_KEY` in `.env.local` is valid
+- Ensure `FIREBASE_CLIENT_EMAIL` matches the service account email
+- Ensure `FIREBASE_PROJECT_ID` is correct
 
-## API Endpoints
+### "Missing Firestore index"
+- Deploy indexes via: `firebase deploy --only firestore:indexes`
+- Or add manually in Firebase Console → Firestore → Indexes
 
-### Authentication
-- `POST /api/auth/session` - Create httpOnly session from Firebase ID token
-- `DELETE /api/auth/session` - Sign out (clear cookie)
-- `GET /api/auth/me` - Current user profile
-- `POST /api/auth/register` - Server-side registration (optional; UI uses client SDK)
-- `POST /api/auth/google` - Legacy Google token exchange (prefer `/api/auth/session`)
-
-### Settings
-- `GET /api/settings/api-keys` - Get user's API keys
-- `POST /api/settings/api-keys` - Save user's API keys
-
-### Database Operations
-All database operations are available in `src/lib/database/operations.ts`:
-- `createUser`, `getUser`, `getUserByEmail`
-- `saveApiKeys`, `getApiKeys`
-- `createAutomation`, `updateAutomation`, `getUserAutomations`
-- `createProduct`, `getUserProducts`
-- `createSupplier`, `getUserSuppliers`
-- `createOrder`, `updateOrder`, `getUserOrders`
-- `saveSettings`, `getSettings`
+### Sign-in redirects to /login
+- Check that authorized domains include your current URL
+- For localhost, ensure you're using `localhost:3000` not an IP address
