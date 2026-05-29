@@ -107,8 +107,12 @@ body {
     linear-gradient(rgba(17, 24, 39, 0.5) 1px, transparent 1px),
     linear-gradient(90deg, rgba(17, 24, 39, 0.5) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-  background-attachment: fixed;
   min-height: 100vh;
+}
+
+/* Ensure main content area has solid background to avoid transparency issues */
+main {
+  background: var(--background);
 }
 
 /* Theme-aware scrollbar */

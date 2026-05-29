@@ -41,7 +41,7 @@ export function Sidebar({ footer }: { footer?: ReactNode }) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <aside className="flex w-full shrink-0 flex-col border-b border-zinc-800 bg-zinc-950 text-zinc-100 md:h-screen md:w-64 md:border-b-0 md:border-r md:sticky md:top-0">
+    <aside className="flex w-full shrink-0 flex-col border-b border-zinc-800 bg-zinc-950 text-zinc-100 md:h-screen md:w-64 md:border-b-0 md:border-r md:sticky md:top-0 z-10">
       <div className="border-b border-zinc-800 px-5 py-6">
         <p className="text-xs font-medium uppercase tracking-widest text-emerald-400">
           Dropship
