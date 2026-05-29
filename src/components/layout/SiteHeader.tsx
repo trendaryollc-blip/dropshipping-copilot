@@ -319,14 +319,11 @@ export function SiteHeader() {
               </Link>
 
               {/* User Menu */}
-              {loading ? (
-                <div className="h-9 w-9 animate-pulse rounded-full bg-violet-500/20" />
-              ) : demoMode || !authConfigured ? (
+              {!user ? (
                 <Link href="/login" className="sign-in-btn flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white">
                   Sign in
                 </Link>
-              ) : user ? (
-                <div className="relative">
+              ) : (
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     onMouseEnter={() => setUserMenuOpen(true)}
@@ -357,11 +354,6 @@ export function SiteHeader() {
                       </button>
                     </div>
                   )}
-                </div>
-              ) : (
-                <Link href="/login" className="sign-in-btn flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white">
-                  Sign in
-                </Link>
               )}
             </div>
           </div>
