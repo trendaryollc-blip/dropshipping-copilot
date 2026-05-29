@@ -238,11 +238,11 @@ export function SiteHeader() {
                     >
                       <span className="text-base">{category.icon}</span>
                       <span>{category.label}</span>
-                      <span className={`text-[10px] transition-transform ${isHovered || isActiveCat ? "rotate-180" : ""}`}>▼</span>
+                      <span className={`text-[10px] transition-transform ${isHovered ? "rotate-180" : ""}`}>▼</span>
                     </button>
 
                     {/* Dropdown Menu */}
-                    {(isHovered || isActiveCat) && (
+                    {isHovered && (
                       <div className="dropdown-reveal absolute left-0 top-full mt-1 min-w-56 rounded-xl border border-violet-500/20 bg-zinc-900/98 p-2 shadow-2xl backdrop-blur-md">
                         {category.items.map((item) => {
                           const active = isActive(item.href);
