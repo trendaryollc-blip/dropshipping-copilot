@@ -23,15 +23,15 @@ const STEPS = [
     title: "Find Your First Product",
     description: "Start with the Product Research page to discover trending items with low competition. Aim for a trend score above 75 and low competition level.",
     cta: { label: "Browse Products →", href: "/products" },
-    color: "bg-emerald-100 text-emerald-700",
+    color: "bg-success-light text-success",
   },
   {
     icon: Users,
     emoji: "🤝",
     title: "Connect with Suppliers",
-    description: "Browse our verified supplier directory. Look for suppliers with a trust score above 4.5 and fast response times for the best experience.",
+    description: "Use the Suppliers page to find reliable suppliers for your products. Look for verified suppliers with high ratings and fast shipping.",
     cta: { label: "Find Suppliers →", href: "/suppliers" },
-    color: "bg-blue-100 text-blue-700",
+    color: "bg-primary-light text-primary",
   },
   {
     icon: BookOpen,
@@ -39,7 +39,15 @@ const STEPS = [
     title: "Learn as You Go",
     description: "The Learning Hub has step-by-step guides for beginners. Start with 'What is Dropshipping?' and work your way up to scaling strategies.",
     cta: { label: "Open Learning Hub →", href: "/learn" },
-    color: "bg-amber-100 text-amber-700",
+    color: "bg-warning-light text-warning",
+  },
+  {
+    icon: BookOpen,
+    emoji: "📚",
+    title: "Learn as You Go",
+    description: "The Learning Hub has step-by-step guides for beginners. Start with 'What is Dropshipping?' and work your way up to scaling strategies.",
+    cta: { label: "Open Learning Hub →", href: "/learn" },
+    color: "bg-warning-light text-warning",
   },
 ]
 

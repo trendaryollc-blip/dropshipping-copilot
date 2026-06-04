@@ -1,4 +1,4 @@
-"use client"
+h "use client"
 
 import { useEffect, useState } from "react"
 import {
@@ -226,7 +226,7 @@ export function BusinessOperations() {
                     <p className="font-semibold">{customer.name}</p>
                     <p className="text-xs text-muted-foreground">{customer.email}</p>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-700">{customer.segment}</Badge>
+                  <Badge className="bg-primary-light text-primary">{customer.segment}</Badge>
                 </div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2 text-sm text-muted-foreground">
                   <span>Value: ${customer.lifetimeValue.toFixed(2)}</span>
@@ -323,7 +323,7 @@ export function BusinessOperations() {
                       <p className="font-semibold">{transaction.customerName}</p>
                       <p className="text-xs text-muted-foreground">{transaction.orderId}</p>
                     </div>
-                    <Badge className="bg-emerald-100 text-emerald-700">{transaction.status}</Badge>
+                    <Badge className="bg-success-light text-success">{transaction.status}</Badge>
                   </div>
                   <p className="mt-2 text-sm">${transaction.amount.toFixed(2)} • {transaction.gateway.toUpperCase()}</p>
                 </div>
@@ -344,7 +344,7 @@ export function BusinessOperations() {
               <div key={test.id} className="rounded-lg border border-border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-semibold">{test.name}</p>
-                  <Badge className="bg-blue-100 text-blue-700">{test.status}</Badge>
+                  <Badge className="bg-primary-light text-primary">{test.status}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">{test.description}</p>
                 <div className="mt-3 text-sm text-muted-foreground">
@@ -402,7 +402,7 @@ export function BusinessOperations() {
                 <div key={campaign.id} className="rounded-lg border border-border p-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-semibold">{campaign.name}</p>
-                    <Badge className="bg-blue-100 text-blue-700">{campaign.status}</Badge>
+                    <Badge className="bg-primary-light text-primary">{campaign.status}</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">{campaign.message}</p>
                 </div>
@@ -427,7 +427,7 @@ export function BusinessOperations() {
                       <p className="font-semibold">{affiliate.name}</p>
                       <p className="text-xs text-muted-foreground">{affiliate.email}</p>
                     </div>
-                    <Badge className="bg-emerald-100 text-emerald-700">{affiliate.status}</Badge>
+                    <Badge className="bg-success-light text-success">{affiliate.status}</Badge>
                   </div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     {affiliate.referrals} referrals • ${affiliate.earned.toFixed(2)} earned
@@ -502,7 +502,7 @@ export function BusinessOperations() {
               <div key={workflow.id} className="rounded-lg border border-border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-semibold">{workflow.name}</p>
-                  <Badge className="bg-emerald-100 text-emerald-700">{workflow.enabled ? "Enabled" : "Paused"}</Badge>
+                  <Badge className="bg-success-light text-success">{workflow.enabled ? "Enabled" : "Paused"}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Trigger: {workflow.trigger}</p>
               </div>

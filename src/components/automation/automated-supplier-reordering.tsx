@@ -145,7 +145,7 @@ export function AutomatedSupplierReordering() {
                     {rule.trigger.replace("_", " ")}
                   </Badge>
                   {rule.conditions.autoReorder ? (
-                    <Badge variant="default" className="bg-green-100 text-green-800">
+                    <Badge variant="default" className="bg-success-light text-success">
                       <RefreshCw className="h-3 w-3 mr-1" />
                       Auto-Reorder
                     </Badge>

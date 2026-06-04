@@ -56,16 +56,16 @@ const initialCampaigns: AdCampaign[] = [
 // ─── Config ────────────────────────────────────────────────────────────────────
 
 const platformConfig: Record<AdPlatform, { label: string; color: string; bg: string }> = {
-  google: { label: "Google Ads", color: "text-blue-700", bg: "bg-blue-100" },
+  google: { label: "Google Ads", color: "text-primary", bg: "bg-primary-light" },
   meta: { label: "Meta Ads", color: "text-indigo-700", bg: "bg-indigo-100" },
   tiktok: { label: "TikTok Ads", color: "text-pink-700", bg: "bg-pink-100" },
 }
 
 const statusConfig: Record<CampaignStatus, { label: string; color: string; bg: string }> = {
-  active: { label: "Active", color: "text-emerald-700", bg: "bg-emerald-100" },
-  paused: { label: "Paused", color: "text-amber-700", bg: "bg-amber-100" },
-  draft: { label: "Draft", color: "text-gray-600", bg: "bg-gray-100" },
-  ended: { label: "Ended", color: "text-red-700", bg: "bg-red-100" },
+  active: { label: "Active", color: "text-success", bg: "bg-success-light" },
+  paused: { label: "Paused", color: "text-warning", bg: "bg-warning-light" },
+  draft: { label: "Draft", color: "text-muted-foreground", bg: "bg-muted" },
+  ended: { label: "Ended", color: "text-destructive", bg: "bg-destructive-light" },
 }
 
 function fmtNum(n: number) {
@@ -165,7 +165,7 @@ export default function CampaignsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Ad Spend</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-red-100 text-red-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-destructive-light text-destructive">
               <DollarSign className="size-4" />
             </div>
           </CardHeader>
@@ -177,7 +177,7 @@ export default function CampaignsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg. ROAS</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
               <TrendingUp className="size-4" />
             </div>
           </CardHeader>
@@ -189,7 +189,7 @@ export default function CampaignsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
               <MousePointer className="size-4" />
             </div>
           </CardHeader>

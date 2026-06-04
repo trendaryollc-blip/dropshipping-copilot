@@ -5,7 +5,7 @@ import { Search, TrendingUp, CheckCircle, ArrowUpRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+import { Progress, ProgressIndicator } from "@/components/ui/progress"
 import { products } from "@/lib/mock-data"
 import { useAppStore } from "@/store/useAppStore"
 import { toast } from "sonner"
@@ -16,9 +16,9 @@ const NICHES = ["All", "Electronics", "Fashion", "Home & Garden", "Beauty", "Spo
 const COMPETITION = ["All", "low", "medium", "high"]
 
 const competitionConfig: Record<CompetitionLevel, { label: string; class: string }> = {
-  low: { label: "Low", class: "bg-green-100 text-green-700 border-green-200" },
-  medium: { label: "Medium", class: "bg-amber-100 text-amber-700 border-amber-200" },
-  high: { label: "High", class: "bg-red-100 text-red-700 border-red-200" },
+  low: { label: "Low", class: "bg-success-light text-success border-success" },
+  medium: { label: "Medium", class: "bg-warning-light text-warning border-warning" },
+  high: { label: "High", class: "bg-destructive-light text-destructive border-destructive" },
 }
 
 export default function ProductsPage() {

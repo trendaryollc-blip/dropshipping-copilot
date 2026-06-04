@@ -75,7 +75,7 @@ export default function IntegrationManager() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h3 className="text-lg font-semibold">Platform Integrations</h3>
         <p className="text-sm text-gray-500 mt-1">Connect Shopify or Amazon and fetch mock products/orders.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
@@ -101,7 +101,7 @@ export default function IntegrationManager() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white shadow rounded p-4">
+        <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
           <h4 className="font-semibold">Connected Platforms</h4>
           <ul className="mt-3 space-y-2">
             {connections.map((connection) => (
@@ -119,7 +119,7 @@ export default function IntegrationManager() {
           </ul>
         </div>
 
-        <div className="bg-white shadow rounded p-4">
+        <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
           <h4 className="font-semibold">Integration Data</h4>
           <div className="mt-3">
             <div className="font-medium">Products</div>

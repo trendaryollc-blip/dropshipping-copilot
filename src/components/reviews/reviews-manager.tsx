@@ -75,7 +75,7 @@ export default function ReviewsManager() {
       <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Storefront Widget</h3>
         <button onClick={() => setWidgetCode(generateReviewWidgetEmbed())} className="px-3 py-1 border rounded text-sm">Generate embed code</button>
-        {widgetCode && <pre className="mt-2 text-xs bg-gray-100 p-2 overflow-x-auto">{widgetCode}</pre>}
+        {widgetCode && <pre className="mt-2 text-xs bg-muted p-2 overflow-x-auto">{widgetCode}</pre>}
       </div>
 
       <div className="bg-card-solid shadow rounded p-4">

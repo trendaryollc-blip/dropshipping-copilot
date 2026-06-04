@@ -29,9 +29,9 @@ interface EditableProduct extends Product {
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const statusConfig: Record<ProductStatus, { label: string; color: string; bg: string }> = {
-  active: { label: "Active", color: "text-emerald-700", bg: "bg-emerald-100" },
-  draft: { label: "Draft", color: "text-amber-700", bg: "bg-amber-100" },
-  archived: { label: "Archived", color: "text-gray-600", bg: "bg-gray-100" },
+  active: { label: "Active", color: "text-success", bg: "bg-success-light" },
+  draft: { label: "Draft", color: "text-warning", bg: "bg-warning-light" },
+  archived: { label: "Archived", color: "text-muted-foreground", bg: "bg-muted" },
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -176,9 +176,9 @@ export default function BulkEditPage() {
         <Card>
           <CardContent className="pt-5 pb-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary-light text-primary">
                 <Package className="size-4" />
-              </div>
+            </div>
               <div>
                 <p className="text-2xl font-bold">{products.length}</p>
                 <p className="text-xs text-muted-foreground">Total Products</p>
@@ -202,9 +202,9 @@ export default function BulkEditPage() {
         <Card>
           <CardContent className="pt-5 pb-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-success-light text-success">
                 <PenLine className="size-4" />
-              </div>
+            </div>
               <div>
                 <p className="text-2xl font-bold">
                   {products.filter(p => p.status === "active").length}

@@ -59,7 +59,7 @@ export function RateLimitDashboard() {
     const isCritical = percentage >= 90
 
     return (
-      <Card className={`p-4 ${isCritical ? "border-red-300 bg-red-50" : isWarning ? "border-yellow-300 bg-yellow-50" : ""}`}>
+      <Card className={`p-4 ${isCritical ? "border-destructive bg-destructive/10" : isWarning ? "border-warning bg-warning/10" : ""}`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {Icon}
@@ -78,7 +78,7 @@ export function RateLimitDashboard() {
         </div>
 
         {isCritical && (
-          <div className="mt-3 text-xs text-red-600 bg-red-100 p-2 rounded">
+          <div className="mt-3 text-xs text-destructive bg-destructive/10 p-2 rounded">
             ⚠️ Rate limit nearly exceeded
           </div>
         )}
@@ -128,7 +128,7 @@ export function RateLimitDashboard() {
       </div>
 
       {/* Usage Tips */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-primary-light/20 border-primary/20">
         <h4 className="font-medium text-sm mb-2">💡 Tips to Optimize API Usage</h4>
         <ul className="text-xs text-muted-foreground space-y-1">
           <li>• Use batch operations instead of individual requests</li>

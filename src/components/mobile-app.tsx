@@ -174,7 +174,7 @@ export function MobileApp() {
                 {isMobile ? 'Mobile Device Detected' : 'Desktop Browser'}
               </div>
             </div>
-            <Badge className={isMobile ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}>
+            <Badge className={isMobile ? "bg-success-light text-success" : "bg-primary-light text-primary"}>
               {isMobile ? 'Mobile' : 'Desktop'}
             </Badge>
           </div>
@@ -192,7 +192,7 @@ export function MobileApp() {
               ) : (
                 <WifiOff className="size-4 text-red-600" />
               )}
-              <Badge className={connectionStatus === 'online' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+              <Badge className={connectionStatus === 'online' ? "bg-success-light text-success" : "bg-destructive-light text-destructive"}>
                 {connectionStatus}
               </Badge>
             </div>
@@ -216,7 +216,7 @@ export function MobileApp() {
                 {features.pushNotifications ? 'Enabled' : 'Disabled'}
               </div>
             </div>
-            <Badge className={features.pushNotifications ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+            <Badge className={features.pushNotifications ? "bg-success-light text-success" : "bg-muted text-muted-foreground"}>
               {features.pushNotifications ? 'Active' : 'Inactive'}
             </Badge>
           </div>
@@ -263,9 +263,9 @@ export function MobileApp() {
               </div>
             </div>
             <Badge className={
-              features.syncStatus === 'synced' ? "bg-green-100 text-green-700" :
-              features.syncStatus === 'syncing' ? "bg-yellow-100 text-yellow-700" :
-              "bg-red-100 text-red-700"
+              features.syncStatus === 'synced' ? "bg-success-light text-success" :
+              features.syncStatus === 'syncing' ? "bg-warning-light text-warning" :
+              "bg-destructive-light text-destructive"
             }>
               {features.syncStatus}
             </Badge>

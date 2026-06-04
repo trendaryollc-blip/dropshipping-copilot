@@ -41,9 +41,9 @@ export function OnboardingWizard() {
     <Card className="p-6">
       <div className="mb-6">
         <h3 className="font-semibold mb-2">Get Started</h3>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${completion}%` }} />
-        </div>
+          <div className="w-full bg-muted rounded-full h-2">
+            <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${completion}%` }} />
+          </div>
         <p className="text-xs text-muted-foreground mt-2">{Math.round(completion)}% Complete</p>
       </div>
 
@@ -52,7 +52,7 @@ export function OnboardingWizard() {
           <div
             key={step.id}
             className={`flex-1 p-3 rounded-lg text-center transition-all ${
-              completedSteps.includes(step.id) ? "bg-green-100" : "bg-gray-100"
+              completedSteps.includes(step.id) ? "bg-success-light" : "bg-muted"
             }`}
           >
             <div className="text-xl mb-1">{step.icon}</div>
@@ -195,7 +195,7 @@ export function MarketInsights() {
                 <p className="font-medium">Wireless Earbuds</p>
                 <p className="text-xs text-muted-foreground">5.2K searches/week • ↗ 87% momentum</p>
               </div>
-              <Badge className="bg-green-100 text-green-800">Hot</Badge>
+              <Badge className="bg-success-light text-success">Hot</Badge>
             </div>
           </div>
         </TabsContent>
@@ -419,7 +419,7 @@ export function IntegrationManager() {
               {integ.connected && <p className="text-xs text-muted-foreground">{integ.products} products synced</p>}
             </div>
             {integ.connected ? (
-              <Badge className="bg-green-100 text-green-800">Connected</Badge>
+              <Badge className="bg-success-light text-success">Connected</Badge>
             ) : (
               <Button size="sm">Connect</Button>
             )}

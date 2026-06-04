@@ -196,9 +196,9 @@ export default function CompetitorsPage() {
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { label: "Tracking", value: competitors.length, icon: Bell, color: "bg-blue-100 text-blue-600" },
-          { label: "We're Cheaper", value: competitors.filter((c) => c.ourPrice && c.ourPrice < c.currentPrice).length, icon: TrendingDown, color: "bg-green-100 text-green-600" },
-          { label: "They're Cheaper", value: competitors.filter((c) => c.ourPrice && c.currentPrice < c.ourPrice).length, icon: TrendingUp, color: "bg-red-100 text-red-600" },
+          { label: "Tracking", value: competitors.length, icon: Bell, color: "bg-primary-light text-primary" },
+          { label: "We're Cheaper", value: competitors.filter((c) => c.ourPrice && c.ourPrice < c.currentPrice).length, icon: TrendingDown, color: "bg-success-light text-success" },
+          { label: "They're Cheaper", value: competitors.filter((c) => c.ourPrice && c.currentPrice < c.ourPrice).length, icon: TrendingUp, color: "bg-destructive-light text-destructive" },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="stat-card flex items-center gap-3">
             <div className={`flex size-9 items-center justify-center rounded-lg ${color}`}>
@@ -234,9 +234,9 @@ export default function CompetitorsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <p className="text-sm font-semibold">{comp.productName}</p>
-                        {weAreCheaper && <Badge className="text-[10px] bg-green-100 text-green-700 border border-green-200">We're cheaper</Badge>}
-                        {theyAreCheaper && <Badge className="text-[10px] bg-red-100 text-red-700 border border-red-200">They're cheaper</Badge>}
-                        {priceDropped && priceChanged && <Badge className="text-[10px] bg-amber-100 text-amber-700 border border-amber-200">Price dropped ↓</Badge>}
+                        {weAreCheaper && <Badge className="text-[10px] bg-success-light text-success border border-success">We're cheaper</Badge>}
+                        {theyAreCheaper && <Badge className="text-[10px] bg-destructive-light text-destructive border border-destructive">They're cheaper</Badge>}
+                        {priceDropped && priceChanged && <Badge className="text-[10px] bg-warning-light text-warning border border-warning">Price dropped ↓</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground">{comp.competitorName}</p>
 

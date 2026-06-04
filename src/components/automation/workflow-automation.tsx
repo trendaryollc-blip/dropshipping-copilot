@@ -49,7 +49,7 @@ export function WorkflowAutomation() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-success-light text-success">
             <Zap className="size-5" />
           </div>
           <div>
@@ -57,7 +57,7 @@ export function WorkflowAutomation() {
             <p className="text-sm text-muted-foreground">Build custom automation flows for operations and customer lifecycle.</p>
           </div>
         </div>
-        <Badge className="bg-blue-100 text-blue-700">Automation</Badge>
+        <Badge className="bg-primary-light text-primary">Automation</Badge>
       </div>
 
       <Card>
@@ -87,7 +87,7 @@ export function WorkflowAutomation() {
                       <p className="font-semibold">{workflow.name}</p>
                       <p className="text-xs text-muted-foreground">Trigger: {workflow.trigger}</p>
                     </div>
-                    <Badge className={workflow.enabled ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-700"}>
+                    <Badge className={workflow.enabled ? "bg-success-light text-success" : "bg-muted text-muted-foreground"}>
                       {workflow.enabled ? "Enabled" : "Disabled"}
                     </Badge>
                   </div>

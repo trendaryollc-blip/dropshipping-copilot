@@ -10,11 +10,11 @@ import type { NotificationType } from "@/types"
 import Link from "next/link"
 
 const typeConfig: Record<NotificationType, { icon: React.ElementType; color: string }> = {
-  order: { icon: ShoppingCart, color: "bg-blue-100 text-blue-600" },
-  product: { icon: Package, color: "bg-emerald-100 text-primary" },
+  order: { icon: ShoppingCart, color: "bg-primary-light text-primary" },
+  product: { icon: Package, color: "bg-success-light text-success" },
   supplier: { icon: Users, color: "bg-purple-100 text-purple-600" },
-  alert: { icon: AlertTriangle, color: "bg-amber-100 text-amber-600" },
-  system: { icon: Info, color: "bg-gray-100 text-gray-600" },
+  alert: { icon: AlertTriangle, color: "bg-warning-light text-warning" },
+  system: { icon: Info, color: "bg-muted text-muted-foreground" },
 }
 
 function timeAgo(isoDate: string) {

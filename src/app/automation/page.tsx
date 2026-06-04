@@ -29,23 +29,23 @@ import { AutomatedComplianceReporting } from "@/components/automation/automated-
 import { AIActionButton } from "@/components/AIActionButton"
 
 const tabs = [
-  { id: "fulfillment",     label: "Auto-Fulfillment",        icon: Package,      color: "text-emerald-600", bg: "bg-emerald-100", description: "Automatically process and fulfill orders based on your rules" },
-  { id: "price",           label: "Price Monitoring",         icon: DollarSign,   color: "text-blue-600",    bg: "bg-blue-100",    description: "Track competitor prices and receive real-time alerts" },
-  { id: "email",           label: "Email Marketing",          icon: Mail,         color: "text-purple-600",  bg: "bg-purple-100",  description: "Send automated marketing and transactional emails" },
+  { id: "fulfillment",     label: "Auto-Fulfillment",        icon: Package,      color: "text-success", bg: "bg-success-light", description: "Automatically process and fulfill orders based on your rules" },
+  { id: "price",           label: "Price Monitoring",         icon: DollarSign,   color: "text-primary",    bg: "bg-primary-light",    description: "Track competitor prices and receive real-time alerts" },
+  { id: "email",           label: "Email Marketing",          icon: Mail,         color: "text-accent",  bg: "bg-accent-light",  description: "Send automated marketing and transactional emails" },
   { id: "inventory",       label: "Inventory Management",     icon: AlertTriangle,color: "text-orange-600",  bg: "bg-orange-100",  description: "Monitor stock levels and trigger reorders automatically" },
   { id: "sms",             label: "SMS Marketing",            icon: MessageCircle,color: "text-cyan-600",    bg: "bg-cyan-100",    description: "Send automated text messages to your customers" },
   { id: "workflow",        label: "Workflow Automation",       icon: Zap,          color: "text-teal-600",    bg: "bg-teal-100",    description: "Build custom automation workflows with conditional logic" },
-  { id: "cart",            label: "Abandoned Cart Recovery",  icon: ShoppingCart, color: "text-red-600",     bg: "bg-red-100",     description: "Recover lost sales from abandoned shopping carts" },
-  { id: "lifecycle",       label: "Customer Lifecycle",       icon: Users,        color: "text-indigo-600",  bg: "bg-indigo-100",  description: "Automate customer journeys based on behavior and events" },
-  { id: "dynamic-pricing", label: "Dynamic Pricing",          icon: DollarSign,   color: "text-yellow-600",  bg: "bg-yellow-100",  description: "Automatically adjust prices based on demand and competition" },
-  { id: "listing",         label: "Product Listing",          icon: Upload,       color: "text-green-600",   bg: "bg-green-100",   description: "Auto-generate and optimize product listings across channels" },
+  { id: "cart",            label: "Abandoned Cart Recovery",  icon: ShoppingCart, color: "text-destructive",     bg: "bg-destructive-light",     description: "Recover lost sales from abandoned shopping carts" },
+  { id: "lifecycle",       label: "Customer Lifecycle",       icon: Users,        color: "text-primary",  bg: "bg-primary-light",  description: "Automate customer journeys based on behavior and events" },
+  { id: "dynamic-pricing", label: "Dynamic Pricing",          icon: DollarSign,   color: "text-warning",  bg: "bg-warning-light",  description: "Automatically adjust prices based on demand and competition" },
+  { id: "listing",         label: "Product Listing",          icon: Upload,       color: "text-success",   bg: "bg-success-light",   description: "Auto-generate and optimize product listings across channels" },
   { id: "social",          label: "Social Media",             icon: Share2,       color: "text-pink-600",    bg: "bg-pink-100",    description: "Schedule and automate social media posts and engagement" },
-  { id: "order",           label: "Order Processing",         icon: Workflow,     color: "text-violet-600",  bg: "bg-violet-100",  description: "Advanced order routing, splitting, and processing rules" },
-  { id: "supplier",        label: "Supplier Reordering",      icon: Truck,        color: "text-amber-600",   bg: "bg-amber-100",   description: "Automate supplier purchase orders and stock replenishment" },
+  { id: "order",           label: "Order Processing",         icon: Workflow,     color: "text-accent",  bg: "bg-accent-light",  description: "Advanced order routing, splitting, and processing rules" },
+  { id: "supplier",        label: "Supplier Reordering",      icon: Truck,        color: "text-warning",   bg: "bg-warning-light",   description: "Automate supplier purchase orders and stock replenishment" },
   { id: "upsell",          label: "AI Upsell & Cross-sell",   icon: Sparkles,     color: "text-rose-600",    bg: "bg-rose-100",    description: "AI-powered product recommendations to increase order value" },
   { id: "seasonal",        label: "Seasonal Campaigns",       icon: Calendar,     color: "text-sky-600",     bg: "bg-sky-100",     description: "Schedule and automate seasonal promotions and campaigns" },
-  { id: "compliance",      label: "Compliance Reporting",     icon: Shield,       color: "text-gray-600",    bg: "bg-gray-100",    description: "Generate compliance reports and audit logs automatically" },
-  { id: "ai-hub",            label: "AI Automation Hub",        icon: Sparkles,     color: "text-violet-600",  bg: "bg-violet-100",  description: "Access all AI models for different automation tasks" },
+  { id: "compliance",      label: "Compliance Reporting",     icon: Shield,       color: "text-muted-foreground",    bg: "bg-muted",    description: "Generate compliance reports and audit logs automatically" },
+  { id: "ai-hub",            label: "AI Automation Hub",        icon: Sparkles,     color: "text-accent",  bg: "bg-accent-light",  description: "Access all AI models for different automation tasks" },
 ]
 
 export default function AutomationPage() {
@@ -76,7 +76,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Automations</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
               <Zap className="size-4" />
             </div>
           </CardHeader>
@@ -88,7 +88,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Orders Auto-Processed</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
               <Package className="size-4" />
             </div>
           </CardHeader>
@@ -112,7 +112,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Alerts Triggered</CardTitle>
-            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-warning-light text-warning">
               <AlertTriangle className="size-4" />
             </div>
           </CardHeader>
@@ -166,7 +166,7 @@ export default function AutomationPage() {
                 <h2 className="text-base font-semibold leading-tight">
                   {activeTabData.label}
                 </h2>
-                <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-xs font-medium">
+                <Badge className="bg-success-light text-success border-success text-xs font-medium">
                   Active
                 </Badge>
               </div>

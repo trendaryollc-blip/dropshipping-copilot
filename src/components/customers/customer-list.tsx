@@ -14,7 +14,7 @@ export default function CustomerList() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h2 className="text-lg font-semibold mb-2">Customers</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {customers.map((c) => (
@@ -28,7 +28,7 @@ export default function CustomerList() {
       </div>
 
       {selected && (
-        <div className="bg-white shadow rounded p-4">
+        <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
           <CustomerProfile id={selected} onClose={() => setSelected(null)} />
         </div>
       )}

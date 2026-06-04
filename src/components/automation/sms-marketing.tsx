@@ -54,7 +54,7 @@ export function SmsMarketing() {
             <p className="text-sm text-muted-foreground">Automate SMS alerts, reminders, and promotions.</p>
           </div>
         </div>
-        <Badge className="bg-emerald-100 text-emerald-700">Ready</Badge>
+        <Badge className="bg-success-light text-success">Ready</Badge>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -85,9 +85,9 @@ export function SmsMarketing() {
           <CardContent className="space-y-3">
             <p className="text-sm">Trigger text alerts on new orders, shipping updates, abandoned carts, and low stock.</p>
             <div className="space-y-2">
-              <Badge className="bg-blue-100 text-blue-700">new_order</Badge>
-              <Badge className="bg-blue-100 text-blue-700">order_shipped</Badge>
-              <Badge className="bg-blue-100 text-blue-700">low_stock</Badge>
+              <Badge className="bg-primary-light text-primary">new_order</Badge>
+              <Badge className="bg-primary-light text-primary">order_shipped</Badge>
+              <Badge className="bg-primary-light text-primary">low_stock</Badge>
             </div>
             <Button variant="outline" className="w-full" onClick={() => toast.success("SMS ordering rules ready")}>Configure Triggers</Button>
           </CardContent>
@@ -126,7 +126,7 @@ export function SmsMarketing() {
                     <p className="font-semibold">{campaign.name}</p>
                     <p className="text-xs text-muted-foreground">Trigger: {campaign.trigger}</p>
                   </div>
-                  <Badge className="bg-green-100 text-green-700">{campaign.status}</Badge>
+                  <Badge className="bg-success-light text-success">{campaign.status}</Badge>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">{campaign.message}</p>
               </CardContent>

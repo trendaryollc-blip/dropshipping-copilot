@@ -9,7 +9,7 @@ export default function RmaManager() {
   const [reason, setReason] = useState("")
 
   return (
-    <div className="bg-white shadow rounded p-4">
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold">Returns / RMA</h3>
       <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
         <input placeholder="Order ID" value={orderId} onChange={(e) => setOrderId(e.target.value)} className="border rounded p-2" />

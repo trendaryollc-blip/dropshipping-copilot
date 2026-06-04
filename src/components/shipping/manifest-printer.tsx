@@ -10,7 +10,7 @@ export default function ManifestPrinter() {
   useEffect(() => { if (shipments.length && selected.length === 0) setSelected(shipments.slice(0,3).map(s=>s.id)) }, [shipments])
 
   return (
-    <div className="bg-white shadow rounded p-4">
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold">Manifest Printer</h3>
       <div className="text-sm text-gray-500">Select shipments and export manifests or generate customs CSV</div>
       <div className="mt-3">

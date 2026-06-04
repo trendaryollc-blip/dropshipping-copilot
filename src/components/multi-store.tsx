@@ -24,17 +24,17 @@ import { toast } from "sonner"
 import type { StoreStatus, StorePlatform } from "@/types"
 
 const statusConfig: Record<StoreStatus, { label: string; class: string; icon: React.ElementType }> = {
-  active: { label: "Active", class: "bg-green-100 text-green-700 border-green-200", icon: CheckCircle },
-  inactive: { label: "Inactive", class: "bg-gray-100 text-gray-600 border-gray-200", icon: XCircle },
-  disconnected: { label: "Disconnected", class: "bg-red-100 text-red-700 border-red-200", icon: Clock },
+  active: { label: "Active", class: "bg-success-light text-success border-success", icon: CheckCircle },
+  inactive: { label: "Inactive", class: "bg-muted text-muted-foreground border-border", icon: XCircle },
+  disconnected: { label: "Disconnected", class: "bg-destructive-light text-destructive border-destructive", icon: Clock },
 }
 
 const platformConfig: Record<StorePlatform, { label: string; color: string }> = {
-  shopify: { label: "Shopify", color: "bg-emerald-100 text-emerald-700" },
+  shopify: { label: "Shopify", color: "bg-success-light text-success" },
   woocommerce: { label: "WooCommerce", color: "bg-purple-100 text-purple-700" },
-  bigcommerce: { label: "BigCommerce", color: "bg-blue-100 text-blue-700" },
-  magento: { label: "Magento", color: "bg-orange-100 text-orange-700" },
-  custom: { label: "Custom", color: "bg-gray-100 text-gray-700" },
+  bigcommerce: { label: "BigCommerce", color: "bg-primary-light text-primary" },
+  magento: { label: "Magento", color: "bg-warning-light text-warning" },
+  custom: { label: "Custom", color: "bg-muted text-muted-foreground" },
 }
 
 export function MultiStore() {

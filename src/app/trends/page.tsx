@@ -99,7 +99,7 @@ export default function TrendsPage() {
 
       <div className="space-y-3">
         {sorted.map((trend, idx) => {
-          const compConfig = { low: "bg-green-100 text-green-700 border-green-200", medium: "bg-amber-100 text-amber-700 border-amber-200", high: "bg-red-100 text-red-700 border-red-200" }
+          const compConfig = { low: "bg-success-light text-success border-success", medium: "bg-warning-light text-warning border-warning", high: "bg-destructive-light text-destructive border-destructive" }
           return (
             <Card key={trend.niche} className="hover:shadow-sm transition-shadow">
               <CardContent className="p-4">

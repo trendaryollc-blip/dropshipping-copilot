@@ -63,7 +63,7 @@ export function AIAnalysisCard({ productName, category }: { productName: string;
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge className={analysis.trending ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+                  <Badge className={analysis.trending ? "bg-success-light text-success" : "bg-muted text-muted-foreground"}>
                     {analysis.trending ? "🔥 Trending" : "📊 Stable"}
                   </Badge>
                   <span className="text-sm font-medium">Market Demand</span>
@@ -76,9 +76,9 @@ export function AIAnalysisCard({ productName, category }: { productName: string;
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge className={
-                    analysis.competition === 'low' ? "bg-green-100 text-green-700" :
-                    analysis.competition === 'medium' ? "bg-yellow-100 text-yellow-700" :
-                    "bg-red-100 text-red-700"
+                    analysis.competition === 'low' ? "bg-success-light text-success" :
+                    analysis.competition === 'medium' ? "bg-warning-light text-warning" :
+                    "bg-destructive-light text-destructive"
                   }>
                     {analysis.competition === 'low' ? "🟢 Low" : analysis.competition === 'medium' ? "🟡 Medium" : "🔴 High"}
                   </Badge>

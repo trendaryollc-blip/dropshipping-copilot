@@ -108,11 +108,11 @@ export function InventoryManagement() {
   const getAlertLevelColor = (level: InventoryAlertLevel) => {
     switch (level) {
       case "low":
-        return "bg-amber-100 text-amber-700 border-amber-200"
+        return "bg-warning-light text-warning border-warning"
       case "critical":
-        return "bg-red-100 text-red-700 border-red-200"
+        return "bg-destructive-light text-destructive border-destructive"
       case "out_of_stock":
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
@@ -121,7 +121,7 @@ export function InventoryManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-orange-100 text-orange-700">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-warning-light text-warning">
             <Package className="size-5" />
           </div>
           <div>
@@ -130,7 +130,7 @@ export function InventoryManagement() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={rule.enabled ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-gray-100 text-gray-600 border-gray-200"}>
+          <Badge className={rule.enabled ? "bg-success-light text-success border-success" : "bg-muted text-muted-foreground border-border"}>
             {rule.enabled ? "Active" : "Paused"}
           </Badge>
           <Button
@@ -148,7 +148,7 @@ export function InventoryManagement() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-warning-light text-warning">
                 <AlertTriangle className="size-4" />
               </div>
               <div>
@@ -161,7 +161,7 @@ export function InventoryManagement() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
                 <ShoppingCart className="size-4" />
               </div>
               <div>
@@ -174,7 +174,7 @@ export function InventoryManagement() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
                 <CheckCircle className="size-4" />
               </div>
               <div>
@@ -304,7 +304,7 @@ export function InventoryManagement() {
                         {alert.level.replace("_", " ").toUpperCase()}
                       </Badge>
                       {!alert.acknowledged && (
-                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px]">New</Badge>
+                        <Badge className="bg-warning-light text-warning border-warning text-[10px]">New</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs">

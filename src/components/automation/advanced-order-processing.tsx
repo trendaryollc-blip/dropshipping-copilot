@@ -229,7 +229,7 @@ export function AdvancedOrderProcessing() {
                             <span>{step.timeLimit}m limit</span>
                           )}
                           {step.autoAdvance ? (
-                            <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                            <Badge variant="default" className="text-xs bg-success-light text-success">
                               Auto
                             </Badge>
                           ) : (

@@ -22,7 +22,7 @@ export default function CarrierHub() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h3 className="font-semibold">Carrier Accounts</h3>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {carriers.map((c) => (
@@ -48,7 +48,7 @@ export default function CarrierHub() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h3 className="font-semibold">Rate Comparison</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mt-3">
           <input placeholder="Origin country (e.g. CN)" value={origin} onChange={(e) => setOrigin(e.target.value)} className="border rounded p-2" />

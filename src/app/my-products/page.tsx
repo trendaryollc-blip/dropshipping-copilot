@@ -20,9 +20,9 @@ import { exportToCSV, exportToXLSX } from "@/lib/csv-export"
 import type { ProductStatus } from "@/types"
 
 const statusConfig: Record<ProductStatus, { label: string; class: string }> = {
-  active: { label: "Active", class: "bg-green-100 text-green-700 border-green-200" },
-  draft: { label: "Draft", class: "bg-amber-100 text-amber-700 border-amber-200" },
-  archived: { label: "Archived", class: "bg-gray-100 text-gray-600 border-gray-200" },
+  active: { label: "Active", class: "bg-success-light text-success border-success" },
+  draft: { label: "Draft", class: "bg-warning-light text-warning border-warning" },
+  archived: { label: "Archived", class: "bg-muted text-muted-foreground border-border" },
 }
 
 export default function MyProductsPage() {

@@ -79,7 +79,7 @@ export default function SuppliersPage() {
               onClick={() => setCountry(c)}
               className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
                 country === c
-                  ? "bg-foreground text-background border-foreground"
+                  ? "bg-primary text-primary-foreground border-primary"
                   : "bg-card text-muted-foreground border-border hover:text-foreground"
               }`}
             >
@@ -93,9 +93,9 @@ export default function SuppliersPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((supplier) => (
-          <div key={supplier.id} className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md">
+          <div key={supplier.id} className="group flex flex-col gap-4 rounded-[28px] border border-border bg-gradient-to-br from-card-solid via-card-solid to-card-solid p-4 transition-all duration-300 hover:shadow-[0_12px_44px_-24px_rgba(167,139,250,0.22)] hover:-translate-y-1">
             <div className="flex items-start gap-3">
-              <Avatar className="size-12 rounded-xl border border-border">
+              <Avatar className="size-12 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5">
                 <AvatarImage src={supplier.avatar} alt={supplier.name} />
                 <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-sm font-bold">
                   {supplier.name.slice(0, 2).toUpperCase()}
@@ -105,10 +105,10 @@ export default function SuppliersPage() {
                 <div className="flex items-center gap-1.5">
                   <p className="truncate text-sm font-semibold text-foreground">{supplier.name}</p>
                   {supplier.verified && (
-                    <CheckCircle className="size-3.5 shrink-0 text-primary" />
+                    <CheckCircle className="size-3.5 shrink-0 text-emerald-400" />
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">{supplier.country}</p>
+                <p className="text-xs text-muted-foreground/80">{supplier.country}</p>
               </div>
             </div>
 
@@ -117,37 +117,37 @@ export default function SuppliersPage() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`size-3.5 ${i < Math.floor(supplier.trustScore) ? "fill-amber-400 text-amber-400" : "fill-muted text-muted-foreground/30"}`}
+                  className={`size-3.5 transition-colors ${i < Math.floor(supplier.trustScore) ? "fill-amber-400 text-amber-400" : "fill-muted/50 text-muted-foreground/30"}`}
                 />
               ))}
-              <span className="text-xs font-medium text-foreground ml-0.5">{supplier.trustScore}</span>
+              <span className="text-xs font-medium text-primary ml-0.5">{supplier.trustScore}</span>
               {supplier.verified && (
-                <Badge className="ml-auto text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200">
-                  Verified
+                <Badge className="ml-auto text-[10px] bg-success-light/80 text-success border-success backdrop-blur-sm">
+                  ✓ Verified
                 </Badge>
               )}
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-muted/60 p-2">
+              <div className="rounded-lg bg-muted/50 p-2 transition-colors group-hover:bg-muted/70">
                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Clock className="size-3" /> Response
+                  <Clock className="size-3 text-primary" /> Response
                 </div>
-                <p className="mt-0.5 text-xs font-semibold text-foreground">{supplier.responseTime}</p>
+                <p className="mt-0.5 text-xs font-semibold text-primary">{supplier.responseTime}</p>
               </div>
-              <div className="rounded-lg bg-muted/60 p-2">
+              <div className="rounded-lg bg-muted/50 p-2 transition-colors group-hover:bg-muted/70">
                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Package className="size-3" /> Products
+                  <Package className="size-3 text-primary" /> Products
                 </div>
-                <p className="mt-0.5 text-xs font-semibold text-foreground">{supplier.totalProducts.toLocaleString()}</p>
+                <p className="mt-0.5 text-xs font-semibold text-primary">{supplier.totalProducts.toLocaleString()}</p>
               </div>
             </div>
 
             {/* Categories */}
             <div className="flex flex-wrap gap-1">
               {supplier.categories.map((cat) => (
-                <span key={cat} className="rounded-md bg-secondary px-2 py-0.5 text-[11px] text-secondary-foreground font-medium">
+                <span key={cat} className="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] text-primary font-medium transition-colors group-hover:bg-primary/20">
                   {cat}
                 </span>
               ))}
@@ -155,10 +155,10 @@ export default function SuppliersPage() {
 
             <Button
               size="sm"
-              className="mt-auto h-7 text-xs w-full"
+              className="mt-auto h-7 text-xs w-full transition-all group-hover:shadow-[0_4px_12px_-4px_rgba(167,139,250,0.4)]"
               onClick={() => toast.success(`Contact request sent to ${supplier.name}!`)}
             >
-              Contact Supplier
+              <span className="mr-1">📧</span> Contact Supplier
             </Button>
           </div>
         ))}

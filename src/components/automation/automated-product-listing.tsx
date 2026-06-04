@@ -119,7 +119,7 @@ export function AutomatedProductListing() {
                     {rule.trigger.replace("_", " ")}
                   </Badge>
                   {rule.conditions.autoPublish ? (
-                    <Badge variant="default" className="bg-green-100 text-green-800">
+                    <Badge variant="default" className="bg-success-light text-success">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Auto-Publish
                     </Badge>

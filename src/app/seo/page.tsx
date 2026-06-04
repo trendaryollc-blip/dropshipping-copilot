@@ -163,8 +163,8 @@ export default function SEOPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <div className={cn("flex size-16 items-center justify-center rounded-full text-xl font-bold",
-                overallScore >= 80 ? "bg-green-100 text-green-700" :
-                overallScore >= 50 ? "bg-amber-100 text-amber-700" :
+                overallScore >= 80 ? "bg-success-light text-success" :
+                overallScore >= 50 ? "bg-warning-light text-warning" :
                 "bg-muted text-muted-foreground"
               )}>
                 {overallScore}

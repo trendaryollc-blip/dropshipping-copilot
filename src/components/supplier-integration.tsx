@@ -165,7 +165,7 @@ export function SupplierIntegration({ supplierId }: { supplierId: string }) {
             <p className="text-sm text-muted-foreground">No messages yet. Start a conversation!</p>
           ) : (
             messages.map((msg) => (
-              <div key={msg.id} className={`p-3 rounded-lg ${msg.sender === "Current User" ? "bg-blue-100" : "bg-gray-100"}`}>
+              <div key={msg.id} className={`p-3 rounded-lg ${msg.sender === "Current User" ? "bg-primary-light" : "bg-muted"}`}>
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-sm">{msg.sender}</span>
                   <span className="text-xs text-muted-foreground">{msg.timestamp}</span>

@@ -25,10 +25,10 @@ const INITIAL_RETURNS: ReturnRequest[] = [
 ]
 
 const statusConfig: Record<ReturnStatus, { label: string; class: string }> = {
-  requested: { label: "Requested", class: "bg-amber-100 text-amber-700 border-amber-200" },
-  approved: { label: "Approved", class: "bg-blue-100 text-blue-700 border-blue-200" },
-  refunded: { label: "Refunded", class: "bg-green-100 text-green-700 border-green-200" },
-  denied: { label: "Denied", class: "bg-red-100 text-red-700 border-red-200" },
+  requested: { label: "Requested", class: "bg-warning-light text-warning border-warning" },
+  approved: { label: "Approved", class: "bg-primary-light text-primary border-primary" },
+  refunded: { label: "Refunded", class: "bg-success-light text-success border-success" },
+  denied: { label: "Denied", class: "bg-destructive-light text-destructive border-destructive" },
 }
 
 const reasonLabel: Record<string, string> = {
@@ -108,10 +108,10 @@ export default function ReturnsPage() {
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-4">
         {[
-          { label: "Total Returns", value: stats.total, icon: RotateCcw, color: "bg-blue-100 text-blue-600" },
-          { label: "Action Needed", value: stats.requested, icon: Package, color: "bg-amber-100 text-amber-600" },
-          { label: "Refunds Issued", value: stats.refunded, icon: CheckCircle, color: "bg-green-100 text-green-600" },
-          { label: "$ Refunded", value: `$${stats.totalRefunded.toFixed(2)}`, icon: DollarSign, color: "bg-purple-100 text-purple-600" },
+          { label: "Total Returns", value: stats.total, icon: RotateCcw, color: "bg-primary-light text-primary" },
+          { label: "Action Needed", value: stats.requested, icon: Package, color: "bg-warning-light text-warning" },
+          { label: "Refunds Issued", value: stats.refunded, icon: CheckCircle, color: "bg-success-light text-success" },
+          { label: "$ Refunded", value: `$${stats.totalRefunded.toFixed(2)}`, icon: DollarSign, color: "bg-accent-light text-accent" },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="stat-card flex items-center gap-3">
             <div className={`flex size-9 items-center justify-center rounded-lg ${color}`}>

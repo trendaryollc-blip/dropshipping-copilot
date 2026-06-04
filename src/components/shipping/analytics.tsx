@@ -20,7 +20,7 @@ export default function ShippingAnalytics() {
   }, [shipments])
 
   return (
-    <div className="bg-white shadow rounded p-4">
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold">Shipping Analytics (basic)</h3>
       <div className="mt-2">
         <button onClick={() => {

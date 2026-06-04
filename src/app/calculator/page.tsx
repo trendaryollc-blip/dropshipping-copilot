@@ -121,11 +121,11 @@ function NumInput({
 }
 
 function profitLabel(margin: number) {
-  if (margin >= 30) return { label: "Excellent", color: "bg-green-100 text-green-700 border-green-200" }
-  if (margin >= 20) return { label: "Good", color: "bg-emerald-100 text-emerald-700 border-emerald-200" }
-  if (margin >= 10) return { label: "Acceptable", color: "bg-amber-100 text-amber-700 border-amber-200" }
-  if (margin >= 0) return { label: "Thin", color: "bg-orange-100 text-orange-700 border-orange-200" }
-  return { label: "Loss", color: "bg-red-100 text-red-700 border-red-200" }
+  if (margin >= 30) return { label: "Excellent", color: "bg-success-light text-success border-success" }
+  if (margin >= 20) return { label: "Good", color: "bg-success-light text-success border-success" }
+  if (margin >= 10) return { label: "Acceptable", color: "bg-warning-light text-warning border-warning" }
+  if (margin >= 0) return { label: "Thin", color: "bg-warning-light text-warning border-warning" }
+  return { label: "Loss", color: "bg-destructive-light text-destructive border-destructive" }
 }
 
 export default function CalculatorPage() {

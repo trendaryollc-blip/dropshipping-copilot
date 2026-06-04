@@ -59,7 +59,7 @@ export function AutoFulfillment() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-success-light text-success">
             <Package className="size-5" />
           </div>
           <div>
@@ -68,7 +68,7 @@ export function AutoFulfillment() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={rule.enabled ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-gray-100 text-gray-600 border-gray-200"}>
+          <Badge className={rule.enabled ? "bg-success-light text-success border-success" : "bg-muted text-muted-foreground border-border"}>
             {rule.enabled ? "Active" : "Paused"}
           </Badge>
           <Button
@@ -86,7 +86,7 @@ export function AutoFulfillment() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
                 <Package className="size-4" />
               </div>
               <div>
@@ -112,7 +112,7 @@ export function AutoFulfillment() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
                 <CheckCircle className="size-4" />
               </div>
               <div>
@@ -246,7 +246,7 @@ export function AutoFulfillment() {
                   <span className="text-sm font-medium">{activity.id}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={activity.status === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-amber-100 text-amber-700 border-amber-200"}>
+                  <Badge className={activity.status === "completed" ? "bg-success-light text-success border-success" : "bg-warning-light text-warning border-warning"}>
                     {activity.status}
                   </Badge>
                   <span className="text-xs text-muted-foreground">{activity.time}</span>

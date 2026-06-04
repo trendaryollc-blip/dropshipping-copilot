@@ -21,7 +21,7 @@ export default function ZoneEditor() {
   }
 
   return (
-    <div className="bg-white shadow rounded p-4">
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold">Shipping Zones</h3>
       <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
         <input placeholder="Zone name" value={name} onChange={(e) => setName(e.target.value)} className="border rounded p-2" />

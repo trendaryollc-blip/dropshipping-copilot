@@ -106,7 +106,7 @@ export function EmailMarketing() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={rule.enabled ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-gray-100 text-gray-600 border-gray-200"}>
+          <Badge className={rule.enabled ? "bg-success-light text-success border-success" : "bg-muted text-muted-foreground border-border"}>
             {rule.enabled ? "Active" : "Paused"}
           </Badge>
           <Button
@@ -124,7 +124,7 @@ export function EmailMarketing() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
                 <Send className="size-4" />
               </div>
               <div>
@@ -137,7 +137,7 @@ export function EmailMarketing() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
                 <Users className="size-4" />
               </div>
               <div>
@@ -163,7 +163,7 @@ export function EmailMarketing() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-warning-light text-warning">
                 <ShoppingCart className="size-4" />
               </div>
               <div>
@@ -315,9 +315,9 @@ export function EmailMarketing() {
                     <p className="text-xs text-muted-foreground">{campaign.subject}</p>
                   </div>
                   <Badge className={
-                    campaign.status === "sent" ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
-                    campaign.status === "scheduled" ? "bg-blue-100 text-blue-700 border-blue-200" :
-                    "bg-gray-100 text-gray-600 border-gray-200"
+                    campaign.status === "sent" ? "bg-success-light text-success border-success" :
+                    campaign.status === "scheduled" ? "bg-primary-light text-primary border-primary" :
+                    "bg-muted text-muted-foreground border-border"
                   }>
                     {campaign.status}
                   </Badge>

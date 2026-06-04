@@ -19,7 +19,6 @@ module.exports = {
     },
     extend: {
       colors: {
-        white: "var(--card-solid)",
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: "var(--card)",
@@ -66,13 +65,6 @@ module.exports = {
         "text-primary-light": "var(--textPrimary-light)",
         "page-bg-start": "var(--pageBgStart)",
         "page-bg-end": "var(--pageBgEnd)",
-        "slate-900": "var(--foreground)",
-        "slate-50": "var(--card-solid)",
-        "slate-100": "var(--secondary)",
-        "slate-200": "var(--border)",
-        "slate-400": "var(--muted-foreground)",
-        "slate-500": "var(--muted-foreground)",
-        "slate-600": "var(--textSecondary)",
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",

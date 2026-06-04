@@ -51,7 +51,7 @@ export default function ConnectorManager() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h3 className="text-lg font-semibold">Payment & Ad Connectors</h3>
         <p className="text-sm text-gray-500 mt-1">Connect payment gateways and ad platforms to reconcile transactions and import spend data.</p>
 
@@ -99,7 +99,7 @@ export default function ConnectorManager() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h4 className="font-semibold">Imported Payment & Ad Data</h4>
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <div>

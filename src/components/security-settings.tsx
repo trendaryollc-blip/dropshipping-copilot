@@ -84,7 +84,7 @@ export function SecuritySettings() {
           </div>
           {twoFAEnabled ? (
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-100 text-green-800">Enabled</Badge>
+              <Badge className="bg-success-light text-success">Enabled</Badge>
               <Dialog>
                 <DialogTrigger
                   render={
@@ -107,7 +107,7 @@ export function SecuritySettings() {
                       <p className="text-xs text-muted-foreground mb-4">
                         Save these codes in a safe place. Each code can be used once if you lose access to your authenticator.
                       </p>
-                      <div className="bg-gray-100 p-4 rounded font-mono text-xs space-y-2">
+                      <div className="bg-muted p-4 rounded font-mono text-xs space-y-2">
                         {backupCodes.length === 0 ? (
                           <p className="text-muted-foreground">No recovery codes generated</p>
                         ) : (
@@ -269,8 +269,8 @@ function TwoFASetup({ onConfirm }: TwoFASetupProps) {
               Scan this QR code with your authenticator app (Google Authenticator, Authy, Microsoft Authenticator)
             </AlertDescription>
           </Alert>
-          <div className="flex justify-center p-4 bg-gray-100 rounded-lg">
-            <div className="w-48 h-48 bg-white rounded flex items-center justify-center">
+          <div className="flex justify-center p-4 bg-muted rounded-lg">
+            <div className="w-48 h-48 bg-card border border-border rounded-lg flex items-center justify-center">
               {/* QR Code would be rendered here */}
               <span className="text-sm text-muted-foreground">[QR Code]</span>
             </div>
@@ -309,7 +309,7 @@ function TwoFASetup({ onConfirm }: TwoFASetupProps) {
             <p className="text-xs text-muted-foreground mb-4">
               Save these codes in a safe place. You'll need them if you lose access to your authenticator.
             </p>
-            <div className="bg-gray-100 p-4 rounded font-mono text-xs space-y-2">
+            <div className="bg-muted p-4 rounded font-mono text-xs space-y-2">
               {backupCodes.map((code, i) => (
                 <p key={i}>{code}</p>
               ))}
@@ -390,7 +390,7 @@ function PasswordChangeForm() {
       <div>
         <div className="flex gap-1 mb-1">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className={`h-1 flex-1 rounded ${i < strength ? "bg-blue-500" : "bg-gray-300"}`} />
+            <div key={i} className={`h-1 flex-1 rounded ${i < strength ? "bg-primary" : "bg-border"}`} />
           ))}
         </div>
         <p className="text-xs text-muted-foreground">Password strength: {["Very Weak", "Weak", "Fair", "Good", "Strong"][strength]}</p>

@@ -6,102 +6,103 @@
 
 @layer base {
   :root {
-    /* ─── Page background gradient ─────────────────────────────────────────── */
-    --page-bg-start: #0E0E12;
-    --page-bg-end: #0A0A0C;
-    --pageBgStart: #0E0E12;
-    --pageBgEnd: #0A0A0C;
+    /* ─── Page background ───────────────────────────────────────────────────── */
+    --page-bg-start: #0C0C10;
+    --page-bg-end: #0A0A0E;
+    --pageBgStart: #0C0C10;
+    --pageBgEnd: #0A0A0E;
 
-    /* ─── Page brand colors ──────────────────────────────────────────────────── */
-    --primary: #D4A853;
-    --primary-medium: #B8922E;
-    --primary-light: #F5D08A;
+    /* ─── Brand - Purple + Gold ──────────────────────────────────────────────── */
+    --primary: #A78BFA;
+    --primary-medium: #8B5CF6;
+    --primary-light: #C4B5FD;
     --primary-foreground: #0A0A0C;
 
-    /* ─── Text colors ────────────────────────────────────────────────────────── */
+    /* ─── Text ────────────────────────────────────────────────────────────────── */
     --textPrimary: #F1F5F9;
     --textSecondary: #94A3B8;
     --textPrimary-light: #E2E8F0;
 
-    /* ─── Accent color ───────────────────────────────────────────────────────── */
-    --accent: #8B5CF6;
-    --accent-light: #A78BFA;
+    /* ─── Accent - Gold ───────────────────────────────────────────────────────── */
+    --accent: #D4A853;
+    --accent-light: #F5D08A;
+    --accent-foreground: #0A0A0C;
 
-    /* ─── Page background & surface ─────────────────────────────────────────── */
-    --background: #0A0A0C;
+    /* ─── Surfaces - Dark Gray ─────────────────────────────────────────────────── */
+    --background: #0A0A0E;
     --foreground: #F1F5F9;
-    --card: linear-gradient(135deg, #14141A 0%, #111118 100%);
-    --card-solid: #14141A;
-    --cardBg: #14141A;
+    --card: linear-gradient(135deg, #14141C 0%, #111118 100%);
+    --card-solid: #14141C;
+    --cardBg: #14141C;
     --card-foreground: #F1F5F9;
     --popover: #111118;
     --popover-foreground: #F1F5F9;
 
-    --secondary: #14141A;
+    --secondary: #14141C;
     --secondary-foreground: #F1F5F9;
-    --muted: #1A1A22;
+    --muted: #1A1A24;
     --muted-foreground: #94A3B8;
-    --accent: #8B5CF6;
-    --accent-foreground: #F1F5F9;
     --destructive: #EF4444;
-    --border: #27272A;
-    --input: #1F1F27;
-    --ring: #D4A853;
+    --border: #27273A;
+    --input: #1F1F2B;
+    --ring: #A78BFA;
 
-    /* ─── Sidebar: deep black with gold accents ─────────────────────────────── */
+    /* ─── Sidebar - Deep Dark with Purple Accents ──────────────────────────────── */
     --sidebar: #08080C;
     --sidebarBg: rgba(8, 8, 12, 0.95);
     --sidebar-foreground: #CBD5E1;
-    --sidebar-primary: #D4A853;
+    --sidebar-primary: #A78BFA;
     --sidebar-primary-foreground: #0A0A0C;
-    --sidebar-accent: rgba(212, 168, 83, 0.12);
+    --sidebar-accent: rgba(167, 139, 250, 0.12);
     --sidebar-accent-foreground: #CBD5E1;
     --sidebar-border: rgba(255, 255, 255, 0.08);
-    --sidebar-ring: #D4A853;
+    --sidebar-ring: #A78BFA;
 
-    /* ─── Semantic colors for stats ─────────────────────────────────────────── */
+    /* ─── Semantic colors ──────────────────────────────────────────────────────── */
     --success: #8B5CF6;
     --success-light: #A78BFA;
-    --warning: #F59E0B;
-    --warning-light: #FBBF24;
+    --warning: #D4A853;
+    --warning-light: #F5D08A;
     --info: #60A5FA;
     --danger: #EF4444;
     --danger-light: #F87171;
 
     --radius: 0.625rem;
 
-    --chart-1: #D4A853;
-    --chart-2: #8B5CF6;
+    --chart-1: #A78BFA;
+    --chart-2: #D4A853;
     --chart-3: #60A5FA;
     --chart-4: #34D399;
     --chart-5: #94A3B8;
   }
 
   .dark {
-    /* ─── Page background gradient ─────────────────────────────────────────── */
+    /* ─── Page background ───────────────────────────────────────────────────── */
     --page-bg-start: #08080C;
-    --page-bg-end: #0A0A0C;
+    --page-bg-end: #0A0A0E;
     --pageBgStart: #08080C;
-    --pageBgEnd: #0A0A0C;
+    --pageBgEnd: #0A0A0E;
 
-    --primary: #F5D08A;
-    --primary-medium: #D4A853;
-    --primary-light: #FDE8B0;
+    /* ─── Brand - Purple + Gold (slightly brighter for dark mode contrast) ──── */
+    --primary: #C4B5FD;
+    --primary-medium: #A78BFA;
+    --primary-light: #DDD6FE;
     --primary-foreground: #0A0A0C;
 
-    /* ─── Text colors ────────────────────────────────────────────────────────── */
+    /* ─── Text ────────────────────────────────────────────────────────────────── */
     --textPrimary: #F1F5F9;
     --textSecondary: #94A3B8;
     --textPrimary-light: #E2E8F0;
 
-    /* ─── Accent color ───────────────────────────────────────────────────────── */
-    --accent: #A78BFA;
-    --accent-light: #C4B5FD;
+    /* ─── Accent - Gold ───────────────────────────────────────────────────────── */
+    --accent: #F5D08A;
+    --accent-light: #FDE8B0;
+    --accent-foreground: #0A0A0C;
 
-    /* ─── Page background & surface ─────────────────────────────────────────── */
-    --background: #0A0A0C;
+    /* ─── Surfaces - Dark Gray ─────────────────────────────────────────────────── */
+    --background: #0A0A0E;
     --foreground: #F1F5F9;
-    --card: linear-gradient(145deg, #111118 0%, #0E0E14 50%, #14141A 100%);
+    --card: linear-gradient(145deg, #14141C 0%, #0E0E14 50%, #14141C 100%);
     --card-solid: #111118;
     --cardBg: #111118;
     --card-foreground: #F1F5F9;
@@ -112,37 +113,35 @@
     --secondary-foreground: #F1F5F9;
     --muted: #111118;
     --muted-foreground: #94A3B8;
-    --accent: #8B5CF6;
-    --accent-foreground: #F1F5F9;
     --destructive: #F87171;
-    --border: #27272A;
-    --input: #27272A;
-    --ring: #F5D08A;
+    --border: #27273A;
+    --input: #27273A;
+    --ring: #C4B5FD;
 
-    /* ─── Dark-mode sidebar ────────────────────────────────────────────────────── */
+    /* ─── Sidebar - Darker with Purple Accents ──────────────────────────────────── */
     --sidebar: #06060A;
     --sidebarBg: rgba(6, 6, 10, 0.95);
     --sidebar-foreground: #9AAFC1;
-    --sidebar-primary: #F5D08A;
+    --sidebar-primary: #C4B5FD;
     --sidebar-primary-foreground: #0A0A0C;
-    --sidebar-accent: rgba(245, 208, 138, 0.10);
+    --sidebar-accent: rgba(196, 181, 253, 0.10);
     --sidebar-accent-foreground: #CBD5E1;
     --sidebar-border: rgba(255, 255, 255, 0.06);
-    --sidebar-ring: #F5D08A;
+    --sidebar-ring: #C4B5FD;
 
-    /* ─── Semantic colors for stats ─────────────────────────────────────────── */
+    /* ─── Semantic colors ──────────────────────────────────────────────────────── */
     --success: #A78BFA;
     --success-light: #C4B5FD;
-    --warning: #FBBF24;
-    --warning-light: #FDE68A;
+    --warning: #F5D08A;
+    --warning-light: #FDE8B0;
     --info: #60A5FA;
     --danger: #F87171;
     --danger-light: #FCA5A5;
 
     --radius: 0.625rem;
 
-    --chart-1: #F5D08A;
-    --chart-2: #A78BFA;
+    --chart-1: #C4B5FD;
+    --chart-2: #F5D08A;
     --chart-3: #60A5FA;
     --chart-4: #34D399;
     --chart-5: #94A3B8;
@@ -291,19 +290,19 @@ h1.page-header {
   color: var(--foreground);
 }
 
-/* Stat / KPI cards: gradient background with gold tint and enhanced shadow */
+/* Stat / KPI cards: gradient background with purple/gold tint and enhanced shadow */
 .stat-card {
   background: var(--card);
   background-color: var(--card-solid);
-  border: 1px solid rgba(212, 168, 83, 0.20);
+  border: 1px solid rgba(167, 139, 250, 0.20);
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
-  box-shadow: 0 2px 12px rgba(212, 168, 83, 0.10), 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 12px rgba(167, 139, 250, 0.10), 0 1px 3px rgba(0, 0, 0, 0.4);
   transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
   .stat-card:hover {
-    box-shadow: 0 10px 30px rgba(212, 168, 83, 0.20), 0 4px 12px rgba(0, 0, 0, 0.5);
-    border-color: #F5D08A;
+    box-shadow: 0 10px 30px rgba(167, 139, 250, 0.20), 0 4px 12px rgba(0, 0, 0, 0.5);
+    border-color: #C4B5FD;
     transform: translateY(-2px);
   }
 

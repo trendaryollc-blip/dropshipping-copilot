@@ -21,11 +21,11 @@ import { testRealTimeFeatures } from "@/lib/websocket-test"
 import Link from "next/link"
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; class: string }> = {
-  pending: { label: "Pending", icon: Clock, class: "bg-amber-100 text-amber-700 border-amber-200" },
-  processing: { label: "Processing", icon: RefreshCw, class: "bg-blue-100 text-blue-700 border-blue-200" },
-  shipped: { label: "Shipped", icon: Truck, class: "bg-purple-100 text-purple-700 border-purple-200" },
-  delivered: { label: "Delivered", icon: CheckCircle, class: "bg-green-100 text-green-700 border-green-200" },
-  cancelled: { label: "Cancelled", icon: XCircle, class: "bg-red-100 text-red-700 border-red-200" },
+  pending: { label: "Pending", icon: Clock, class: "bg-warning-light text-warning border-warning" },
+  processing: { label: "Processing", icon: RefreshCw, class: "bg-primary-light text-primary border-primary" },
+  shipped: { label: "Shipped", icon: Truck, class: "bg-accent-light text-accent border-accent" },
+  delivered: { label: "Delivered", icon: CheckCircle, class: "bg-success-light text-success border-success" },
+  cancelled: { label: "Cancelled", icon: XCircle, class: "bg-destructive-light text-destructive border-destructive" },
 }
 
 export default function OrdersPage() {
@@ -158,10 +158,10 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <button onClick={() => { testRealTimeFeatures(); toast.success("Real-time test started!") }} className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-3 py-1.5 rounded text-sm border">
+        <button onClick={() => { testRealTimeFeatures(); toast.success("Real-time test started!") }} className="bg-success-light border-success text-success hover:bg-success/50 px-3 py-1.5 rounded text-sm border">
           🧪 Test Real-Time
         </button>
-        <Link href="/returns" className="bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded text-sm border flex items-center gap-1.5">
+        <Link href="/returns" className="bg-warning-light border-warning text-warning hover:bg-warning/50 px-3 py-1.5 rounded text-sm border flex items-center gap-1.5">
           <RotateCcw className="size-3.5" /> Returns & Refunds
         </Link>
         <div className="relative w-full max-w-xs">

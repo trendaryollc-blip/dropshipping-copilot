@@ -274,11 +274,11 @@ export function AnalyticsDashboard() {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">New</span>
-                    <Badge className="bg-blue-100 text-blue-700">{data?.customerDemographics?.new ?? 0}</Badge>
+                    <Badge className="bg-primary-light text-primary">{data?.customerDemographics?.new ?? 0}</Badge>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Returning</span>
-                    <Badge className="bg-green-100 text-green-700">{data?.customerDemographics?.returning ?? 0}</Badge>
+                    <Badge className="bg-success-light text-success">{data?.customerDemographics?.returning ?? 0}</Badge>
                   </div>
                 </div>
               </div>
@@ -340,9 +340,9 @@ export function AnalyticsDashboard() {
                     <div className="font-bold">${product.revenue?.toLocaleString() ?? '0'}</div>
                     <Badge 
                       className={
-                        (product.conversionRate ?? 0) >= 4.5 ? "bg-green-100 text-green-700" :
-                        (product.conversionRate ?? 0) >= 4.0 ? "bg-yellow-100 text-yellow-700" :
-                        "bg-red-100 text-red-700"
+                        (product.conversionRate ?? 0) >= 4.5 ? "bg-success-light text-success" :
+                        (product.conversionRate ?? 0) >= 4.0 ? "bg-warning-light text-warning" :
+                        "bg-destructive-light text-destructive"
                       }
                     >
                       {product.conversionRate ?? 0}% CR

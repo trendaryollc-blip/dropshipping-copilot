@@ -93,11 +93,11 @@ export function GDPRComplianceManager() {
           </div>
           <div className="text-right">
             <div className="text-4xl font-bold text-green-600">{complianceScore}%</div>
-            <Badge className="mt-2 bg-green-100 text-green-800">Compliant</Badge>
+            <Badge className="mt-2 bg-success-light text-success">Compliant</Badge>
           </div>
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 text-sm">
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
+          <div className="text-center p-3 bg-primary-light/20 rounded-lg">
             <p className="font-semibold">Data Processing</p>
             <p className="text-muted-foreground">✓ Documented</p>
           </div>
