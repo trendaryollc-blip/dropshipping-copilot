@@ -1,9 +1,19 @@
-/**
- * Exports an array of records to a CSV file download.
- * @param data     Array of objects to export
- * @param filename Base filename (date suffix added automatically)
- * @param columns  Optional column config to control key order & display labels
- */
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib"
+import * as XLSX from "xlsx"
+
+const defaultFileSuffix = () => new Date().toISOString().split("T")[0]
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 export function exportToCSV<T extends Record<string, unknown>>(
   data: T[],
   filename: string,
@@ -34,12 +44,81 @@ export function exportToCSV<T extends Record<string, unknown>>(
 
   const csv = [headers, ...rows].join("\n")
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = `${filename}_${new Date().toISOString().split("T")[0]}.csv`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  downloadBlob(blob, `${filename}_${defaultFileSuffix()}.csv`)
+}
+
+export function exportToXLSX<T extends Record<string, unknown>>(
+  data: T[],
+  filename: string,
+  sheetName = "Sheet1"
+): void {
+  if (!data.length) return
+
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
+  const blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+  downloadBlob(blob, `${filename}_${defaultFileSuffix()}.xlsx`)
+}
+
+export async function exportToPDF<T extends Record<string, unknown>>(
+  data: T[],
+  filename: string,
+  title = "Export"
+): Promise<void> {
+  if (!data.length) return
+
+  const doc = await PDFDocument.create()
+  const page = doc.addPage([595, 842])
+  const font = await doc.embedFont(StandardFonts.Helvetica)
+  const fontSize = 10
+  const margin = 40
+  const lineHeight = fontSize * 1.4
+  let y = 820
+
+  page.drawText(title, {
+    x: margin,
+    y: y,
+    size: 16,
+    font,
+    color: rgb(0.1, 0.1, 0.1),
+  })
+
+  y -= 30
+  const headers = Object.keys(data[0])
+  page.drawText(headers.join(" | "), {
+    x: margin,
+    y,
+    size: fontSize,
+    font,
+    color: rgb(0.2, 0.2, 0.2),
+  })
+  y -= lineHeight
+
+  data.forEach((row) => {
+    if (y < 80) {
+      const nextPage = doc.addPage([595, 842])
+      y = 820
+      page.drawText("Continued...", { x: margin, y, size: fontSize, font, color: rgb(0.2, 0.2, 0.2) })
+    }
+    const rowText = headers
+      .map((key) => {
+        const val = row[key as keyof T]
+        return typeof val === "object" ? JSON.stringify(val) : String(val ?? "")
+      })
+      .join(" | ")
+    page.drawText(rowText, {
+      x: margin,
+      y,
+      size: fontSize,
+      font,
+      color: rgb(0.1, 0.1, 0.1),
+    })
+    y -= lineHeight
+  })
+
+  const pdfBytes = await doc.save()
+  const blob = new Blob([pdfBytes], { type: "application/pdf" })
+  downloadBlob(blob, `${filename}_${defaultFileSuffix()}.pdf`)
 }

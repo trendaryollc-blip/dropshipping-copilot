@@ -56,8 +56,8 @@ export const AI = {
   /**
    * Automatically routes to the best AI for the given task
    */
-  async runTask(task: AutomationTask, input: TaskInput["task"] extends typeof task ? TaskInput["input"] : never) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed for dynamic input casting
+  async runTask(task: AutomationTask, input: any) {
     const anyInput: any = input
     const provider = TASK_AI_MAPPING[task]
     const competitors =

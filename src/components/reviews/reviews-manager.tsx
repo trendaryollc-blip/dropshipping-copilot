@@ -50,7 +50,7 @@ export default function ReviewsManager() {
         </div>
       )}
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Platform Import</h3>
         <div className="mt-2 flex flex-wrap gap-2">
           {(['shopify', 'amazon', 'ebay', 'trustpilot'] as ReviewPlatform[]).map((p) => (
@@ -59,7 +59,7 @@ export default function ReviewsManager() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Bulk Reply</h3>
         <input value={bulkTemplate} onChange={(e) => setBulkTemplate(e.target.value)} className="border rounded p-2 w-full mt-2" />
         <button
@@ -72,18 +72,18 @@ export default function ReviewsManager() {
         >Reply to {selectedIds.length || reviews.length} reviews</button>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Storefront Widget</h3>
         <button onClick={() => setWidgetCode(generateReviewWidgetEmbed())} className="px-3 py-1 border rounded text-sm">Generate embed code</button>
         {widgetCode && <pre className="mt-2 text-xs bg-gray-100 p-2 overflow-x-auto">{widgetCode}</pre>}
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Review Solicitation</h3>
         <button onClick={() => sendReviewSolicitationEmail('customer@example.com', 'Sample Product')} className="px-3 py-1 bg-green-600 text-white rounded text-sm">Send sample request email</button>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Import Reviews (CSV)</h3>
         <input type="file" accept="text/csv" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await importCSV(f) }} />
         <div className="mt-2">
@@ -91,7 +91,7 @@ export default function ReviewsManager() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Moderation Queue</h3>
         <div className="text-sm text-gray-500">Tip: use templates below to reply faster. Duplicate detection will highlight potential duplicates.</div>
         <ul className="mt-2 space-y-2">

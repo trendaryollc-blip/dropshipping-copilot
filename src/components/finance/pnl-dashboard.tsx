@@ -52,7 +52,7 @@ export default function PnlDashboard() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white shadow rounded p-4 flex flex-wrap gap-4 items-center">
+      <div className="bg-card-solid shadow rounded p-4 flex flex-wrap gap-4 items-center">
         <label className="text-sm">Currency
           <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="ml-2 border rounded px-2 py-1">
             <option value="USD">USD</option>
@@ -65,7 +65,7 @@ export default function PnlDashboard() {
       </div>
 
       {forecast.length > 0 && (
-        <div className="bg-white shadow rounded p-4">
+        <div className="bg-card-solid shadow rounded p-4">
           <h3 className="font-semibold">P&L Forecast</h3>
           <div className="mt-2 flex gap-4 text-sm">
             {forecast.map((f) => (
@@ -79,7 +79,7 @@ export default function PnlDashboard() {
         </div>
       )}
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Product Costs</h3>
         <div className="mt-3 space-y-2">
           {products.map(p => (
@@ -93,7 +93,7 @@ export default function PnlDashboard() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">P&L Overview</h3>
         <div className="mt-3">
           <table className="w-full text-left text-sm">
@@ -118,7 +118,7 @@ export default function PnlDashboard() {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      <div className="bg-card-solid shadow rounded p-4">
         <h3 className="font-semibold">Payment Reconciliation</h3>
         <table className="w-full text-sm mt-2">
           <thead><tr className="text-gray-600"><th>Order</th><th>Recorded</th><th>Gateway</th><th>Matched</th></tr></thead>

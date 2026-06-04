@@ -47,7 +47,7 @@ export default function ActivityPage() {
           <ArrowLeft className="size-5" />
         </Link>
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-[#0D7C66]/80">Activity</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-primary/80">Activity</p>
           <h1 className="page-header">All recent activity</h1>
         </div>
       </div>
@@ -60,16 +60,16 @@ export default function ActivityPage() {
           return (
             <div
               key={item.id}
-              className="flex items-start gap-4 rounded-[28px] border border-[#DDE6EE] bg-white p-4 shadow-[0_8px_36px_-20px_rgba(13,124,102,0.15)] transition duration-300 hover:-translate-y-1 hover:border-[#0D7C66]/25"
+              className="flex items-start gap-4 rounded-[28px] border border-border bg-card-solid p-4 shadow-[0_8px_36px_-20px_rgba(212,168,83,0.15)] transition duration-300 hover:-translate-y-1 hover:border-primary/30"
             >
               <div className={`flex h-12 w-12 items-center justify-center rounded-3xl ${accent} text-white shadow-lg shadow-[rgba(0,0,0,0.10)]`}>
                 {icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#171D28]">{item.message}</p>
-                <div className="mt-2 flex items-center gap-3 text-xs text-[#6783A0]">
+                <p className="text-sm font-semibold text-foreground">{item.message}</p>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                   <span>{item.time}</span>
-                  <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] uppercase tracking-wide text-[#52665E]">
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
                     {displayType}
                   </span>
                 </div>

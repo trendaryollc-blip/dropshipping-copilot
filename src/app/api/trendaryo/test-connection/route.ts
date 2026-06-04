@@ -28,7 +28,7 @@ export async function GET() {
   }
 
   const api = createTrendaryoAPI()
-  const conn = await api.connect({})
+  const conn = await api.connect()
 
   if (!conn.connected) {
     return NextResponse.json({ ok: false, error: 'API key header missing on client' }, { status: 400 })

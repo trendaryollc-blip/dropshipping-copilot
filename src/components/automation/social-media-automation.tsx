@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Share2, Calendar, Image, MessageCircle, Heart, Repeat, Clock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import { connectSocialPlatform, getSocialConnections, scheduleSocialPost, SocialConnectionStatus } from "@/lib/social-posting-service"
 
 interface SocialCampaign {
   id: string
@@ -98,6 +99,17 @@ export function SocialMediaAutomation() {
   ])
 
   const [editing, setEditing] = useState<string | null>(null)
+  const [connections, setConnections] = useState<SocialConnectionStatus[]>([])
+
+  useEffect(() => {
+    getSocialConnections().then(setConnections)
+  }, [])
+
+  const handleConnect = async (platform: SocialConnectionStatus["platform"]) => {
+    const updated = await connectSocialPlatform(platform)
+    setConnections((current) => current.map((item) => item.platform === updated.platform ? updated : item))
+    toast.success(`Connected ${platform} (mock)`)
+  }
 
   const handleToggle = (id: string) => {
     setCampaigns(campaigns.map(c =>
@@ -106,8 +118,16 @@ export function SocialMediaAutomation() {
     toast.success("Social campaign updated")
   }
 
-  const handleTest = (campaign: SocialCampaign) => {
-    toast.success(`Test post created for ${campaign.platform}`)
+  const handleTest = async (campaign: SocialCampaign) => {
+    await scheduleSocialPost({
+      platform: campaign.platform,
+      caption: campaign.content.template,
+      imageUrl: campaign.content.includeImage ? "https://via.placeholder.com/600x400" : undefined,
+      hashtags: campaign.content.hashtags,
+      callToAction: campaign.content.callToAction,
+      scheduledAt: new Date(Date.now() + 1000 * 60 * 5).toISOString(),
+    })
+    toast.success(`Social post scheduled for ${campaign.platform}`)
   }
 
   const getPlatformIcon = (platform: string) => {

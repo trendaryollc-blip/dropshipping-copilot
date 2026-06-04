@@ -50,9 +50,9 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-[#0D7C66]/80">Dashboard</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-primary/80">Dashboard</p>
           <h1 className="page-header">Modern dropshipping command center</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#6783A0] sm:text-base">
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
             Monitor revenue, suppliers, automation, and market momentum from one elegant dashboard.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
             subtitle="Monthly sales total"
             trend="+18% vs last month"
             icon={<DollarSign className="size-6" />}
-            gradient="from-emerald-500 via-cyan-500 to-slate-900"
+            gradient="from-primary via-accent to-foreground"
           />
           <DashboardCard
             title="Orders pending"
@@ -72,7 +72,7 @@ export default function DashboardPage() {
             subtitle="Active order queue"
             trend={`+${stats.ordersChange}% order flow`}
             icon={<ShoppingCart className="size-6" />}
-            gradient="from-violet-500 via-fuchsia-500 to-slate-900"
+            gradient="from-accent via-primary to-foreground"
           />
           <DashboardCard
             title="Suppliers"
@@ -80,7 +80,7 @@ export default function DashboardPage() {
             subtitle="Verified partners"
             trend={`+${stats.suppliersChange}% network growth`}
             icon={<Users className="size-6" />}
-            gradient="from-cyan-400 via-teal-400 to-slate-900"
+            gradient="from-info via-accent to-foreground"
           />
         </div>
       </section>
@@ -89,10 +89,10 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-[#6783A0]">Quick Actions</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#171D28]">Triggers for speed and focus</h2>
+              <p className="text-sm uppercase tracking-[0.24em] text-muted-foreground">Quick Actions</p>
+              <h2 className="mt-2 text-2xl font-semibold text-foreground">Triggers for speed and focus</h2>
             </div>
-            <p className="text-sm text-[#6783A0]">Use the most important actions whenever you need a boost.</p>
+            <p className="text-sm text-muted-foreground">Use the most important actions whenever you need a boost.</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -107,30 +107,30 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <AIInsightsPanel />
 
-          <div className="rounded-[2rem] border border-[#DDE6EE] bg-white p-5 shadow-[0_20px_60px_-24px_rgba(13,124,102,0.22)]">
+          <div className="rounded-[2rem] border border-border bg-gradient-to-br from-card-solid via-card-solid to-card-solid p-5 shadow-[0_20px_60px_-24px_rgba(212,168,83,0.22)]">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-[#0D7C66]/80">Recent activity</p>
-                <h2 className="mt-2 text-xl font-semibold text-[#171D28]">Timeline updates</h2>
+                <p className="text-sm uppercase tracking-[0.24em] text-primary/80">Recent activity</p>
+                <h2 className="mt-2 text-xl font-semibold text-foreground">Timeline updates</h2>
               </div>
-              <span className="rounded-full bg-[#D4F0EE]/60 px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#0D7C66]">Live</span>
+              <span className="rounded-full bg-primary-light/50 px-3 py-1 text-xs uppercase tracking-[0.24em] text-primary">Live</span>
             </div>
 
             <div className="mt-5 space-y-4">
-            {recentActivity.map((item) => (
+            {recentActivity.map((item) =>
                 <ActivityFeedItem
                   key={item.id}
                   icon={activityIconMap[item.type]}
                   title={item.message}
                   time={item.time}
                   accent={activityAccent[item.type]}
-                  badgeTextColor="text-[#6783A0]"
+                  badgeTextColor="text-muted-foreground"
                 />
-              ))}
+              )}
             </div>
 
             <div className="mt-5 flex justify-center">
-              <Link href="/activity" className="rounded-full border border-[#DDE6EE] bg-[#E4EDF4]/55 px-5 py-2 text-sm text-[#0D7C66] transition hover:bg-[#D4F0EE]/70">
+              <Link href="/activity" className="rounded-full border border-border bg-muted/70 px-5 py-2 text-sm text-primary transition hover:bg-primary-light/70">
                 Load more
               </Link>
             </div>

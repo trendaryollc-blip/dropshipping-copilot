@@ -12,5 +12,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/test/setup.ts'],
     coverage: { reporter: ['text'] },
+    exclude: ['e2e/**'],
   },
 })

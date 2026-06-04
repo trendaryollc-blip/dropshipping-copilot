@@ -11,22 +11,40 @@ module.exports = async (req, res) => {
       const orders = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
       return res.status(200).json(orders)
     } catch (error) {
-      return res.status(500).json({ error: error.message })
+      console.error('[Automation Sync] Failed to fetch orders:', error)
+      return res.status(500).json({ error: 'Internal server error while fetching orders' })
     }
   }
 
   if (req.method === 'POST') {
     try {
-      const docRef = await getDb().collection('orders').add({
-        ...req.body,
-        status: req.body?.status || 'pending',
+      const { userId, items, total, shippingAddress } = req.body || {}
+      
+      // Basic input validation
+      if (!userId || !items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Invalid order data: userId and items array are required' })
+      }
+      if (typeof total !== 'number' || total <= 0) {
+        return res.status(400).json({ error: 'Invalid order data: total must be a positive number' })
+      }
+
+      const orderData = {
+        userId,
+        items,
+        total,
+        shippingAddress: shippingAddress || {},
+        status: 'pending',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         automationSource: 'dropease',
-      })
-      return res.status(200).json({ id: docRef.id, success: true })
+        automationSynced: true,
+      }
+
+      const docRef = await getDb().collection('orders').add(orderData)
+      return res.status(201).json({ id: docRef.id, success: true, status: 'pending' })
     } catch (error) {
-      return res.status(500).json({ error: error.message })
+      console.error('[Automation Sync] Failed to create order:', error)
+      return res.status(500).json({ error: 'Internal server error while creating order' })
     }
   }
 

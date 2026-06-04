@@ -41,5 +41,5 @@ export async function seedFirestoreData() {
 if (typeof window !== 'undefined') {
   // @ts-ignore
   window.seedFirestoreData = seedFirestoreData
-  console.log('%c[DropEase] Seeding ready. Run: seedFirestoreData()', 'color: #0D7C66')
+  console.log('%c[DropEase] Seeding ready. Run: seedFirestoreData()', 'color: #D4A853')
 }

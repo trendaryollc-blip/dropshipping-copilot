@@ -60,5 +60,5 @@ export async function testFirestoreConnection() {
 if (typeof window !== 'undefined') {
   // @ts-ignore
   window.testFirestoreConnection = testFirestoreConnection
-  console.log('%c[DropEase] Firestore test ready. Run: testFirestoreConnection()', 'color: #0D7C66')
+  console.log('%c[DropEase] Firestore test ready. Run: testFirestoreConnection()', 'color: #D4A853')
 }

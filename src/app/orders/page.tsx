@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { orders } from "@/lib/mock-data"
 import { toast } from "sonner"
-import { exportToCSV } from "@/lib/csv-export"
+import { exportToCSV, exportToXLSX } from "@/lib/csv-export"
 import { AIActionButton } from "@/components/AIActionButton"
 import type { OrderStatus } from "@/types"
 import { useOrderUpdates, useWebSocket } from "@/hooks/use-websocket"
@@ -97,6 +97,23 @@ export default function OrdersPage() {
     toast.success(`Exported ${rows.length} orders to CSV`)
   }
 
+  function handleExportXLSX() {
+    const rows = (someSelected ? filtered.filter((o) => selected.has(o.id)) : filtered).map((o) => ({
+      order_id: o.id,
+      product: o.productName,
+      customer: o.customer,
+      quantity: o.quantity,
+      total: o.total,
+      status: o.status,
+      order_date: o.orderDate,
+      estimated_delivery: o.estimatedDelivery,
+      tracking_number: o.trackingNumber ?? "",
+    }))
+    if (!rows.length) { toast.error("No orders to export"); return }
+    exportToXLSX(rows, "orders")
+    toast.success(`Exported ${rows.length} orders to XLSX`)
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-start justify-between">
@@ -113,6 +130,9 @@ export default function OrdersPage() {
           </span>
           <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="size-3.5" /> Export CSV
+          </Button>
+          <Button variant="secondary" size="sm" onClick={handleExportXLSX}>
+            <Download className="size-3.5" /> Export XLSX
           </Button>
         </div>
       </div>

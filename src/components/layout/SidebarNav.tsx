@@ -95,6 +95,9 @@ const navGroups = [
     items: [
       { href: "/multi-store", label: "Multi-Store", icon: Store },
       { href: "/mobile", label: "Mobile App", icon: Smartphone },
+      { href: "/admin/billing", label: "Billing", icon: DollarSign },
+      { href: "/admin/branding", label: "Branding", icon: Settings },
+      { href: "/admin/reports", label: "Reports", icon: FileText },
       { href: "/search", label: "Advanced Search", icon: Filter },
       { href: "/learn", label: "Learning Hub", icon: BookOpen },
     ],
@@ -110,7 +113,7 @@ export function SidebarNav() {
         <Sidebar collapsible="icon" className="bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
             <SidebarHeader className="px-4 py-5">
                 <Link href="/" className="flex items-center gap-3 rounded-3xl border border-sidebar-border bg-sidebar-primary/10 p-3 shadow-lg transition hover:border-primary/30">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-xl">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 text-white shadow-xl">
                         <Zap className="size-5" />
                     </div>
                     {!collapsed && (

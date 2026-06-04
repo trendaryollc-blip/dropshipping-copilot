@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select"
 import { useAppStore } from "@/store/useAppStore"
 import { toast } from "sonner"
-import { exportToCSV } from "@/lib/csv-export"
+import { exportToCSV, exportToXLSX } from "@/lib/csv-export"
 import type { ProductStatus } from "@/types"
 
 const statusConfig: Record<ProductStatus, { label: string; class: string }> = {
@@ -89,6 +89,24 @@ export default function MyProductsPage() {
     toast.success(`Exported ${rows.length} products to CSV`)
   }
 
+  function handleExportXLSX() {
+    const rows = (someSelected ? filtered.filter((p) => selected.has(p.id)) : filtered).map((p) => ({
+      id: p.id,
+      name: p.name,
+      niche: p.niche,
+      supplier: p.supplierName,
+      min_price: p.priceRange.min,
+      max_price: p.priceRange.max,
+      competition: p.competition,
+      trend_score: p.trendScore,
+      status: p.status,
+      imported_at: p.importedAt ?? "",
+    }))
+    if (!rows.length) { toast.error("No products to export"); return }
+    exportToXLSX(rows, "my_products")
+    toast.success(`Exported ${rows.length} products to XLSX`)
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-start justify-between">
@@ -98,10 +116,16 @@ export default function MyProductsPage() {
             Manage your imported products, update statuses, and edit listings.
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleExportCSV}>
-          <Download className="size-3.5" />
-          Export CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
+            <Download className="size-3.5" />
+            Export CSV
+          </Button>
+          <Button variant="secondary" size="sm" onClick={handleExportXLSX}>
+            <Download className="size-3.5" />
+            Export XLSX
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
