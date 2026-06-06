@@ -4,15 +4,17 @@ import { getFirestore } from 'firebase/firestore'
 
 // Read at call-time so the values reflect the actual runtime env, not a
 // snapshot taken at module-load (which can be `undefined` during SSR/build).
-// Fall back to the live `trendaryo-automation-prod` project so the deployed
-// site keeps working even if Vercel env vars are missing/stale.
+// Fall back to the `new-automation-app-7dd33` project whose Identity
+// Toolkit API is currently enabled (the trendaryo-automation-prod key
+// in .env.local is rejected with API_KEY_SERVICE_BLOCKED).  See
+// FIREBASE-LOGIN-TROUBLESHOOTING.md for the full story.
 const FIREBASE_FALLBACK_CONFIG = {
-  apiKey: "AIzaSyDBFUeCgJNmHHUzNqcfIxBYhH9vbrww2VI",
-  authDomain: "trendaryo-automation-prod.firebaseapp.com",
-  projectId: "trendaryo-automation-prod",
-  storageBucket: "trendaryo-automation-prod.firebasestorage.app",
-  messagingSenderId: "114799189060922350355",
-  appId: "1:352820611099:web:90258b7fa5f787990d90be",
+  apiKey: "AIzaSyDC8NXskfapmCmf8O8y687bxG0DUshbfVY",
+  authDomain: "new-automation-app-7dd33.firebaseapp.com",
+  projectId: "new-automation-app-7dd33",
+  storageBucket: "new-automation-app-7dd33.firebasestorage.app",
+  messagingSenderId: "1042435665365",
+  appId: "1:1042435665365:web:placeholder",
 } as const
 
 function getClientConfig() {

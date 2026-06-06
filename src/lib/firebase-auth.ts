@@ -31,19 +31,25 @@ import type { User } from "@/types"
  * cached config object.  Reading them lazily here means every call gets the
  * freshest value (and stays correct in dev/prod/server/client).
  *
- * We also keep a hard-coded fallback to the live `trendaryo-automation-prod`
- * project so the deployed site still works if the Vercel env vars are missing
- * or stale.  The Firebase web API key is *meant* to be public — the project's
- * security model relies on Firebase Auth rules + authorised domains, not on
- * keeping the key secret.
+ * We also keep a hard-coded fallback to a Firebase project whose Identity
+ * Toolkit API is currently enabled (project `new-automation-app-7dd33`,
+ * number `1042435665365`).  The `trendaryo-automation-prod` key from
+ * `.env.local` is being rejected with `API_KEY_SERVICE_BLOCKED` because
+ * Identity Toolkit is disabled on the Google Cloud project that owns
+ * that key.  The Firebase web API key is *meant* to be public — the
+ * project's security model relies on Firebase Auth rules + authorised
+ * domains, not on keeping the key secret.
  */
 const FIREBASE_FALLBACK_CONFIG = {
-  apiKey: "AIzaSyDBFUeCgJNmHHUzNqcfIxBYhH9vbrww2VI",
-  authDomain: "trendaryo-automation-prod.firebaseapp.com",
-  projectId: "trendaryo-automation-prod",
-  storageBucket: "trendaryo-automation-prod.firebasestorage.app",
-  messagingSenderId: "114799189060922350355",
-  appId: "1:352820611099:web:90258b7fa5f787990d90be",
+  apiKey: "AIzaSyDC8NXskfapmCmf8O8y687bxG0DUshbfVY",
+  authDomain: "new-automation-app-7dd33.firebaseapp.com",
+  projectId: "new-automation-app-7dd33",
+  storageBucket: "new-automation-app-7dd33.firebasestorage.app",
+  // The web-app `messagingSenderId` and `appId` for new-automation-app-7dd33
+  // can be filled in later if you enable FCM / Analytics; they aren't
+  // required for email/password sign-in or Firestore.
+  messagingSenderId: "1042435665365",
+  appId: "1:1042435665365:web:placeholder",
 } as const
 
 function getFirebaseConfig() {
