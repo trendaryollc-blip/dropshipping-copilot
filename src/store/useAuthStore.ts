@@ -13,12 +13,52 @@ import {
 } from "@/lib/firebase-auth"
 import { setDocument } from "@/lib/firestore-service"
 
+/**
+ * Convert any error thrown by Firebase (or our own `requireAuth` guard) into
+ * a human-readable, UI-friendly string.  This replaces the previous behaviour
+ * which silently returned `false` and showed the generic "Invalid email or
+ * password" message for *every* failure — even when Firebase was simply not
+ * configured, when the network was down, or when the user's account was
+ * disabled.
+ */
+function describeAuthError(err: unknown): string {
+  const e = err as { code?: string; message?: string }
+  const code = e?.code || ""
+  // Common Firebase Auth error codes -> friendly message
+  const map: Record<string, string> = {
+    "auth/invalid-email": "That email address isn't valid.",
+    "auth/user-disabled": "This account has been disabled.",
+    "auth/user-not-found": "No account exists with that email.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/invalid-login-credentials": "Incorrect email or password.",
+    "auth/email-already-in-use": "An account with that email already exists.",
+    "auth/weak-password": "Password is too weak. Use at least 6 characters.",
+    "auth/too-many-requests": "Too many attempts. Please wait a moment and try again.",
+    "auth/network-request-failed": "Network error. Check your connection and try again.",
+    "auth/popup-closed-by-user": "Sign-in popup was closed before completing.",
+    "auth/popup-blocked": "Sign-in popup was blocked by the browser.",
+    "auth/unauthorized-domain": "This domain isn't authorised for OAuth sign-in.",
+    "auth/operation-not-allowed": "This sign-in method isn't enabled. Contact the admin.",
+    "auth/invalid-api-key": "Firebase isn't configured correctly. Contact the admin.",
+    "auth/configuration-not-found": "Firebase project isn't configured. Contact the admin.",
+  }
+  if (code && map[code]) return map[code]
+  if (typeof e?.message === "string" && e.message.length > 0) return e.message
+  if (code) return code.replace(/^auth\//, "").replace(/-/g, " ")
+  return "Sign-in failed. Please try again."
+}
+
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
   isInitialised: boolean
-  login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>
+  register: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<{ ok: boolean; error?: string }>
   logout: () => Promise<void>
   updateProfile: (data: Partial<User>) => Promise<void>
   completeOnboarding: () => void
@@ -26,7 +66,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, _get) => ({
+    (set) => ({
       user: null,
       isAuthenticated: false,
       isInitialised: false,
@@ -34,38 +74,53 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         try {
           const user = await signIn(email, password)
-          await setDocument(
-            `dropease_users/${user.id}`,
-            { id: user.id, name: user.name, email, plan: "free", isOnboarded: false },
-            true,
-          )
+          // Best-effort: ensure a Firestore user doc exists.  A failure here
+          // must NOT block the user from being signed in \u2014 the Auth session
+          // is the source of truth, Firestore is just profile data.
+          try {
+            await setDocument(
+              `dropease_users/${user.id}`,
+              { id: user.id, name: user.name, email, plan: "free", isOnboarded: false },
+              true,
+            )
+          } catch (fsErr) {
+            console.warn("[Auth] login: Firestore profile upsert failed:", fsErr)
+          }
           set({ user, isAuthenticated: true, isInitialised: true })
-          return true
-        } catch (err: any) {
-          console.warn("[Auth] login failed:", err.message)
-          return false
+          return { ok: true }
+        } catch (err) {
+          const msg = describeAuthError(err)
+          console.warn("[Auth] login failed:", msg, err)
+          return { ok: false, error: msg }
         }
       },
 
       register: async (name, email, password) => {
         try {
           const user = await signUp(email, password, name)
-          await setDocument(
-            `dropease_users/${user.id}`,
-            { id: user.id, name, email, plan: "free", isOnboarded: false },
-            true,
-          )
+          try {
+            await setDocument(
+              `dropease_users/${user.id}`,
+              { id: user.id, name, email, plan: "free", isOnboarded: false },
+              true,
+            )
+          } catch (fsErr) {
+            console.warn("[Auth] register: Firestore profile upsert failed:", fsErr)
+          }
           set({ user, isAuthenticated: true, isInitialised: true })
-          return true
-        } catch (err: any) {
-          console.warn("[Auth] register failed:", err.message)
-          return false
+          return { ok: true }
+        } catch (err) {
+          const msg = describeAuthError(err)
+          console.warn("[Auth] register failed:", msg, err)
+          return { ok: false, error: msg }
         }
       },
 
       logout: async () => {
         try {
           await signOut()
+        } catch (err) {
+          console.warn("[Auth] logout failed:", err)
         } finally {
           set({ user: null, isAuthenticated: false })
         }

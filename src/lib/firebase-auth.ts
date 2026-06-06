@@ -21,13 +21,25 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
 import { getFirestore, type Firestore } from "firebase/firestore"
 import type { User } from "@/types"
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+/**
+ * Read Firebase config at *call time*, not at module-load time.
+ *
+ * `process.env.NEXT_PUBLIC_*` is replaced at *build* time by Next.js.  When
+ * this module is first evaluated (often on the server during SSR/build) the
+ * env vars are present on `process.env`, but if the module is re-evaluated in
+ * a context where they are missing we used to bake `undefined` into the
+ * cached config object.  Reading them lazily here means every call gets the
+ * freshest value (and stays correct in dev/prod/server/client).
+ */
+function getFirebaseConfig() {
+  return {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  }
 }
 
 let fbApp: FirebaseApp | null = null
@@ -35,13 +47,19 @@ let db: Firestore | null = null
 let auth: Auth | null = null
 
 export function isFirebaseAuthConfigured(): boolean {
-  const { apiKey, projectId } = firebaseConfig
-  return Boolean(
-    apiKey &&
-      projectId &&
-      !String(apiKey).startsWith("your_") &&
-      !String(projectId).startsWith("your_"),
-  )
+  const { apiKey, projectId } = getFirebaseConfig()
+  // Reject undefined, empty, or the placeholder "your_*" sentinel values that
+  // ship in .env.example.  Previously `String(undefined).startsWith("your_")`
+  // returned false and falsely reported the SDK as configured.
+  const validApiKey =
+    typeof apiKey === "string" &&
+    apiKey.length > 10 &&
+    !apiKey.startsWith("your_")
+  const validProjectId =
+    typeof projectId === "string" &&
+    projectId.length > 0 &&
+    !projectId.startsWith("your_")
+  return Boolean(validApiKey && validProjectId)
 }
 
 function requireAuth(): Auth {
@@ -51,8 +69,9 @@ function requireAuth(): Auth {
     )
   }
   if (!auth) {
+    const cfg = getFirebaseConfig()
     if (!getApps().length) {
-      fbApp = initializeApp(firebaseConfig)
+      fbApp = initializeApp(cfg)
       db = getFirestore(fbApp)
     } else {
       fbApp = getApps()[0]!

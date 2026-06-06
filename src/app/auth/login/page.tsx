@@ -60,17 +60,17 @@ export default function LoginPage() {
     }
     setLoading(true)
     try {
-      const ok = await login(email, password)
-      if (ok) {
+      const result = await login(email, password)
+      if (result.ok) {
         toast.success("Welcome back! 👋")
         router.push("/")
         router.refresh()
       } else {
-        setError("Invalid email or password. Please check your credentials and try again.")
+        setError(result.error || "Sign in failed. Please try again.")
       }
     } catch (err: any) {
-      const msg = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Sign in failed."
-      setError(msg.charAt(0).toUpperCase() + msg.slice(1) + ".")
+      const code = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Sign in failed."
+      setError(code.charAt(0).toUpperCase() + code.slice(1) + ".")
     } finally {
       setLoading(false)
     }

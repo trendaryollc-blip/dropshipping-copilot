@@ -35,17 +35,17 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       // Firebase register — errors surface here if the email already exists
-      const ok = await register(name, email, password)
-      if (ok) {
+      const result = await register(name, email, password)
+      if (result.ok) {
         toast.success("Account created! Welcome to DropEase 🚀")
         router.push("/")
         router.refresh()
       } else {
-        setError("An account with this email already exists.")
+        setError(result.error || "Registration failed. Please try again.")
       }
     } catch (err: any) {
-      const msg = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Registration failed."
-      setError(msg.charAt(0).toUpperCase() + msg.slice(1) + ".")
+      const code = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Registration failed."
+      setError(code.charAt(0).toUpperCase() + code.slice(1) + ".")
     } finally {
       setLoading(false)
     }
