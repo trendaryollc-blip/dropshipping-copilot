@@ -30,15 +30,42 @@ import type { User } from "@/types"
  * a context where they are missing we used to bake `undefined` into the
  * cached config object.  Reading them lazily here means every call gets the
  * freshest value (and stays correct in dev/prod/server/client).
+ *
+ * We also keep a hard-coded fallback to the live `trendaryo-automation-prod`
+ * project so the deployed site still works if the Vercel env vars are missing
+ * or stale.  The Firebase web API key is *meant* to be public — the project's
+ * security model relies on Firebase Auth rules + authorised domains, not on
+ * keeping the key secret.
  */
+const FIREBASE_FALLBACK_CONFIG = {
+  apiKey: "AIzaSyDBFUeCgJNmHHUzNqcfIxBYhH9vbrww2VI",
+  authDomain: "trendaryo-automation-prod.firebaseapp.com",
+  projectId: "trendaryo-automation-prod",
+  storageBucket: "trendaryo-automation-prod.firebasestorage.app",
+  messagingSenderId: "114799189060922350355",
+  appId: "1:352820611099:web:90258b7fa5f787990d90be",
+} as const
+
 function getFirebaseConfig() {
   return {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    apiKey:
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
+      FIREBASE_FALLBACK_CONFIG.apiKey,
+    authDomain:
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
+      FIREBASE_FALLBACK_CONFIG.authDomain,
+    projectId:
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
+      FIREBASE_FALLBACK_CONFIG.projectId,
+    storageBucket:
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+      FIREBASE_FALLBACK_CONFIG.storageBucket,
+    messagingSenderId:
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ||
+      FIREBASE_FALLBACK_CONFIG.messagingSenderId,
+    appId:
+      process.env.NEXT_PUBLIC_FIREBASE_APP_ID ||
+      FIREBASE_FALLBACK_CONFIG.appId,
   }
 }
 
