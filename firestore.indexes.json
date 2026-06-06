@@ -33,13 +33,6 @@
       ]
     },
     {
-      "collectionGroup": "copilot_products",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "trendScore", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "copilot_orders",
       "queryScope": "COLLECTION",
       "fields": [
@@ -69,20 +62,6 @@
       "fields": [
         { "fieldPath": "ownerId", "order": "ASCENDING" },
         { "fieldPath": "orderDate", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "copilot_suppliers",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "verified", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "copilot_suppliers",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "country", "order": "ASCENDING" }
       ]
     },
     {
