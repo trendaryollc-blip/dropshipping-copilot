@@ -15,7 +15,7 @@ export async function updateProductPricesFromTrendaryo(): Promise<{
 }> {
   try {
     // Get all active products that have a Trendaryo URL
-    const products = await getCollection('dropease_products');
+    const products = await getCollection('copilot_products');
     const trendaryoProducts = products.filter(
       (p): p is (Product & { trendaryoUrl: string }) =>
         p.status === 'active' && typeof p.trendaryoUrl === 'string' && p.trendaryoUrl.length > 0
@@ -48,7 +48,7 @@ export async function updateProductPricesFromTrendaryo(): Promise<{
       if (priceResult.success && priceResult.price !== undefined) {
         try {
           await updateDocument(
-            `dropease_products/${product.id}`, 
+            `copilot_products/${product.id}`,
             { 
               price: priceResult.price,
               currency: priceResult.currency || 'INR',
@@ -103,7 +103,7 @@ export async function updateSingleProductPriceFromTrendaryo(
     
     if (priceResult.success && priceResult.price !== undefined) {
       await updateDocument(
-        `dropease_products/${productId}`, 
+        `copilot_products/${productId}`,
         { 
           price: priceResult.price,
           currency: priceResult.currency || 'INR',

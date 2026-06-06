@@ -8,7 +8,7 @@ import {
 } from '../firestore-service'
 import type { AutomationRule, FulfillmentRule, PriceMonitoringRule, EmailMarketingRule, InventoryRule } from '@/types'
 
-const COLLECTION_NAME = 'dropease_automation_rules'
+const COLLECTION_NAME = 'copilot_automation_rules'
 
 // ============================================================================
 // AUTOMATION RULES OPERATIONS

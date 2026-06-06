@@ -32,14 +32,14 @@ class ProfitDashboardService {
   async calculatePnL(startDate: Date, endDate: Date): Promise<PnLMetrics> {
     try {
       // Fetch all orders in the date range
-      const orders = await getCollection('dropease_orders');
+      const orders = await getCollection('copilot_orders');
       const filteredOrders = orders.filter((o: any) => {
         const orderDate = new Date(o.createdAt || o.orderDate);
         return orderDate >= startDate && orderDate <= endDate;
       });
 
       // Fetch products to get COGS data
-      const products = await getCollection('dropease_products');
+      const products = await getCollection('copilot_products');
       const productMap = new Map(products.map((p: any) => [p.id, p]));
 
       let totalRevenue = 0;
@@ -75,7 +75,7 @@ class ProfitDashboardService {
       }
 
       // Fetch ad spend from finance records
-      const adRecords = await getCollection('dropease_finance_records');
+      const adRecords = await getCollection('copilot_analytics');
       const adSpendRecords = adRecords.filter((r: any) => 
         r.type === 'ad_spend' && new Date(r.date) >= startDate && new Date(r.date) <= endDate
       );

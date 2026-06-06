@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     console.log('[Cron] Checking automation rules...');
     
     // Fetch all enabled automation rules
-    const rules = await getCollection('dropease_automation_rules');
+    const rules = await getCollection('copilot_automation_rules');
     const enabledRules = rules.filter((r: any) => r.enabled === true);
 
     let triggeredCount = 0;

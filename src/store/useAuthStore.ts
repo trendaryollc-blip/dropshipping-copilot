@@ -103,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
           // is the source of truth, Firestore is just profile data.
           try {
             await setDocument(
-              `dropease_users/${user.id}`,
+              `copilot_users/${user.id}`,
               { id: user.id, name: user.name, email, plan: "free", isOnboarded: false },
               true,
             )
@@ -124,7 +124,7 @@ export const useAuthStore = create<AuthState>()(
           const user = await signUp(email, password, name)
           try {
             await setDocument(
-              `dropease_users/${user.id}`,
+              `copilot_users/${user.id}`,
               { id: user.id, name, email, plan: "free", isOnboarded: false },
               true,
             )
@@ -195,7 +195,7 @@ if (typeof window !== "undefined") {
       // Also upsert the Firestore user doc so it exists on every silent re-auth
       if (user) {
         setDocument(
-          `dropease_users/${user.id}`,
+          `copilot_users/${user.id}`,
           { id: user.id, name: user.name, email: user.email, plan: "free", isOnboarded: false },
           true,
         ).catch(() => {})

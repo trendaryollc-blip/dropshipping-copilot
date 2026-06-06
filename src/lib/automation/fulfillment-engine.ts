@@ -28,7 +28,7 @@ class FulfillmentEngine {
       console.log(`[FulfillmentEngine] Starting auto-fulfillment for order ${order.id}`);
 
       // 1. Update order status to 'processing'
-      await updateDocument(`dropease_orders/${order.id}`, {
+      await updateDocument(`copilot_orders/${order.id}`, {
         status: 'processing',
         fulfillmentStartedAt: new Date().toISOString(),
       });
@@ -42,7 +42,7 @@ class FulfillmentEngine {
 
       // 3. Update order with tracking/supplier info (mocked for now, would be real data from supplier API)
       const trackingNumber = `TRK-${Date.now()}`; // Placeholder
-      await updateDocument(`dropease_orders/${order.id}`, {
+      await updateDocument(`copilot_orders/${order.id}`, {
         status: 'shipped',
         trackingNumber,
         fulfillmentCompletedAt: new Date().toISOString(),
@@ -87,7 +87,7 @@ class FulfillmentEngine {
       console.error(`[FulfillmentEngine] Auto-fulfillment failed for order ${order.id}:`, error);
       
       // Update order status to 'failed' or 'manual_review'
-      await updateDocument(`dropease_orders/${order.id}`, {
+      await updateDocument(`copilot_orders/${order.id}`, {
         status: 'manual_review',
         fulfillmentError: (error as Error).message,
       });
@@ -116,7 +116,7 @@ class FulfillmentEngine {
    */
   async processPendingOrders(): Promise<{ processed: number; failed: number }> {
     try {
-      const orders = await getCollection('dropease_orders');
+      const orders = await getCollection('copilot_orders');
       const pendingOrders = orders.filter((o: any) => o.status === 'pending' && o.automationEnabled === true);
 
       let processed = 0;

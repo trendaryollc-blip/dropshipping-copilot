@@ -8,7 +8,7 @@ import {
 } from '../firestore-service'
 import type { Order } from '@/types'
 
-const COLLECTION_NAME = 'dropease_orders'
+const COLLECTION_NAME = 'copilot_orders'
 
 // ============================================================================
 // ORDER OPERATIONS

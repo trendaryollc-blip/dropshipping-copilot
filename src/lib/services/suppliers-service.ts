@@ -8,7 +8,7 @@ import {
 } from '../firestore-service'
 import type { Supplier } from '@/types'
 
-const COLLECTION_NAME = 'dropease_suppliers'
+const COLLECTION_NAME = 'copilot_suppliers'
 
 // ============================================================================
 // SUPPLIER OPERATIONS

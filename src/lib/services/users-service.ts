@@ -8,7 +8,7 @@ import {
 } from '../firestore-service'
 import type { User } from '@/types'
 
-const COLLECTION_NAME = 'dropease_users'
+const COLLECTION_NAME = 'copilot_users'
 
 // ============================================================================
 // USER OPERATIONS

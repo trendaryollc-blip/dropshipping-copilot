@@ -12,21 +12,21 @@ export async function seedFirestoreData() {
     // Seed Products
     console.log('📦 Seeding products...')
     for (const product of products) {
-      await setDocument(`dropease_products/${product.id}`, product)
+      await setDocument(`copilot_products/${product.id}`, product)
     }
     console.log(`✅ Seeded ${products.length} products`)
 
     // Seed Suppliers
     console.log('🏭 Seeding suppliers...')
     for (const supplier of suppliers) {
-      await setDocument(`dropease_suppliers/${supplier.id}`, supplier)
+      await setDocument(`copilot_suppliers/${supplier.id}`, supplier)
     }
     console.log(`✅ Seeded ${suppliers.length} suppliers`)
 
     // Seed Orders
     console.log('🛒 Seeding orders...')
     for (const order of orders) {
-      await setDocument(`dropease_orders/${order.id}`, order)
+      await setDocument(`copilot_orders/${order.id}`, order)
     }
     console.log(`✅ Seeded ${orders.length} orders`)
 

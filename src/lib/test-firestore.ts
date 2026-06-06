@@ -19,9 +19,9 @@ export async function testFirestoreConnection() {
     return false
   }
 
-  const testDocPath = 'dropease_test/connection-test'
+  const testDocPath = 'copilot_test/connection-test'
   const testData = {
-    message: 'Hello from DropEase!',
+    message: 'Hello from Automation Copilot!',
     timestamp: serverTimestamp(),
     testNumber: Math.floor(Math.random() * 1000),
   }

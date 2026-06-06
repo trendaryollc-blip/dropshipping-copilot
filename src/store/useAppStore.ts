@@ -38,14 +38,14 @@ export const useAppStore = create<AppState>()(
   loadFromFirestore: async () => {
     try {
       // Load products from Firestore
-      const fsProducts = await getCollection('dropease_products') as Product[]
+      const fsProducts = await getCollection('copilot_products') as Product[]
       if (fsProducts && fsProducts.length > 0) {
         set({ products: fsProducts, isLoadedFromFirestore: true })
         console.log('[AppStore] Loaded products from Firestore')
       }
 
       // Load orders from Firestore
-      const fsOrders = await getCollection('dropease_orders') as Order[]
+      const fsOrders = await getCollection('copilot_orders') as Order[]
       if (fsOrders && fsOrders.length > 0) {
         set({ orders: fsOrders })
         console.log('[AppStore] Loaded orders from Firestore')

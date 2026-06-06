@@ -43,7 +43,7 @@ export async function GET() {
   let firebaseStatus = { status: 'unknown', latency: 0, error: '' };
   try {
     const fbStart = Date.now();
-    await getCollection('dropease_products');
+    await getCollection('copilot_products');
     firebaseStatus = {
       status: 'connected',
       latency: Date.now() - fbStart,

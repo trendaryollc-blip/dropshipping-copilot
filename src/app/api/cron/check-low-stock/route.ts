@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     console.log('[Cron] Checking low stock products...');
     
     // Fetch all active products
-    const products = await getCollection('dropease_products');
+    const products = await getCollection('copilot_products');
     const activeProducts = products.filter((p: any) => p.status === 'active');
 
     let alertedCount = 0;
