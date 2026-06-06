@@ -1,5 +1,5 @@
 import { getFirestoreClient, isFirestoreConfigured } from './firebase-client'
-import type { DocumentData, Query, QueryConstraint, DocumentSnapshot } from 'firebase/firestore'
+import type { DocumentData, QueryConstraint, DocumentSnapshot } from 'firebase/firestore'
 import {
   collection,
   doc,
@@ -21,6 +21,74 @@ import {
 } from 'firebase/firestore'
 import { products, suppliers, orders, dashboardStats } from './mock-data'
 import type { User } from '@/types'
+
+// ============================================================================
+// PROFESSIONAL COLLECTION SCHEMA
+// ============================================================================
+// Every collection follows: copilot_{plural_entity_name}
+// All documents include: createdAt (serverTimestamp), updatedAt (serverTimestamp), ownerId (auth.uid)
+// ============================================================================
+
+export const COLLECTIONS = {
+  // ── Core Business Entities ──────────────────────────────────────────────
+  USERS: 'copilot_users',
+  PRODUCTS: 'copilot_products',
+  ORDERS: 'copilot_orders',
+  SUPPLIERS: 'copilot_suppliers',
+  STORES: 'copilot_stores',
+  RETURNS: 'copilot_returns',
+
+  // ── Customer & CRM ──────────────────────────────────────────────────────
+  CUSTOMERS: 'copilot_customers',
+  CUSTOMER_SEGMENTS: 'copilot_customer_segments',
+  CRM_ACTIVITIES: 'copilot_crm_activities',
+  CRM_AUTOMATIONS: 'copilot_crm_automations',
+  GDPR_REQUESTS: 'copilot_gdpr_requests',
+
+  // ── Reviews & Communication ──────────────────────────────────────────────
+  PRODUCT_REVIEWS: 'copilot_product_reviews',
+  SUPPLIER_REVIEWS: 'copilot_supplier_reviews',
+  SUPPLIER_MESSAGES: 'copilot_supplier_messages',
+  NOTIFICATIONS: 'copilot_notifications',
+
+  // ── Automation & Rules ──────────────────────────────────────────────────
+  AUTOMATION_RULES: 'copilot_automation_rules',
+  WORKFLOWS: 'copilot_workflows',
+  REORDER_RULES: 'copilot_reorder_rules',
+  UPSELL_RULES: 'copilot_upsell_rules',
+  PRICING_RULES: 'copilot_pricing_rules',
+  INVENTORY_ALERTS: 'copilot_inventory_alerts',
+  PRICE_ALERTS: 'copilot_price_alerts',
+
+  // ── Marketing & Campaigns ──────────────────────────────────────────────
+  CAMPAIGNS: 'copilot_campaigns',
+  EMAIL_CAMPAIGNS: 'copilot_email_campaigns',
+  SMS_CAMPAIGNS: 'copilot_sms_campaigns',
+  SEASONAL_CAMPAIGNS: 'copilot_seasonal_campaigns',
+  AB_TESTS: 'copilot_ab_tests',
+  AFFILIATES: 'copilot_affiliates',
+
+  // ── Operations & Logistics ──────────────────────────────────────────────
+  BULK_ORDERS: 'copilot_bulk_orders',
+  SHIPMENT_TRACKING: 'copilot_shipment_tracking',
+
+  // ── Analytics & Insights ──────────────────────────────────────────────
+  ANALYTICS: 'copilot_analytics',
+  ACTIVITY_LOG: 'copilot_activity_log',
+  COMPETITOR_PRODUCTS: 'copilot_competitor_products',
+  COMPLIANCE_REPORTS: 'copilot_compliance_reports',
+
+  // ── Configuration ──────────────────────────────────────────────────────
+  SETTINGS: 'copilot_settings',
+  INTEGRATIONS: 'copilot_integrations',
+} as const
+
+// ── Standard document fields that every collection document must include ──
+export const STANDARD_FIELDS = {
+  OWNER_ID: 'ownerId',
+  CREATED_AT: 'createdAt',
+  UPDATED_AT: 'updatedAt',
+} as const
 
 // ============================================================================
 // ERROR HANDLING
@@ -57,15 +125,39 @@ const mockUsers: User[] = [
 ]
 
 const mockCollections: Record<string, unknown[]> = {
-  dropease_products: products as unknown[],
-  dropease_suppliers: suppliers as unknown[],
-  dropease_orders: orders as unknown[],
-  dropease_users: mockUsers as unknown[],
+  copilot_products: products as unknown[],
+  copilot_suppliers: suppliers as unknown[],
+  copilot_orders: orders as unknown[],
+  copilot_users: mockUsers as unknown[],
 }
 
 // ============================================================================
 // DOCUMENT OPERATIONS
 // ============================================================================
+
+/**
+ * Adds standard ownerId, createdAt, updatedAt to document data.
+ */
+function withStandardFields<D extends DocumentData>(
+  data: D,
+  ownerId?: string,
+): D & { createdAt: ReturnType<typeof serverTimestamp>; updatedAt: ReturnType<typeof serverTimestamp>; ownerId?: string } {
+  return {
+    ...data,
+    ...(ownerId ? { [STANDARD_FIELDS.OWNER_ID]: ownerId } : {}),
+    [STANDARD_FIELDS.CREATED_AT]: serverTimestamp(),
+    [STANDARD_FIELDS.UPDATED_AT]: serverTimestamp(),
+  }
+}
+
+function withUpdatedAt<D extends DocumentData>(
+  data: Partial<D>,
+): Partial<D> & { updatedAt: ReturnType<typeof serverTimestamp> } {
+  return {
+    ...data,
+    [STANDARD_FIELDS.UPDATED_AT]: serverTimestamp(),
+  }
+}
 
 export async function getDocument<D extends DocumentData = DocumentData>(
   path: string,
@@ -83,7 +175,7 @@ export async function getDocument<D extends DocumentData = DocumentData>(
     const db = getFirestoreClient()!
     const dref = doc(db, path)
     const snap = await getDoc(dref)
-    return (snap.exists() ? snap.data() : null) as D | null
+    return (snap.exists() ? ({ id: snap.id, ...snap.data() } as unknown as D) : null) as D | null
   } catch (error) {
     handleFirestoreError(error, "getDocument")
   }
@@ -93,6 +185,7 @@ export async function setDocument<D extends DocumentData = DocumentData>(
   path: string,
   data: D,
   merge: boolean = true,
+  ownerId?: string,
 ): Promise<void> {
   if (!isFirestoreConfigured()) {
     console.warn(`Firestore not configured; setDocument no-op for ${path}`)
@@ -101,7 +194,10 @@ export async function setDocument<D extends DocumentData = DocumentData>(
   try {
     const db = getFirestoreClient()!
     const dref = doc(db, path)
-    await setDoc(dref, { ...data, updatedAt: serverTimestamp() }, { merge })
+    const dataWithTimestamps = merge
+      ? { ...data, updatedAt: serverTimestamp() }
+      : withStandardFields(data, ownerId)
+    await setDoc(dref, dataWithTimestamps, { merge })
   } catch (error) {
     handleFirestoreError(error, "setDocument")
   }
@@ -110,6 +206,7 @@ export async function setDocument<D extends DocumentData = DocumentData>(
 export async function addDocument<D extends DocumentData = DocumentData>(
   collectionName: string,
   data: D,
+  ownerId?: string,
 ): Promise<string> {
   if (!isFirestoreConfigured()) {
     console.warn(`Firestore not configured; addDocument no-op for ${collectionName}`)
@@ -118,11 +215,7 @@ export async function addDocument<D extends DocumentData = DocumentData>(
   try {
     const db = getFirestoreClient()!
     const colRef = collection(db, collectionName)
-    const docRef = await addDoc(colRef, {
-      ...data,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    })
+    const docRef = await addDoc(colRef, withStandardFields(data, ownerId))
     return docRef.id
   } catch (error) {
     handleFirestoreError(error, "addDocument")
@@ -140,12 +233,10 @@ export async function updateDocument<D extends DocumentData = DocumentData>(
   try {
     const db = getFirestoreClient()!
     const dref = doc(db, path)
-    // Try update first, fall back to set with merge if document doesn't exist
     try {
-      await updateDoc(dref, { ...data, updatedAt: serverTimestamp() })
+      await updateDoc(dref, withUpdatedAt(data))
     } catch (updateError) {
       const fbError = updateError as { code?: string }
-      // If document doesn't exist, create it with merge
       if (fbError.code === 'not-found') {
         await setDoc(dref, { ...data, updatedAt: serverTimestamp() }, { merge: true })
       } else {
@@ -223,6 +314,13 @@ export async function getCollectionWhere<D extends DocumentData = DocumentData>(
   value: unknown,
 ): Promise<D[]> {
   return queryCollection<D>(collectionName, [where(field, operator as any, value)])
+}
+
+export async function getCollectionByOwner<D extends DocumentData = DocumentData>(
+  collectionName: string,
+  ownerId: string,
+): Promise<D[]> {
+  return queryCollection<D>(collectionName, [where('ownerId', '==', ownerId)])
 }
 
 // ============================================================================
@@ -342,4 +440,3 @@ export async function batchWrite<D extends DocumentData = DocumentData>(
     handleFirestoreError(error, 'batchWrite')
   }
 }
-

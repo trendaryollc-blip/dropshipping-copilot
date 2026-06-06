@@ -1,83 +1,398 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ─── Helpers ──────────────────────────────────────────────────────────────
 
-    function isSignedIn() {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PROFESSIONAL FIRESTORE SECURITY RULES — DropEase / Automation Copilot
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Security model: Owner-based access control with admin override.
+    // Every document must have: ownerId (string), createdAt (timestamp), updatedAt (timestamp)
+    // Collections are organized by business domain (core, crm, automation, marketing, etc.)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ==========================================================================
+    // HELPER FUNCTIONS
+    // ==========================================================================
+
+    function isAuthenticated() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/copilot_users/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isOwnerOrAdmin(userId) {
-      return isOwner(userId) || get(/databases/$(database)/documents/dropease_users/$(request.auth.uid)).data.role == 'admin';
+      return isOwner(userId) || isAdmin();
     }
 
-    // Basic validation helpers
-    function isValidString(val) {
-      return val is string && val.size() > 0 && val.size() < 1000;
-    }
-    
-    function isValidNumber(val) {
-      return val is number && val >= 0;
+    function hasValidEmail() {
+      return request.auth.token.email != null &&
+             request.auth.token.email.matches('.*@.*\\..*');
     }
 
-    // ─── dropease_users ───────────────────────────────────────────────────────
-    match /dropease_users/{userId} {
-      allow read: if isOwner(userId) || isOwnerOrAdmin(userId);
-      allow create: if isOwner(userId) && request.resource.data.keys().hasAll(['name', 'email']);
-      allow update: if isOwner(userId) || isOwnerOrAdmin(userId);
-      allow delete: if isOwnerOrAdmin(userId); // Only admins can delete users
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
     }
 
-    // ─── dropease_products ────────────────────────────────────────────────────
-    match /dropease_products/{productId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.keys().hasAll(['name', 'ownerId']) && request.resource.data.ownerId == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
     }
 
-    // ─── dropease_suppliers ───────────────────────────────────────────────────
-    match /dropease_suppliers/{supplierId} {
-      allow read: if isSignedIn();
-      // Suppliers are typically managed by admins or specific logic
-      allow write: if isSignedIn(); 
+    function resourceHasOwner() {
+      return resource.data.keys().hasAny(['ownerId', 'uid']);
     }
 
-    // ─── dropease_orders ──────────────────────────────────────────────────────
-    match /dropease_orders/{orderId} {
-      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.keys().hasAll(['ownerId', 'items', 'total']) && request.resource.data.ownerId == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    function getOwnerField() {
+      return resource.data.keys().hasAny(['ownerId']) ? resource.data.ownerId : 
+             resource.data.keys().hasAny(['uid']) ? resource.data.uid : null;
     }
 
-    // ─── dropease_automation_rules ─────────────────────────────────────────────
-    match /dropease_automation_rules/{ruleId} {
-      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.keys().hasAll(['ownerId', 'name', 'type']) && request.resource.data.ownerId == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    function requestHasOwner() {
+      return request.resource.data.keys().hasAny(['ownerId', 'uid']);
     }
 
-    // ─── dropease_notifications ────────────────────────────────────────────────
-    match /dropease_notifications/{notifId} {
-      allow read: if isSignedIn() && resource.data.uid == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+    function getRequestOwner() {
+      return request.resource.data.keys().hasAny(['ownerId']) ? request.resource.data.ownerId :
+             request.resource.data.keys().hasAny(['uid']) ? request.resource.data.uid : null;
     }
 
-    // ─── dropease_analytics ───────────────────────────────────────────────────
-    match /dropease_analytics/{analyticsId} {
-      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow write: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ACCESS PATTERNS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ── Owner-based access (most collections) ────────────────────
+    function ownerCanRead(resource) {
+      return isAuthenticated() &&
+        (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
-    // ─── Default deny ─────────────────────────────────────────────────────────
+    function ownerCanCreate() {
+      return isAuthenticated() && requestHasOwner() && getRequestOwner() == request.auth.uid;
+    }
+
+    function ownerCanUpdate(resource) {
+      return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    function ownerCanDelete(resource) {
+      return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // ── UID-based access (notifications, settings) ──────────────
+    function uidCanRead(resource) {
+      return isAuthenticated() &&
+        (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    function uidCanCreate() {
+      return isAuthenticated() && request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidCanUpdate(resource) {
+      return isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 1. CORE BUSINESS ENTITIES
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_users/{userId} {
+      allow read: if isOwnerOrAdmin(userId);
+      allow create: if isOwner(userId) &&
+        hasRequiredFields(['name', 'email', 'plan']) &&
+        request.resource.data.name is string &&
+        request.resource.data.email is string;
+      allow update: if isOwnerOrAdmin(userId);
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        hasRequiredFields(['name', 'ownerId']) &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_orders/{orderId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if isAuthenticated() &&
+        hasRequiredFields(['ownerId', 'items', 'total', 'customer']) &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_suppliers/{supplierId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_stores/{storeId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_returns/{returnId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 2. CUSTOMER & CRM
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_customers/{customerId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_customer_segments/{segmentId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_crm_activities/{activityId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_crm_automations/{autoId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_gdpr_requests/{requestId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 3. REVIEWS & COMMUNICATION
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_product_reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        hasRequiredFields(['productId', 'rating', 'body', 'author']);
+      allow update: if isAuthenticated() && resource.data.author == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_supplier_reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        hasRequiredFields(['supplierId', 'rating', 'review', 'author']);
+      allow update: if isAuthenticated() && resource.data.author == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_supplier_messages/{msgId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.sender == request.auth.uid || resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() &&
+        request.resource.data.sender == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.sender == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_notifications/{notifId} {
+      allow read: if uidCanRead(resource);
+      allow create: if uidCanCreate();
+      allow update: if uidCanUpdate(resource);
+      allow delete: if uidCanUpdate(resource);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 4. AUTOMATION & RULES
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_automation_rules/{ruleId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate() &&
+        hasRequiredFields(['ownerId', 'name', 'type']);
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_workflows/{workflowId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_reorder_rules/{ruleId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_upsell_rules/{ruleId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_pricing_rules/{ruleId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_inventory_alerts/{alertId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_price_alerts/{alertId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 5. MARKETING & CAMPAIGNS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_campaigns/{campaignId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_email_campaigns/{campaignId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_sms_campaigns/{campaignId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_seasonal_campaigns/{campaignId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_ab_tests/{testId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_affiliates/{affiliateId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 6. OPERATIONS & LOGISTICS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_bulk_orders/{orderId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    match /copilot_shipment_tracking/{trackingId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if isAdmin();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 7. ANALYTICS & INSIGHTS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_analytics/{analyticsId} {
+      allow read: if ownerCanRead(resource);
+      allow write: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    match /copilot_activity_log/{logId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /copilot_competitor_products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /copilot_compliance_reports/{reportId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if isAdmin();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 8. CONFIGURATION
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    match /copilot_settings/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /copilot_integrations/{integrationId} {
+      allow read: if ownerCanRead(resource);
+      allow create: if ownerCanCreate();
+      allow update: if ownerCanUpdate(resource);
+      allow delete: if ownerCanDelete(resource);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DEFAULT DENY — Block all access to any unlisted collection
+    // ═══════════════════════════════════════════════════════════════════════════
+
     match /{document=**} {
       allow read, write: if false;
     }
