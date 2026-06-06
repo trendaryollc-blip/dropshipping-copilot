@@ -39,18 +39,29 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Link
-          href="/"
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-accent"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-primary/80">Activity</p>
-          <h1 className="page-header">All recent activity</h1>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Bot className="size-3" />
+              Activity
+            </span>
+            <h1 className="hero-title">All Recent Activity</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Track all actions across your store in real time.
+            </p>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="size-3" /> Back to Dashboard
+          </Link>
         </div>
-      </div>
+      </section>
 
       <div className="space-y-4">
         {allActivity.map((item) => {

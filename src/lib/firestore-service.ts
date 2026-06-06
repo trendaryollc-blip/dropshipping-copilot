@@ -140,7 +140,18 @@ export async function updateDocument<D extends DocumentData = DocumentData>(
   try {
     const db = getFirestoreClient()!
     const dref = doc(db, path)
-    await updateDoc(dref, { ...data, updatedAt: serverTimestamp() })
+    // Try update first, fall back to set with merge if document doesn't exist
+    try {
+      await updateDoc(dref, { ...data, updatedAt: serverTimestamp() })
+    } catch (updateError) {
+      const fbError = updateError as { code?: string }
+      // If document doesn't exist, create it with merge
+      if (fbError.code === 'not-found') {
+        await setDoc(dref, { ...data, updatedAt: serverTimestamp() }, { merge: true })
+      } else {
+        throw updateError
+      }
+    }
   } catch (error) {
     handleFirestoreError(error, "updateDocument")
   }
@@ -331,3 +342,4 @@ export async function batchWrite<D extends DocumentData = DocumentData>(
     handleFirestoreError(error, 'batchWrite')
   }
 }
+

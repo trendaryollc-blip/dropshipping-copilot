@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import aiService, { type AIDescriptionRequest, type AIAnalysis, type AIPriceOptimization } from "@/lib/ai-service"
 import { AIAnalysisCard } from "@/components/ai-analysis"
@@ -71,25 +70,38 @@ export default function DescriptionPage() {
   const wordCount = generated ? generated.split(/\s+/).filter(Boolean).length : 0
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="page-header">Description Generator</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Generate professional product descriptions in seconds.
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* ═══ Hero Section ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+
+        <div className="relative z-10 flex flex-col gap-4">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Sparkles className="size-3" />
+              AI Content Generator
+            </span>
+            <h1 className="hero-title">Description Generator</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Generate professional product descriptions in seconds using advanced AI.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Input Form */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-1">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-primary" />
-              Product Details
-            </CardTitle>
-            <CardDescription className="text-xs">Fill in the details below to generate a tailored description.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground">Product Details</h3>
+            </div>
+            <p className="text-xs text-muted-foreground/70">Fill in the details below to generate a tailored description.</p>
+            
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Product Name *</Label>
               <Input
@@ -144,34 +156,39 @@ export default function DescriptionPage() {
               />
             </div>
 
-            <Button className="w-full" onClick={handleGenerate} disabled={loading}>
+            <Button 
+              className="w-full rounded-xl" 
+              onClick={handleGenerate} 
+              disabled={loading}
+            >
               {loading ? (
                 <><RefreshCw className="size-3.5 animate-spin mr-1.5" /> Generating...</>
               ) : (
                 <><Sparkles className="size-3.5 mr-1.5" /> Generate Description</>
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* AI Analysis */}
         <AIAnalysisCard productName={productName} category={category} />
 
         {/* Test AI Features */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-2">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-primary" />
-              Test AI Features
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Test AI Features</h3>
+            </div>
+            
             <div className="grid grid-cols-2 gap-3">
               <Button 
                 onClick={() => testAIFeatures().testProductAnalysis()}
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full rounded-xl"
               >
                 🧠 Test Product Analysis
               </Button>
@@ -179,7 +196,7 @@ export default function DescriptionPage() {
                 onClick={() => testAIFeatures().testDescriptionGeneration()}
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full rounded-xl"
               >
                 ✍️ Test Description Generator
               </Button>
@@ -189,7 +206,7 @@ export default function DescriptionPage() {
                 onClick={() => testAIFeatures().testPriceOptimization()}
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full rounded-xl"
               >
                 💰 Test Price Optimization
               </Button>
@@ -197,26 +214,28 @@ export default function DescriptionPage() {
                 onClick={() => testAIFeatures().testCompetitionAnalysis()}
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full rounded-xl"
               >
                 📊 Test Competition Analysis
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Output */}
-        <Card>
-          <CardHeader className="pb-3">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-3">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <FileText className="size-4 text-primary" />
-                Generated Description
-              </CardTitle>
+                <h3 className="text-sm font-semibold text-foreground">Generated Description</h3>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs"
+                className="text-xs rounded-xl"
                 onClick={handleCopy}
                 disabled={!generated || copied}
               >
@@ -233,15 +252,20 @@ export default function DescriptionPage() {
                 )}
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm leading-relaxed">{generated || "Your generated description will appear here..."}</p>
+            
+            <div className="space-y-3">
+              <div className="p-4 bg-card/50 rounded-xl border border-border/20">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">Word Count</span>
+                  <Badge variant="secondary" className="text-xs">{wordCount} words</Badge>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {generated || "Your generated description will appear here..."}
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

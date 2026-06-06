@@ -8,12 +8,23 @@ import { getCollection } from '@/lib/firestore-service';
 import { EmailService } from '@/lib/email-service';
 import { SMSService } from '@/lib/sms-service';
 
-export async function GET(request: Request) {
-  // Verify Vercel Cron secret
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+// Shared auth helper for cron routes — fail closed if CRON_SECRET is missing.
+function authorizeCron(request: Request): NextResponse | null {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${secret}`) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+  return null;
+}
+
+export async function GET(request: Request) {
+  // Verify Vercel Cron secret
+  const authError = authorizeCron(request);
+  if (authError) return authError;
 
   try {
     console.log('[Cron] Checking automation rules...');

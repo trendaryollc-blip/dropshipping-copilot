@@ -63,13 +63,23 @@ export default function AutomationPage() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Automation Tools</h1>
-        <p className="text-muted-foreground">
-          Automate your dropshipping workflow with powerful automation rules.
-        </p>
-      </div>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+        <div className="relative z-10 flex flex-col gap-4">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Zap className="size-3" />
+              Automation
+            </span>
+            <h1 className="hero-title">Automation Tools</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Automate your dropshipping workflow with powerful automation rules.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Overview Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

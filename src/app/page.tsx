@@ -8,6 +8,8 @@ import {
   Truck,
   Bot,
   RotateCcw,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react"
 import Link from "next/link"
 import { dashboardStats, recentActivity } from "@/lib/mock-data"
@@ -19,28 +21,28 @@ import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
 import { InsightsFooter } from "@/components/dashboard/InsightsFooter"
 
 const quickActions = [
-  { href: "/products", label: "Find Products", desc: "Discover winning items with strong margins.", icon: <Search className="size-5" />, accent: "bg-emerald-400" },
-  { href: "/suppliers", label: "Find Suppliers", desc: "Connect with reliable suppliers fast.", icon: <Users className="size-5" />, accent: "bg-cyan-400" },
-  { href: "/description", label: "Generate Description", desc: "Create product copy with AI in seconds.", icon: <FileText className="size-5" />, accent: "bg-violet-400" },
-  { href: "/orders", label: "Track Orders", desc: "Monitor shipments and fulfillment status.", icon: <Truck className="size-5" />, accent: "bg-fuchsia-400" },
+  { href: "/products", label: "Find Products", desc: "Discover winning items with strong margins.", icon: <Search className="size-5" />, accent: "bg-gradient-to-br from-emerald-400 to-teal-500" },
+  { href: "/suppliers", label: "Find Suppliers", desc: "Connect with reliable suppliers fast.", icon: <Users className="size-5" />, accent: "bg-gradient-to-br from-cyan-400 to-blue-500" },
+  { href: "/description", label: "Generate Description", desc: "Create product copy with AI in seconds.", icon: <FileText className="size-5" />, accent: "bg-gradient-to-br from-violet-400 to-purple-500" },
+  { href: "/orders", label: "Track Orders", desc: "Monitor shipments and fulfillment status.", icon: <Truck className="size-5" />, accent: "bg-gradient-to-br from-fuchsia-400 to-pink-500" },
 ]
 
 const activityAccent = {
-  import: "bg-emerald-400",
-  order: "bg-cyan-400",
-  supplier: "bg-violet-400",
-  description: "bg-fuchsia-400",
-  automation: "bg-amber-400",
-  return: "bg-rose-400",
+  import: "bg-gradient-to-br from-emerald-400 to-teal-500",
+  order: "bg-gradient-to-br from-cyan-400 to-blue-500",
+  supplier: "bg-gradient-to-br from-violet-400 to-purple-500",
+  description: "bg-gradient-to-br from-fuchsia-400 to-pink-500",
+  automation: "bg-gradient-to-br from-amber-400 to-orange-500",
+  return: "bg-gradient-to-br from-rose-400 to-red-500",
 }
 
 const activityIconMap: Record<ActivityItem["type"], React.ReactNode> = {
-  import: <Package2 className="size-5" />,
-  order: <ShoppingCart className="size-5" />,
-  supplier: <Users className="size-5" />,
-  description: <FileText className="size-5" />,
-  automation: <Bot className="size-5" />,
-  return: <RotateCcw className="size-5" />,
+  import: <Package2 className="size-4" />,
+  order: <ShoppingCart className="size-4" />,
+  supplier: <Users className="size-4" />,
+  description: <FileText className="size-4" />,
+  automation: <Bot className="size-4" />,
+  return: <RotateCcw className="size-4" />,
 }
 
 export default function DashboardPage() {
@@ -48,91 +50,144 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-primary/80">Dashboard</p>
-          <h1 className="page-header">Modern dropshipping command center</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Monitor revenue, suppliers, automation, and market momentum from one elegant dashboard.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <DashboardCard
-            title="Revenue"
-            value={`$${stats.monthlyRevenue.toLocaleString()}`}
-            subtitle="Monthly sales total"
-            trend="+18% vs last month"
-            icon={<DollarSign className="size-6" />}
-            gradient="from-primary via-accent to-foreground"
-          />
-          <DashboardCard
-            title="Orders pending"
-            value={stats.ordersPending}
-            subtitle="Active order queue"
-            trend={`+${stats.ordersChange}% order flow`}
-            icon={<ShoppingCart className="size-6" />}
-            gradient="from-accent via-primary to-foreground"
-          />
-          <DashboardCard
-            title="Suppliers"
-            value={stats.suppliersConnected}
-            subtitle="Verified partners"
-            trend={`+${stats.suppliersChange}% network growth`}
-            icon={<Users className="size-6" />}
-            gradient="from-info via-accent to-foreground"
-          />
+      {/* ═══ Hero Section ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        {/* Decorative elements */}
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-accent/5 blur-2xl" />
+        <div className="absolute right-1/4 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full bg-info/5 blur-xl" />
+        
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                <Sparkles className="size-3" />
+                Command Center
+              </span>
+            </div>
+            <h1 className="hero-title">
+              Welcome to your<br />dropshipping HQ
+            </h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Monitor revenue, suppliers, automation, and market momentum from one elegant dashboard.
+            </p>
+          </div>
+          
+          <Link href="/products" className="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-primary to-primary-medium px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02]">
+            Start Research
+            <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+      {/* ═══ Stats Cards ═══ */}
+      <section>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="delay-1">
+            <DashboardCard
+              title="Revenue"
+              value={`$${stats.monthlyRevenue.toLocaleString()}`}
+              subtitle="Monthly sales total"
+              trend="+18% vs last month"
+              icon={<DollarSign className="size-5" />}
+              gradient="from-primary via-accent to-foreground"
+            />
+          </div>
+          <div className="delay-2">
+            <DashboardCard
+              title="Orders pending"
+              value={stats.ordersPending}
+              subtitle="Active order queue"
+              trend={`+${stats.ordersChange}% order flow`}
+              icon={<ShoppingCart className="size-5" />}
+              gradient="from-accent via-primary to-foreground"
+            />
+          </div>
+          <div className="delay-3">
+            <DashboardCard
+              title="Suppliers"
+              value={stats.suppliersConnected}
+              subtitle="Verified partners"
+              trend={`+${stats.suppliersChange}% network growth`}
+              icon={<Users className="size-5" />}
+              gradient="from-info via-accent to-foreground"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ Main Content Grid ═══ */}
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
+        {/* Left Column */}
         <div className="space-y-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          {/* Quick Actions Header */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-muted-foreground">Quick Actions</p>
-              <h2 className="mt-2 text-2xl font-semibold text-foreground">Triggers for speed and focus</h2>
+              <p className="section-label">Quick Actions</p>
+              <h2 className="mt-2 text-xl font-bold text-foreground">Triggers for speed</h2>
             </div>
-            <p className="text-sm text-muted-foreground">Use the most important actions whenever you need a boost.</p>
+            <Link href="/products" className="group hidden items-center gap-1.5 text-xs font-medium text-primary/60 transition-colors hover:text-primary sm:inline-flex">
+              View all
+              <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {quickActions.map((action) => (
-              <QuickActionTile key={action.href} href={action.href} label={action.label} desc={action.desc} icon={action.icon} accent={action.accent} />
+          {/* Quick Actions Grid */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {quickActions.map((action, i) => (
+              <div key={action.href} className={`delay-${i + 2}`}>
+                <QuickActionTile {...action} />
+              </div>
             ))}
           </div>
 
+          {/* Insights */}
           <InsightsFooter />
         </div>
 
+        {/* Right Column */}
         <div className="space-y-6">
+          {/* AI Insights */}
           <AIInsightsPanel />
 
-          <div className="rounded-[2rem] border border-border bg-gradient-to-br from-card-solid via-card-solid to-card-solid p-5 shadow-[0_20px_60px_-24px_rgba(212,168,83,0.22)]">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-primary/80">Recent activity</p>
-                <h2 className="mt-2 text-xl font-semibold text-foreground">Timeline updates</h2>
+          {/* Recent Activity */}
+          <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm">
+            <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-accent/5 blur-2xl" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400">
+                      <span className="relative flex size-1.5">
+                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+                      </span>
+                      Live
+                    </span>
+                  </div>
+                  <h2 className="mt-3 text-lg font-bold text-foreground">Recent activity</h2>
+                </div>
               </div>
-              <span className="rounded-full bg-primary-light/50 px-3 py-1 text-xs uppercase tracking-[0.24em] text-primary">Live</span>
-            </div>
 
-            <div className="mt-5 space-y-4">
-            {recentActivity.map((item) =>
-                <ActivityFeedItem
-                  key={item.id}
-                  icon={activityIconMap[item.type]}
-                  title={item.message}
-                  time={item.time}
-                  accent={activityAccent[item.type]}
-                  badgeTextColor="text-muted-foreground"
-                />
-              )}
-            </div>
+              <div className="mt-4 space-y-2">
+                {recentActivity.map((item) => (
+                  <ActivityFeedItem
+                    key={item.id}
+                    icon={activityIconMap[item.type]}
+                    title={item.message}
+                    time={item.time}
+                    accent={activityAccent[item.type]}
+                  />
+                ))}
+              </div>
 
-            <div className="mt-5 flex justify-center">
-              <Link href="/activity" className="rounded-full border border-border bg-muted/70 px-5 py-2 text-sm text-primary transition hover:bg-primary-light/70">
-                Load more
-              </Link>
+              <div className="mt-4 flex justify-center">
+                <Link href="/activity" className="group inline-flex items-center gap-1.5 rounded-xl border border-border/50 bg-card/40 px-4 py-2 text-xs font-medium text-muted-foreground/70 transition-all duration-300 hover:border-primary/20 hover:bg-card/60 hover:text-foreground">
+                  Load more
+                  <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

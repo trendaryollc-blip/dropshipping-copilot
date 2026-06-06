@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Package, CheckCircle, XCircle, DollarSign, RotateCcw, Search, Sparkles } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AIActionButton } from "@/components/AIActionButton"
 import { Input } from "@/components/ui/input"
@@ -25,10 +24,10 @@ const INITIAL_RETURNS: ReturnRequest[] = [
 ]
 
 const statusConfig: Record<ReturnStatus, { label: string; class: string }> = {
-  requested: { label: "Requested", class: "bg-warning-light text-warning border-warning" },
-  approved: { label: "Approved", class: "bg-primary-light text-primary border-primary" },
-  refunded: { label: "Refunded", class: "bg-success-light text-success border-success" },
-  denied: { label: "Denied", class: "bg-destructive-light text-destructive border-destructive" },
+  requested: { label: "Requested", class: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+  approved: { label: "Approved", class: "bg-primary/10 text-primary border-primary/20" },
+  refunded: { label: "Refunded", class: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+  denied: { label: "Denied", class: "bg-red-500/10 text-red-600 border-red-500/20" },
 }
 
 const reasonLabel: Record<string, string> = {
@@ -97,23 +96,35 @@ export default function ReturnsPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="page-header">Returns & Refunds</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage customer return requests and issue refunds with one click.
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* ═══ Hero Section ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+
+        <div className="relative z-10 flex flex-col gap-4">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Package className="size-3" />
+              Returns Manager
+            </span>
+            <h1 className="hero-title">Returns & Refunds</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Manage customer return requests and issue refunds with one click.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Stats */}
       <div className="grid gap-3 sm:grid-cols-4">
         {[
-          { label: "Total Returns", value: stats.total, icon: RotateCcw, color: "bg-primary-light text-primary" },
-          { label: "Action Needed", value: stats.requested, icon: Package, color: "bg-warning-light text-warning" },
-          { label: "Refunds Issued", value: stats.refunded, icon: CheckCircle, color: "bg-success-light text-success" },
-          { label: "$ Refunded", value: `$${stats.totalRefunded.toFixed(2)}`, icon: DollarSign, color: "bg-accent-light text-accent" },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="stat-card flex items-center gap-3">
+          { label: "Total Returns", value: stats.total, icon: RotateCcw, color: "bg-primary/10 text-primary" },
+          { label: "Action Needed", value: stats.requested, icon: Package, color: "bg-amber-500/10 text-amber-600" },
+          { label: "Refunds Issued", value: stats.refunded, icon: CheckCircle, color: "bg-emerald-500/10 text-emerald-600" },
+          { label: "$ Refunded", value: `$${stats.totalRefunded.toFixed(2)}`, icon: DollarSign, color: "bg-amber-500/10 text-amber-600" },
+        ].map(({ label, value, icon: Icon, color }, i) => (
+          <div key={label} className={`stat-card card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}>
             <div className={`flex size-9 items-center justify-center rounded-lg ${color}`}>
               <Icon className="size-4" />
             </div>
@@ -126,53 +137,60 @@ export default function ReturnsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search returns..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
-        </div>
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v || "all")}>
-          <SelectTrigger size="sm" className="w-40 h-8 text-xs">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="requested">Requested</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="refunded">Refunded</SelectItem>
-            <SelectItem value="denied">Denied</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="ml-auto flex gap-2 items-center">
-          <p className="text-xs text-muted-foreground mr-2">{filtered.length} returns</p>
-          <AIActionButton
-            task="returns_review"
-            input={{ returns: returns.filter(r => r.status === "requested") }}
-            label="AI Auto-Review"
-            onSuccess={(result) => {
-              toast.success("AI recommendations ready", { id: "ai-returns" })
-            }}
-          />
+      <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-1">
+        <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+        
+        <div className="relative z-10 flex flex-wrap items-center gap-3">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search returns..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+          </div>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v || "all")}>
+            <SelectTrigger size="sm" className="w-40 h-8 text-xs">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="requested">Requested</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value="denied">Denied</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="ml-auto flex gap-2 items-center">
+            <p className="text-xs text-muted-foreground mr-2">{filtered.length} returns</p>
+            <AIActionButton
+              task="returns_review"
+              input={{ returns: returns.filter(r => r.status === "requested") }}
+              label="AI Auto-Review"
+              onSuccess={() => {
+                toast.success("AI recommendations ready", { id: "ai-returns" })
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {aiDecisions.length > 0 && (
-        <Card className="border-primary/20 bg-primary/[0.03]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Sparkles className="size-4 text-primary" /> AI Return Recommendations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {aiDecisions.map((ret) => (
-              <div key={ret.id} className="text-xs flex justify-between items-start gap-3">
-                <span className="truncate">{ret.productName}</span>
-                <span className="font-medium text-primary whitespace-nowrap">{ret.aiRecommendation}</span>
-              </div>
-            ))}
-          </CardContent>
-          <Button onClick={() => setAiDecisions([])} size="sm" variant="ghost" className="w-full mt-1">Dismiss</Button>
-        </Card>
+        <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-primary/[0.03] p-5 backdrop-blur-sm animate-in delay-2">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="size-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">AI Return Recommendations</h3>
+            </div>
+            <div className="space-y-2">
+              {aiDecisions.map((ret) => (
+                <div key={ret.id} className="text-xs flex justify-between items-start gap-3">
+                  <span className="truncate">{ret.productName}</span>
+                  <span className="font-medium text-primary whitespace-nowrap">{ret.aiRecommendation}</span>
+                </div>
+              ))}
+            </div>
+            <Button onClick={() => setAiDecisions([])} size="sm" variant="ghost" className="w-full rounded-xl mt-1">Dismiss</Button>
+          </div>
+        </div>
       )}
 
       {filtered.length === 0 ? (
@@ -185,9 +203,12 @@ export default function ReturnsPage() {
           {filtered.map((ret) => {
             const status = statusConfig[ret.status]
             return (
-              <Card key={ret.id} className="hover:shadow-sm transition-shadow">
-                <CardContent className="p-4">
+              <div key={ret.id} className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm hover:shadow-sm transition-all duration-300 animate-in">
+                <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+                
+                <div className="relative z-10">
                   <div className="flex items-start gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={ret.productImage} alt={ret.productName} className="size-12 rounded-lg object-cover border border-border shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -211,23 +232,23 @@ export default function ReturnsPage() {
                     <div className="flex flex-col gap-1.5 shrink-0">
                       {ret.status === "requested" && (
                         <>
-                          <Button size="sm" className="h-7 text-xs" onClick={() => updateStatus(ret.id, "approved")}>
+                          <Button size="sm" className="h-7 text-xs rounded-xl" onClick={() => updateStatus(ret.id, "approved")}>
                             <CheckCircle className="size-3.5" /> Approve
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => updateStatus(ret.id, "denied")}>
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10 rounded-xl" onClick={() => updateStatus(ret.id, "denied")}>
                             <XCircle className="size-3.5" /> Deny
                           </Button>
                         </>
                       )}
                       {ret.status === "approved" && (
-                        <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700" onClick={() => updateStatus(ret.id, "refunded")}>
+                        <Button size="sm" className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 rounded-xl" onClick={() => updateStatus(ret.id, "refunded")}>
                           <DollarSign className="size-3.5" /> Issue Refund
                         </Button>
                       )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )
           })}
         </div>

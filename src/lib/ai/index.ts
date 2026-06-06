@@ -1,47 +1,31 @@
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * central task router — pick the right AI automatically
+ * Central task router — pick the right AI automatically (one platform per task)
  * ──────────────────────────────────────────────────────────────────────────────
- * Task              AI Provider  Key var                   Pages
- * ───────────────── ──────────── ───────────────────────── ───────────────
- * order_processing     GROQ         GROQ_API_KEY            /orders
- * product_description  ZAI          ZAI_API_KEY              /products
- *                                                                 /bulk-edit
- *                                                                 /business
- * seo_optimization     ZAI          ZAI_API_KEY              /seo
- * dynamic_pricing      OPENROUTER   OPENROUTER_API_KEY      /calculator
- *                                                                 /business
- * fraud_detection      CLOUDFLARE   CLOUDFLARE_AI_API_KEY   /orders
- * image_analysis       HUGGINGFACE  HUGGINGFACE_API_KEY     pdts upload
- * competitor_analysis  ZAI          ZAI_API_KEY              /competitors
- * returns_review       ZAI          ZAI_API_KEY              /returns
- * ───────────────── ──────────── ───────────────────────── ───────────────
+ * Task                 AI Platform    Free Tier             Env Var
+ * ───────────────────  ────────────  ────────────────────  ───────────────────
+ * order_processing     Groq          30 req/min            GROQ_API_KEY
+ * product_description  Cohere        100 req/day trial     COHERE_API_KEY
+ * seo_optimization     DeepSeek      ¥5M token free        DEEPSEEK_API_KEY
+ * dynamic_pricing      OpenRouter    $1 free credit        OPENROUTER_API_KEY
+ * fraud_detection      Cloudflare    10k req/day           CLOUDFLARE_AI_API_KEY
+ * image_analysis       Mistral       500k tokens free      MISTRAL_API_KEY
+ * competitor_analysis  Cohere        100 req/day trial     COHERE_API_KEY
+ * returns_review       SerpAPI       100 searches/month    SERPAPI_API_KEY
+ * ───────────────────  ────────────  ────────────────────  ───────────────────
  *
- * Env vars live in .env  (git-ignored).
- * Template guide  : .env.example  (safe to keep in git / PRs / docs).
+ * Env vars live in .env (git-ignored).
  */
-import type { CompetitorProduct } from '@/types'
-import type { AutomationTask, AIProvider } from './config'
+import type { AutomationTask } from './config'
 import { TASK_AI_MAPPING } from './config'
 import { processOrderWithGroq, type OrderProcessingInput } from './groq-order-processing'
-import {
-  generateProductDescriptionWithZAI,
-  optimizeSEOWithZAI,
-  generateCompetitorAnalysisWithZAI,
-  reviewReturnsWithZAI,
-  pingZAI,
-  type ProductDescriptionInput,
-  type SEOInput,
-  type ReturnRequest,
-} from './zai'
+import { generateProductDescription, analyzeCompetitors, type ProductDescriptionInput, type CompetitorInput } from './cohere'
+import { optimizeSEO, type SEOInput } from './deepseek-seo'
 import { getDynamicPricingWithOpenRouter, type PricingInput } from './openrouter-pricing'
 import { detectFraudWithCloudflare, type FraudInput } from './cloudflare-fraud'
-import { analyzeProductImageWithHuggingFace, type ImageAnalysisInput } from './huggingface-image'
-import { reviewReturnsWithOpenRouter } from './openrouter-returns'
+import { analyzeProductImage, type ImageAnalysisInput } from './mistral'
+import { reviewReturn, type ReturnRequest } from './serpapi-returns'
 
-/**
- * Discriminated union of all runTask input shapes, keyed by task name.
- */
 type TaskInput =
   | { task: 'order_processing'; input: OrderProcessingInput }
   | { task: 'product_description'; input: ProductDescriptionInput }
@@ -49,51 +33,59 @@ type TaskInput =
   | { task: 'dynamic_pricing'; input: PricingInput }
   | { task: 'fraud_detection'; input: FraudInput }
   | { task: 'image_analysis'; input: ImageAnalysisInput }
-  | { task: 'competitor_analysis'; input: { competitors: CompetitorProduct[] } }
-  | { task: 'returns_review'; input: { returns?: ReturnRequest[]; competitors?: unknown[] } }
+  | { task: 'competitor_analysis'; input: CompetitorInput }
+  | { task: 'returns_review'; input: { returns: ReturnRequest[] } }
 
 export const AI = {
   /**
    * Automatically routes to the best AI for the given task
+   * One platform per task — maximizes free quota across all providers
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed for dynamic input casting
   async runTask(task: AutomationTask, input: any) {
-    const anyInput: any = input
     const provider = TASK_AI_MAPPING[task]
-    const competitors =
-      task === 'competitor_analysis' && Array.isArray(anyInput?.competitors)
-        ? anyInput.competitors
-        : []
 
-    const result: unknown =
-      provider === 'groq' ? processOrderWithGroq(anyInput) :
-      provider === 'zai' ? (
-        task === 'product_description' ? generateProductDescriptionWithZAI(anyInput) :
-        task === 'seo_optimization'    ? optimizeSEOWithZAI(anyInput) :
-        task === 'competitor_analysis' ? generateCompetitorAnalysisWithZAI(competitors) :
-        task === 'returns_review'      ? reviewReturnsWithZAI(anyInput.returns || [])
-        : generateProductDescriptionWithZAI(anyInput)
-      ) :
-      provider === 'openrouter' ? (
-        task === 'returns_review' ? reviewReturnsWithOpenRouter(anyInput.returns || anyInput.competitors || []) : getDynamicPricingWithOpenRouter(anyInput)
-      ) :
-      provider === 'cloudflare' ? detectFraudWithCloudflare(anyInput) :
-      provider === 'huggingface' ? analyzeProductImageWithHuggingFace(anyInput) :
-      (() => { throw new Error(`No AI provider configured for task: ${task}`) })()
+    switch (provider) {
+      case 'groq':
+        return processOrderWithGroq(input as OrderProcessingInput)
 
-    return result
+      case 'cohere':
+        if (task === 'product_description') {
+          return generateProductDescription(input as ProductDescriptionInput)
+        }
+        if (task === 'competitor_analysis') {
+          return analyzeCompetitors(input as CompetitorInput)
+        }
+        throw new Error(`Unknown cohere task: ${task}`)
+
+      case 'deepseek':
+        return optimizeSEO(input as SEOInput)
+
+      case 'openrouter':
+        return getDynamicPricingWithOpenRouter(input as PricingInput)
+
+      case 'cloudflare':
+        return detectFraudWithCloudflare(input as FraudInput)
+
+      case 'mistral':
+        return analyzeProductImage(input as ImageAnalysisInput)
+
+      case 'serpapi':
+        return reviewReturn(input as { returns: ReturnRequest[] })
+
+      default:
+        throw new Error(`No AI provider configured for task: ${task}`)
+    }
   },
 
-  // Direct access to individual AIs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Direct access to individual AIs
   groq: { processOrder: processOrderWithGroq },
-  zai: {
-    generateDescription:      generateProductDescriptionWithZAI,
-    optimizeSEO:              optimizeSEOWithZAI,
-    analyzeCompetitors:       generateCompetitorAnalysisWithZAI,
-    reviewReturns:            reviewReturnsWithZAI,
-    ping:                     pingZAI,
+  cohere: {
+    generateDescription: generateProductDescription,
+    analyzeCompetitors,
   },
-  openrouter: { getPricing: getDynamicPricingWithOpenRouter, reviewReturns: reviewReturnsWithOpenRouter as typeof reviewReturnsWithZAI },
+  deepseek: { optimizeSEO },
+  openrouter: { getPricing: getDynamicPricingWithOpenRouter },
   cloudflare: { detectFraud: detectFraudWithCloudflare },
-  huggingface: { analyzeImage: analyzeProductImageWithHuggingFace },
+  mistral: { analyzeImage: analyzeProductImage },
+  serpapi: { reviewReturns: reviewReturn },
 }

@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { products as initialProducts } from "@/lib/mock-data"
+import { useProducts } from "@/hooks/useData"
+import { products as mockProducts } from "@/lib/mock-data"
 import { AIActionButton } from "@/components/AIActionButton"
 import type { Product, ProductStatus } from "@/types"
 
@@ -44,8 +45,10 @@ const seededStock = (id: string): number => {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BulkEditPage() {
+  const { products: apiProducts, loading } = useProducts()
+  const initialProducts = apiProducts.length > 0 ? apiProducts : mockProducts
   const [products, setProducts] = useState<EditableProduct[]>(() =>
-    initialProducts.map(p => ({
+    (apiProducts.length > 0 ? apiProducts : mockProducts).map(p => ({
       ...p,
       displayPrice: p.priceRange.max,
       stock: seededStock(p.id),
@@ -141,35 +144,47 @@ export default function BulkEditPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-header">Bulk Edit</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Edit prices, stock, and status for multiple products at once.
-          </p>
+    <div className="space-y-6">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <PenLine className="size-3" />
+              Bulk Edit
+            </span>
+            <h1 className="hero-title">Bulk Edit</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Edit prices, stock, and status for multiple products at once.
+            </p>
+          </div>
+          <AIActionButton
+            task="product_description"
+            input={{
+              productName: "Bulk Products",
+              niche: "General",
+              features: ["High quality", "Trending"],
+              priceRange: { min: 20, max: 100 },
+            }}
+            label="AI Bulk Descriptions"
+            onSuccess={(result) => {
+              setAiResults([...aiResults, result])
+              toast.success("AI descriptions generated for bulk!")
+            }}
+          />
         </div>
-        <AIActionButton
-          task="product_description"
-          input={{
-            productName: "Bulk Products",
-            niche: "General",
-            features: ["High quality", "Trending"],
-            priceRange: { min: 20, max: 100 },
-          }}
-          label="AI Bulk Descriptions"
-          onSuccess={(result) => {
-            setAiResults([...aiResults, result])
-            toast.success("AI descriptions generated for bulk!")
-          }}
-         />
-        {selectedCount > 0 && (
+      </section>
+
+      {selectedCount > 0 && (
+        <div className="flex justify-end">
           <Button onClick={() => setPanelOpen(o => !o)} className="shrink-0">
             <PenLine className="size-4 mr-1.5" />
             Edit {selectedCount} Selected
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -420,6 +435,7 @@ export default function BulkEditPage() {
                     {/* Product */}
                     <TableCell>
                       <div className="flex items-center gap-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={product.image}
                           alt={product.name}

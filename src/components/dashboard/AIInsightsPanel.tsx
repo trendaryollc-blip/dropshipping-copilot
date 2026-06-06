@@ -28,35 +28,39 @@ const insights = [
 
 export function AIInsightsPanel() {
   return (
-    <div className="rounded-[34px] border border-muted bg-card-bg p-5 shadow-[0_16px_52px_-20px_rgba(148,0,255,0.16)]">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-primary/80">AI insights</p>
-          <h2 className="mt-3 text-xl font-semibold text-text-primary">Smart suggestions for your next move</h2>
-        </div>
-      </div>
+    <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm">
+      {/* Decorative glow */}
+      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-accent/5 blur-2xl" />
 
-      <div className="mt-6 space-y-4">
-        {insights.map((insight) => {
-          const Icon = insight.icon
-          return (
-            <div key={insight.label} className="rounded-3xl border border-muted bg-card-solid p-4 text-text-primary transition hover:border-primary/25 hover:shadow-[0_8px_28px_-20px_rgba(13,124,102,0.20)]">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className={`flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-br ${insight.accent} text-white shadow-lg`}>
-                    <Icon className="size-5" />
+      <div className="relative z-10">
+        <div className="flex items-center gap-2.5">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+            <Sparkles className="size-3" />
+            AI Insights
+          </span>
+        </div>
+        <h2 className="mt-3 text-lg font-bold text-foreground">Smart suggestions</h2>
+
+        <div className="mt-5 space-y-3">
+          {insights.map((insight, i) => {
+            const Icon = insight.icon
+            return (
+              <div key={insight.label} className={`group/item relative rounded-2xl border border-border/30 bg-card/40 p-4 transition-all duration-300 hover:border-primary/15 hover:bg-card/60 animate-in delay-${i + 1}`}>
+                <div className="flex items-start gap-3">
+                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${insight.accent} text-white shadow-md transition-transform duration-300 group-hover/item:scale-110`}>
+                    <Icon className="size-4" />
                   </span>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{insight.label}</p>
-                    <p className="mt-1 text-lg font-semibold text-text-primary">{insight.value}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-medium text-muted-foreground/60">{insight.label}</p>
+                    <p className="mt-0.5 text-sm font-bold text-foreground">{insight.value}</p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground/70">{insight.detail}</p>
                   </div>
                 </div>
-                <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">AI</span>
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">{insight.detail}</p>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
     </div>
   )

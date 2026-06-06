@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react"
 import { Search, Copy, Check, Tag, Globe, Eye, AlertTriangle, CheckCircle } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -88,23 +87,38 @@ export default function SEOPage() {
   const descCopy = useCopy(metaDesc)
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="page-header">SEO Tools</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Optimize your product listings for search engines and drive more organic traffic.
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* ═══ Hero Section ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+
+        <div className="relative z-10 flex flex-col gap-4">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Globe className="size-3" />
+              SEO Optimizer
+            </span>
+            <h1 className="hero-title">SEO Tools</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Optimize your product listings for search engines and drive more organic traffic.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Input */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Tag className="size-4 text-primary" /> Product Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-1">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <Tag className="size-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Product Details</h3>
+            </div>
+            <p className="text-xs text-muted-foreground/70">Enter your product information to generate SEO-optimized meta tags.</p>
+            
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Product Name *</Label>
               <Input placeholder='e.g. "Wireless Earbuds Pro"' value={productName} onChange={(e) => setProductName(e.target.value)} />
@@ -120,7 +134,7 @@ export default function SEOPage() {
 
             {/* Keyword suggestions */}
             <div>
-              <p className="text-[11px] text-muted-foreground mb-2">💡 Suggested keywords – click to add:</p>
+              <p className="text-[11px] font-semibold text-muted-foreground mb-2">💡 Suggested keywords – click to add:</p>
               <div className="flex flex-wrap gap-1.5">
                 {suggestions.map((kw) => (
                   <button key={kw} onClick={() => addKeyword(kw)} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground hover:border-primary hover:text-primary transition-colors">
@@ -131,8 +145,8 @@ export default function SEOPage() {
             </div>
 
             <div className="flex gap-2">
-              <Button className="flex-1" onClick={generate}>
-                <Search className="size-3.5" /> Generate SEO Tags
+              <Button className="flex-1 rounded-xl" onClick={generate}>
+                <Search className="size-3.5 mr-1.5" /> Generate SEO Tags
               </Button>
               <AIActionButton
                 task="seo_optimization"
@@ -149,22 +163,24 @@ export default function SEOPage() {
                 }}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Score */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Globe className="size-4 text-primary" /> SEO Score
-            </CardTitle>
-            <CardDescription className="text-xs">Based on Google's meta tag best practices</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-2">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <Globe className="size-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">SEO Score</h3>
+            </div>
+            <p className="text-xs text-muted-foreground/70">Based on Google's meta tag best practices</p>
+            
             <div className="flex items-center gap-4">
               <div className={cn("flex size-16 items-center justify-center rounded-full text-xl font-bold",
-                overallScore >= 80 ? "bg-success-light text-success" :
-                overallScore >= 50 ? "bg-warning-light text-warning" :
+                overallScore >= 80 ? "bg-emerald-500/10 text-emerald-600" :
+                overallScore >= 50 ? "bg-amber-500/10 text-amber-600" :
                 "bg-muted text-muted-foreground"
               )}>
                 {overallScore}
@@ -202,26 +218,28 @@ export default function SEOPage() {
                 { ok: metaTitle.toLowerCase().includes(productName.toLowerCase()) && productName.length > 0, text: "Product name appears in title" },
               ].map(({ ok, text }) => (
                 <div key={text} className="flex items-center gap-2 text-xs">
-                  {ok ? <CheckCircle className="size-3.5 text-green-500 shrink-0" /> : <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />}
+                  {ok ? <CheckCircle className="size-3.5 text-emerald-500 shrink-0" /> : <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />}
                   <span className={ok ? "text-foreground" : "text-muted-foreground"}>{text}</span>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Generated tags */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Eye className="size-4 text-primary" /> Generated Meta Tags
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-3 lg:col-span-2">
+          <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
+          
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <Eye className="size-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Generated Meta Tags</h3>
+            </div>
+            
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-medium">Meta Title <span className={cn("ml-2 text-[10px]", metaTitle.length > 60 ? "text-destructive" : "text-muted-foreground")}>{metaTitle.length}/60</span></Label>
-                <Button variant="ghost" size="icon-sm" onClick={titleCopy.copy} disabled={!metaTitle}>
+                <Button variant="ghost" size="sm" onClick={titleCopy.copy} disabled={!metaTitle} className="rounded-xl">
                   {titleCopy.copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                 </Button>
               </div>
@@ -230,7 +248,7 @@ export default function SEOPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-medium">Meta Description <span className={cn("ml-2 text-[10px]", metaDesc.length > 160 ? "text-destructive" : "text-muted-foreground")}>{metaDesc.length}/160</span></Label>
-                <Button variant="ghost" size="icon-sm" onClick={descCopy.copy} disabled={!metaDesc}>
+                <Button variant="ghost" size="sm" onClick={descCopy.copy} disabled={!metaDesc} className="rounded-xl">
                   {descCopy.copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                 </Button>
               </div>
@@ -239,7 +257,7 @@ export default function SEOPage() {
 
             {/* Google preview */}
             {metaTitle && (
-              <div className="rounded-xl border border-border bg-card p-4">
+              <div className="rounded-xl border border-border bg-card/50 p-4">
                 <p className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1">
                   <Globe className="size-3" /> Google Search Preview
                 </p>
@@ -252,8 +270,8 @@ export default function SEOPage() {
             {/* OG Tags */}
             {metaTitle && (
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-2">Ready-to-paste HTML tags:</p>
-                <pre className="rounded-lg bg-muted p-3 text-[11px] font-mono text-foreground overflow-x-auto">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Ready-to-paste HTML tags:</p>
+                <pre className="rounded-lg bg-card/50 p-3 text-[11px] font-mono text-foreground overflow-x-auto border border-border/20">
 {`<title>${metaTitle}</title>
 <meta name="description" content="${metaDesc}" />
 <meta property="og:title" content="${metaTitle}" />
@@ -262,8 +280,8 @@ export default function SEOPage() {
                 </pre>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

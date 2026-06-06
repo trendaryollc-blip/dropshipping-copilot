@@ -18,6 +18,11 @@ export default [
       "server-seed.js",
       "vercel-cache-clear.js",
       "src/lib/ai/verify-keys.ts",
+      // Standalone Express/Node bridge deployed separately (not part of Next.js app)
+      "trendaryo-bridge/**",
+      // Browser widget script (uses `document`) and Node CLI scripts
+      "public/widget/**",
+      "scripts/**",
     ],
   },
   js.configs.recommended,

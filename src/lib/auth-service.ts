@@ -1,6 +1,4 @@
 // Authentication & Security Service
-import type { User } from "@/types"
-
 // ============================================================
 // Helpers – Web Crypto API
 // ============================================================
@@ -12,17 +10,11 @@ async function otpAt(secret: string, timeStep: number): Promise<string> {
   const counter = new ArrayBuffer(8)
   const view = new DataView(counter)
   let steps = BigInt(timeStep)
+  // Write counter as big-endian (MSB first) per RFC 4226 / RFC 6238
   for (let i = 7; i >= 0; i--) {
-    view.getUint8(i)
+    view.setUint8(i, Number(steps & 0xffn))
+    steps >>= 8n
   }
-  view.setUint8(7, Number(steps & 0xffn))
-  view.setUint8(6, Number((steps >> 8n) & 0xffn))
-  view.setUint8(5, Number((steps >> 16n) & 0xffn))
-  view.setUint8(4, Number((steps >> 24n) & 0xffn))
-  view.setUint8(3, Number((steps >> 32n) & 0xffn))
-  view.setUint8(2, Number((steps >> 40n) & 0xffn))
-  view.setUint8(1, Number((steps >> 48n) & 0xffn))
-  view.setUint8(0, Number((steps >> 56n) & 0xffn))
   const signature = await window.crypto.subtle.sign("HMAC", key, counter)
   const hashBytes = new Uint8Array(signature)
   const offset = hashBytes[hashBytes.length - 1] & 0x0f

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Brush, Globe, RotateCcw } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,6 +11,7 @@ import { toast } from "sonner"
 import { loadBrandingSettings, saveBrandingSettings, resetBrandingSettings } from "@/lib/branding-service"
 
 export default function AdminBrandingPage() {
+  const { theme: appTheme, setTheme: setAppTheme } = useTheme()
   const [settings, setSettings] = useState<Awaited<ReturnType<typeof loadBrandingSettings>> | null>(null)
 
   useEffect(() => {
@@ -84,8 +86,16 @@ export default function AdminBrandingPage() {
                 {(["default", "dark", "light"] as const).map((theme) => (
                   <button
                     key={theme}
-                    onClick={() => setSettings({ ...settings, theme })}
-                    className={`rounded-xl border px-3 py-2 text-sm transition ${settings.theme === theme ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground"}`}
+                    onClick={() => {
+                      setSettings({ ...settings, theme })
+                      // Apply the theme to the actual app via next-themes
+                      if (theme === "default") {
+                        setAppTheme("system")
+                      } else {
+                        setAppTheme(theme)
+                      }
+                    }}
+                    className={`rounded-xl border px-3 py-2 text-sm transition ${(settings.theme === theme || (theme === "default" && (appTheme === "system" || appTheme === undefined))) ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground"}`}
                   >
                     {theme}
                   </button>

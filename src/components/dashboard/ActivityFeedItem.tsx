@@ -10,16 +10,17 @@ interface ActivityFeedItemProps {
   badgeTextColor?: string
 }
 
-export function ActivityFeedItem({ icon, title, time, accent, badgeTextColor = "text-muted-foreground" }: ActivityFeedItemProps) {
+export function ActivityFeedItem({ icon, title, time, accent }: ActivityFeedItemProps) {
   return (
-    <div className="group flex gap-4 rounded-[28px] border border-muted bg-card-bg p-4 shadow-[0_8px_36px_-20px_rgba(13,124,102,0.15)] transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_12px_44px_-20px_rgba(13,124,102,0.22)]">
-      <div className={`flex h-12 w-12 items-center justify-center rounded-3xl ${accent} text-white shadow-lg transition duration-300 group-hover:scale-105`}>
+    <div className="group flex items-center gap-4 rounded-2xl border border-border/30 bg-card/40 p-3.5 backdrop-blur-sm transition-all duration-300 hover:border-primary/15 hover:bg-card/60">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent} text-white shadow-md transition-all duration-300 group-hover:scale-110`}>
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-text-primary">{title}</p>
-        <p className={`mt-2 text-xs ${badgeTextColor}`}>{time}</p>
+        <p className="text-[13px] font-medium leading-snug text-foreground">{title}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground/60">{time}</p>
       </div>
+      <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     </div>
   )
 }

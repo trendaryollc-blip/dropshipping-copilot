@@ -129,8 +129,18 @@ export const onboardingService = {
     defaultLanguage: string
   }> {
     await new Promise((resolve) => setTimeout(resolve, 200))
+
+    // Read actual theme from localStorage where next-themes persists it
+    let resolvedTheme: "light" | "dark" | "system" = "system"
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("theme") as "light" | "dark" | "system" | null
+      if (stored) {
+        resolvedTheme = stored
+      }
+    }
+
     return {
-      theme: "dark",
+      theme: resolvedTheme,
       emailNotifications: true,
       pushNotifications: true,
       defaultCurrency: "USD",

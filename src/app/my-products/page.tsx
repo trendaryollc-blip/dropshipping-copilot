@@ -206,6 +206,7 @@ export default function MyProductsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={product.image} alt={product.name} className="size-9 rounded-lg object-cover border border-border" />
                         <div>
                           <p className="text-sm font-medium text-foreground leading-snug">{product.name}</p>

@@ -135,30 +135,41 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="page-header">Ad Campaigns</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage and optimize your advertising campaigns across Google, Meta, and TikTok.
-          </p>
+    <div className="space-y-6">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Megaphone className="size-3" />
+              Campaigns
+            </span>
+            <h1 className="hero-title">Ad Campaigns</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Manage and optimize your advertising campaigns across Google, Meta, and TikTok.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <AIActionButton
+              task="product_description"
+              input={{
+                productName: "Marketing Campaign",
+                niche: "Advertising",
+                features: ["High conversion", "Targeted audience"],
+                priceRange: { min: 100, max: 500 },
+              }}
+              label="AI Ad Copy"
+              onSuccess={setAiCopy}
+            />
+            <Button onClick={() => setCreateOpen(true)} className="shrink-0 rounded-xl">
+              <Plus className="size-4 mr-1.5" />
+              New Campaign
+            </Button>
+          </div>
         </div>
-        <AIActionButton
-          task="product_description"
-          input={{
-            productName: "Marketing Campaign",
-            niche: "Advertising",
-            features: ["High conversion", "Targeted audience"],
-            priceRange: { min: 100, max: 500 },
-          }}
-          label="AI Ad Copy"
-          onSuccess={setAiCopy}
-         />
-        <Button onClick={() => setCreateOpen(true)} className="shrink-0">
-          <Plus className="size-4 mr-1.5" />
-          New Campaign
-        </Button>
-      </div>
+      </section>
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

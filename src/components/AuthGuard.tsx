@@ -5,6 +5,15 @@ import { useRouter, usePathname } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 
+// Routes that don't require authentication. Anything matched here is
+// rendered as-is so the user can reach sign-in / sign-up screens.
+const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/_next", "/favicon"]
+
+function isPublicPath(pathname: string | null): boolean {
+  if (!pathname) return false
+  return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+}
+
 /**
  * AuthGuard — client-side route guard.
  *
@@ -30,12 +39,19 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const redirected = useRef(false)
 
   useEffect(() => {
+    // Skip the redirect entirely for public routes (login, register, etc.)
+    // to avoid an infinite /auth/login -> /auth/login?callbackUrl=... loop.
+    if (isPublicPath(pathname)) return
+
     if (isInitialised && !isAuthenticated && !redirected.current) {
       redirected.current = true
-      const params = new URLSearchParams({ callbackUrl: pathname })
+      const params = new URLSearchParams({ callbackUrl: pathname ?? "/" })
       router.replace(`/auth/login?${params.toString()}`)
     }
   }, [isInitialised, isAuthenticated, pathname, router])
+
+  // Public pages render their content unconditionally.
+  if (isPublicPath(pathname)) return <>{children}</>
 
   if (!isInitialised) {
     return (

@@ -1,76 +1,79 @@
 /**
- * ──────────────────────────────────────────────────────────────────────
- * AI Helper: DeepSeek  →  SEO Optimization
- * Used by: SEO page
- * Env var required: DEEPSEEK_API_KEY
- * Get key: https://platform.deepseek.com
- * ──────────────────────────────────────────────────────────────────────
- * DeepSeek - Structured SEO data, keyword research, technical content
- * Best for: Keyword-driven SEO output, content strategy suggestions
+ * DeepSeek AI integration — powers SEO Optimization
+ * Free tier: ¥5M token free quota (strong at structured analysis)
  */
 
 export interface SEOInput {
   productName: string
-  niche: string
-  currentDescription?: string
+  niche?: string
   targetKeywords?: string[]
 }
 
-interface SEOOptimization {
-  optimizedTitle: string
-  metaDescription: string
-  h1Heading: string
-  recommendedKeywords: string[]
-  contentSuggestions: string[]
-}
+const DEEPSEEK_API = 'https://api.deepseek.com/v1/chat/completions'
 
-/**
- * Optimise a product listing for search engines using DeepSeek
- */
-export async function optimizeSEOWithDeepSeek(
-  input: SEOInput
-): Promise<SEOOptimization> {
-  const key = process.env.DEEPSEEK_API_KEY
-  if (!key) throw new Error('DEEPSEEK_API_KEY not configured')
+async function callDeepSeek(messages: Array<{ role: string; content: string }>): Promise<string> {
+  const apiKey = process.env.DEEPSEEK_API_KEY
+  if (!apiKey) throw new Error('DEEPSEEK_API_KEY not configured')
 
-  const prompt = `You are an expert SEO specialist. Optimise this product for search engines.
-
-Product: ${input.productName}
-Niche: ${input.niche}
-${input.currentDescription ? `Current Description: ${input.currentDescription}` : ''}
-${input.targetKeywords ? `Target Keywords: ${input.targetKeywords.join(', ')}` : ''}
-
-Return ONLY valid JSON:
-{
-  "optimizedTitle": "SEO title under 60 characters",
-  "metaDescription": "Compelling meta description (150-160 chars)",
-  "h1Heading": "Main heading for the page",
-  "recommendedKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
-  "contentSuggestions": ["suggestion1", "suggestion2", "suggestion3"]
-}`
-
-  const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+  const res = await fetch(DEEPSEEK_API, {
     method: 'POST',
     headers: {
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({
       model: 'deepseek-chat',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
+      messages,
       max_tokens: 800,
+      temperature: 0.3,
     }),
   })
 
   if (!res.ok) {
-    const body = (await res.json().catch(() => ({})))
-    throw new Error(`DeepSeek API ${res.status}: ${body.error?.message || 'unknown error'}`)
+    const err = await res.text()
+    throw new Error(`DeepSeek API error: ${res.status} ${err}`)
   }
 
   const data = await res.json()
-  const content = data.choices?.[0]?.message?.content
-  if (!content) throw new Error('DeepSeek returned no content in response')
-  const parsed = JSON.parse(content.replace(/```json|```/g, '').trim())
-  return parsed as SEOOptimization
+  return data.choices?.[0]?.message?.content?.trim() || ''
+}
+
+export async function optimizeSEO(input: SEOInput): Promise<{ optimizedTitle: string; metaDescription: string }> {
+  const { productName, niche, targetKeywords } = input
+
+  const messages = [
+    {
+      role: 'system',
+      content: 'You are an SEO expert specializing in e-commerce product listings. Return only valid JSON with "optimizedTitle" and "metaDescription" fields.',
+    },
+    {
+      role: 'user',
+      content: `Generate SEO-optimized meta tags for:
+Product: ${productName}
+Category: ${niche || 'General'}
+Target Keywords: ${targetKeywords?.join(', ') || 'Auto-detect'}
+
+Requirements:
+- Title: 50-60 characters, include main keyword
+- Meta Description: 150-160 characters, compelling with CTA
+- Include primary keyword near the beginning`,
+    },
+  ]
+
+  const result = await callDeepSeek(messages)
+  
+  try {
+    const parsed = JSON.parse(result)
+    return {
+      optimizedTitle: parsed.optimizedTitle || parsed.title || productName,
+      metaDescription: parsed.metaDescription || parsed.description || '',
+    }
+  } catch {
+    // Fallback: extract from text
+    const lines = result.split('\n')
+    return {
+      optimizedTitle: lines[0]?.replace(/^Title[:\s]*/i, '').trim() || productName,
+      metaDescription: lines[1]?.replace(/^Description[:\s]*/i, '').trim() || '',
+    }
+  }
 }
