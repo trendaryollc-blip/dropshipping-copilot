@@ -24,6 +24,7 @@ import { setDocument } from "@/lib/firestore-service"
 function describeAuthError(err: unknown): string {
   const e = err as { code?: string; message?: string }
   const code = e?.code || ""
+  const message = typeof e?.message === "string" ? e.message : ""
   // Common Firebase Auth error codes -> friendly message
   const map: Record<string, string> = {
     "auth/invalid-email": "That email address isn't valid.",
@@ -44,7 +45,30 @@ function describeAuthError(err: unknown): string {
     "auth/configuration-not-found": "Firebase project isn't configured. Contact the admin.",
   }
   if (code && map[code]) return map[code]
-  if (typeof e?.message === "string" && e.message.length > 0) return e.message
+  // The raw Google API error string can be very long; surface a digest so
+  // the user (and you) can act on it without filling the toast.
+  if (
+    message.includes("identitytoolkit") &&
+    message.includes("are blocked")
+  ) {
+    return (
+      "Firebase Authentication is disabled for this API key / project. " +
+      "Open Google Cloud Console → APIs & Services → Library, search for " +
+      "\u201cIdentity Toolkit API\u201d, and Enable it. Then re-deploy."
+    )
+  }
+  if (message.includes("API_KEY_SERVICE_BLOCKED")) {
+    return (
+      "Firebase API key is blocked from calling Identity Toolkit. " +
+      "Open Google Cloud Console → APIs & Services → Credentials, " +
+      "edit the API key, and add \u201cIdentity Toolkit API\u201d to its allowed APIs."
+    )
+  }
+  if (typeof message === "string" && message.length > 0) {
+    // Trim Firebase's verbose raw error to something readable.
+    const trimmed = message.length > 200 ? message.slice(0, 197) + "…" : message
+    return trimmed
+  }
   if (code) return code.replace(/^auth\//, "").replace(/-/g, " ")
   return "Sign-in failed. Please try again."
 }
