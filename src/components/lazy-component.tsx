@@ -24,16 +24,6 @@ export function LazyComponent<T extends Record<string, unknown>>({
 }
 
 // Pre-defined lazy components for common heavy components
-export const LazyAnalyticsDashboard = () => (
-  <LazyComponent 
-    componentLoader={async () => {
-      const mod = await import("@/components/analytics-dashboard")
-      return { default: mod.AnalyticsDashboard }
-    }}
-    fallback={<div className="h-96 flex items-center justify-center"><LoadingSpinner size="lg" /></div>}
-  />
-)
-
 export const LazyAIAnalysis = (props: { productName: string; category: string }) => (
   <LazyComponent 
     componentLoader={async () => {
@@ -42,15 +32,5 @@ export const LazyAIAnalysis = (props: { productName: string; category: string })
     }}
     fallback={<div className="h-64 flex items-center justify-center"><LoadingSpinner size="md" /></div>}
     props={props}
-  />
-)
-
-export const LazyStockAlert = () => (
-  <LazyComponent 
-    componentLoader={async () => {
-      const mod = await import("@/components/stock-alert")
-      return { default: mod.StockAlertBanner }
-    }}
-    fallback={<div className="h-12 flex items-center justify-center"><LoadingSpinner size="sm" /></div>}
   />
 )

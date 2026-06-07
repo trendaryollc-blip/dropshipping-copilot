@@ -1,15 +1,23 @@
 "use client"
 
-import { LazyStockAlert } from "@/components/lazy-component"
+import dynamic from "next/dynamic"
 import { PWARegister } from "@/components/pwa-register"
 import { FirestoreTestLoader } from "@/components/FirestoreTestLoader"
-import { FirestoreDataLoader } from "@/components/FirestoreDataLoader"
-import { RouteLoadingIndicator } from "@/components/ui/route-loading-indicator"
+
+// Lazy-load heavy components that don't need to be on every page
+const LazyStockAlert = dynamic(
+  () => import("@/components/stock-alert").then((m) => m.StockAlertBanner),
+  { ssr: false }
+)
+
+const FirestoreDataLoader = dynamic(
+  () => import("@/components/FirestoreDataLoader").then((m) => m.FirestoreDataLoader),
+  { ssr: false }
+)
 
 export function ClientOnlyWidgets() {
   return (
     <>
-      <RouteLoadingIndicator />
       <LazyStockAlert />
       <PWARegister />
       <FirestoreTestLoader />

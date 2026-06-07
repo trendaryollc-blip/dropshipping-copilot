@@ -1,4 +1,20 @@
-import { LazyAnalyticsDashboard } from "@/components/lazy-component"
+"use client"
+
+import dynamic from "next/dynamic"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+
+// Lazy-load the analytics dashboard
+const AnalyticsDashboard = dynamic(
+  () => import("@/components/dashboard/AIInsightsPanel").then((m) => m.AIInsightsPanel),
+  {
+    loading: () => (
+      <div className="h-96 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    ),
+    ssr: false,
+  }
+)
 
 export default function AnalyticsPage() {
   return (
@@ -25,7 +41,7 @@ export default function AnalyticsPage() {
       {/* Dashboard */}
       <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm animate-in delay-1">
         <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
-        <LazyAnalyticsDashboard />
+        <AnalyticsDashboard />
       </div>
     </div>
   )

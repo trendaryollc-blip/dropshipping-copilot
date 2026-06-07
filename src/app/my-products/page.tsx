@@ -89,7 +89,7 @@ export default function MyProductsPage() {
     toast.success(`Exported ${rows.length} products to CSV`)
   }
 
-  function handleExportXLSX() {
+  async function handleExportXLSX() {
     const rows = (someSelected ? filtered.filter((p) => selected.has(p.id)) : filtered).map((p) => ({
       id: p.id,
       name: p.name,
@@ -103,7 +103,7 @@ export default function MyProductsPage() {
       imported_at: p.importedAt ?? "",
     }))
     if (!rows.length) { toast.error("No products to export"); return }
-    exportToXLSX(rows, "my_products")
+    await exportToXLSX(rows, "my_products")
     toast.success(`Exported ${rows.length} products to XLSX`)
   }
 

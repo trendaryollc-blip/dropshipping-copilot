@@ -1,6 +1,3 @@
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib"
-import * as XLSX from "xlsx"
-
 const defaultFileSuffix = () => new Date().toISOString().split("T")[0]
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -47,13 +44,18 @@ export function exportToCSV<T extends Record<string, unknown>>(
   downloadBlob(blob, `${filename}_${defaultFileSuffix()}.csv`)
 }
 
-export function exportToXLSX<T extends Record<string, unknown>>(
+/**
+ * XLSX export — dynamically imports the heavy `xlsx` library (~400KB)
+ * only when the user actually triggers an export.
+ */
+export async function exportToXLSX<T extends Record<string, unknown>>(
   data: T[],
   filename: string,
   sheetName = "Sheet1"
-): void {
+): Promise<void> {
   if (!data.length) return
 
+  const XLSX = await import("xlsx")
   const worksheet = XLSX.utils.json_to_sheet(data)
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
@@ -62,6 +64,10 @@ export function exportToXLSX<T extends Record<string, unknown>>(
   downloadBlob(blob, `${filename}_${defaultFileSuffix()}.xlsx`)
 }
 
+/**
+ * PDF export — dynamically imports the heavy `pdf-lib` library
+ * only when the user actually triggers an export.
+ */
 export async function exportToPDF<T extends Record<string, unknown>>(
   data: T[],
   filename: string,
@@ -69,6 +75,7 @@ export async function exportToPDF<T extends Record<string, unknown>>(
 ): Promise<void> {
   if (!data.length) return
 
+  const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib")
   const doc = await PDFDocument.create()
   const page = doc.addPage([595, 842])
   const font = await doc.embedFont(StandardFonts.Helvetica)

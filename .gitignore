@@ -51,3 +51,26 @@ next-env.d.ts
 # Editor
 .vscode/
 .idea/
+
+# Debug & log files
+debug.log
+firebase-debug.log
+*.log
+
+# Backup files
+*.bak
+
+# Server artifacts
+server.pid
+server-seed.js
+
+# Security - never commit sensitive files
+github-recovery-codes.txt
+
+# PowerShell/shell scripts (dev utilities)
+*.ps1
+prepare_launch_branch.sh
+
+# Unused root files
+dashboard.html
+vercel-cache-clear.js

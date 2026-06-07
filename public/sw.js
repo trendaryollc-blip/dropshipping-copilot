@@ -1,23 +1,47 @@
+const CACHE_NAME = 'dropease-v2'
+const STATIC_ASSETS = [
+  '/',
+  '/favicon.svg',
+  '/manifest.json',
+]
+
+// Only cache same-origin static assets, never cache API calls
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+  )
   self.skipWaiting()
-  console.log('DropEase PWA Service Worker installed')
 })
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim())
-  console.log('DropEase PWA Service Worker activated')
+  // Clean up old caches
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+    ).then(() => self.clients.claim())
+  )
 })
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return
+  const { request } = event
+  // Only cache GET requests to same-origin static assets
+  if (request.method !== 'GET') return
+  if (request.url.includes('/api/')) return
+
   event.respondWith(
-    caches.open('dropease-v1').then((cache) =>
-      cache.match(event.request).then((cachedResponse) =>
-        cachedResponse || fetch(event.request).then((response) => {
-          cache.put(event.request, response.clone())
-          return response
-        })
-      )
-    )
+    caches.match(request).then((cached) => {
+      // Network-first strategy for navigation, cache-first for static assets
+      if (request.mode === 'navigate') {
+        return fetch(request).catch(() => cached || caches.match('/'))
+      }
+      return cached || fetch(request).then((response) => {
+        // Only cache successful same-origin responses
+        if (response.ok && response.type === 'basic') {
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+        }
+        return response
+      })
+    })
   )
 })

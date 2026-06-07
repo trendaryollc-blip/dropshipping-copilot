@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Geist_Mono } from "next/font/google"
+import { Suspense, lazy } from "react"
 import "./globals.css"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/components/layout/SidebarNav"
@@ -10,11 +11,14 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryProvider } from "@/components/query-provider"
 import { RouteLoadingIndicator } from "@/components/ui/route-loading-indicator"
-import { PerformanceToggle } from "@/components/performance-monitor"
 import { ThemeProvider } from "@/components/theme-provider"
-import { OnboardingWizard } from "@/components/onboarding-wizard"
 import { ClientOnlyWidgets } from "@/components/ui/client-only-widgets"
 import { AuthGuard } from "@/components/AuthGuard"
+
+// Lazy-load heavy components that aren't needed on initial paint
+const OnboardingWizard = lazy(() =>
+  import("@/components/onboarding-wizard").then((m) => ({ default: m.OnboardingWizard }))
+)
 
 const inter = Inter({
   variable: "--font-inter",
@@ -92,9 +96,10 @@ export default function RootLayout({
                   </div>
                 </SidebarProvider>
                 <Toaster richColors position="top-right" />
-                <OnboardingWizard />
+                <Suspense fallback={null}>
+                  <OnboardingWizard />
+                </Suspense>
                 <ClientOnlyWidgets />
-                <PerformanceToggle />
               </AuthGuard>
             </TooltipProvider>
           </QueryProvider>

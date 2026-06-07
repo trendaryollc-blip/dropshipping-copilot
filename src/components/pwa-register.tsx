@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect } from "react"
-import { toast } from "sonner"
 
 export function PWARegister() {
   useEffect(() => {
@@ -11,12 +10,8 @@ export function PWARegister() {
 
     navigator.serviceWorker
       .register("/sw.js")
-      .then((registration) => {
-        console.log("Service Worker registered:", registration)
-        toast.success("PWA service worker registered")
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error)
+      .catch(() => {
+        // Silently fail – service worker is optional
       })
   }, [])
 

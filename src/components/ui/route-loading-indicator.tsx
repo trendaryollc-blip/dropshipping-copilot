@@ -1,37 +1,53 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Router from "next/router"
+import { useEffect, useRef, useState } from "react"
+import { usePathname } from "next/navigation"
 
+/**
+ * Route loading indicator compatible with Next.js App Router.
+ * Uses pathname changes instead of the Pages Router `Router.events` API.
+ */
 export function RouteLoadingIndicator() {
   const [progress, setProgress] = useState(0)
   const [visible, setVisible] = useState(false)
+  const pathname = usePathname()
+  const prevPathname = useRef(pathname)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Detect route changes via pathname
   useEffect(() => {
-    const handleStart = () => {
-      setVisible(true)
-      setProgress(10)
-    }
-
-    const handleFinish = () => {
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname
+      // Route change completed
       setProgress(100)
-      window.setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setVisible(false)
         setProgress(0)
       }, 250)
     }
 
-    Router.events.on("routeChangeStart", handleStart)
-    Router.events.on("routeChangeComplete", handleFinish)
-    Router.events.on("routeChangeError", handleFinish)
-
     return () => {
-      Router.events.off("routeChangeStart", handleStart)
-      Router.events.off("routeChangeComplete", handleFinish)
-      Router.events.off("routeChangeError", handleFinish)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
+  }, [pathname])
+
+  // Show progress bar when navigating (triggered by link clicks)
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest("a[href]")
+      if (!anchor) return
+      const href = (anchor as HTMLAnchorElement).getAttribute("href")
+      if (!href || href.startsWith("http") || href.startsWith("#") || href.startsWith("mailto:")) return
+      // Internal navigation detected – start loading bar
+      setVisible(true)
+      setProgress(10)
+    }
+
+    document.addEventListener("click", handleClick, { capture: true })
+    return () => document.removeEventListener("click", handleClick, { capture: true })
   }, [])
 
+  // Animate progress while loading
   useEffect(() => {
     if (!visible) return
 
@@ -41,6 +57,8 @@ export function RouteLoadingIndicator() {
 
     return () => window.clearInterval(interval)
   }, [visible])
+
+  if (!visible && progress === 0) return null
 
   return (
     <div
