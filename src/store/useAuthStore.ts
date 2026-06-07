@@ -98,19 +98,22 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         try {
           const user = await signIn(email, password)
-          // Best-effort: ensure a Firestore user doc exists.  A failure here
-          // must NOT block the user from being signed in \u2014 the Auth session
-          // is the source of truth, Firestore is just profile data.
+          // Best-effort: ensure a Firestore user doc exists.
+          // Use merge: true WITHOUT overwriting isOnboarded — the persisted
+          // localStorage value (or Firestore value) is the source of truth.
           try {
             await setDocument(
               `copilot_users/${user.id}`,
-              { id: user.id, name: user.name, email, plan: "free", isOnboarded: false },
+              { id: user.id, name: user.name, email, plan: "free" },
               true,
             )
           } catch (fsErr) {
             console.warn("[Auth] login: Firestore profile upsert failed:", fsErr)
           }
-          set({ user, isAuthenticated: true, isInitialised: true })
+          // Preserve isOnboarded from the persisted store if it exists
+          const prev = useAuthStore.getState().user
+          const isOnboarded = prev?.id === user.id ? prev.isOnboarded : false
+          set({ user: { ...user, isOnboarded }, isAuthenticated: true, isInitialised: true })
           return { ok: true }
         } catch (err) {
           const msg = describeAuthError(err)
@@ -122,6 +125,7 @@ export const useAuthStore = create<AuthState>()(
       register: async (name, email, password) => {
         try {
           const user = await signUp(email, password, name)
+          // New user — isOnboarded is false by default
           try {
             await setDocument(
               `copilot_users/${user.id}`,
@@ -131,7 +135,7 @@ export const useAuthStore = create<AuthState>()(
           } catch (fsErr) {
             console.warn("[Auth] register: Firestore profile upsert failed:", fsErr)
           }
-          set({ user, isAuthenticated: true, isInitialised: true })
+          set({ user: { ...user, isOnboarded: false }, isAuthenticated: true, isInitialised: true })
           return { ok: true }
         } catch (err) {
           const msg = describeAuthError(err)
@@ -192,19 +196,29 @@ if (typeof window !== "undefined") {
     useAuthStore.setState({ isInitialised: true })
   } else {
     onAuthChange((user) => {
-      // Also upsert the Firestore user doc so it exists on every silent re-auth
       if (user) {
+        // Upsert the Firestore user doc WITHOUT overwriting isOnboarded.
+        // The persisted localStorage value is the source of truth for onboarding.
         setDocument(
           `copilot_users/${user.id}`,
-          { id: user.id, name: user.name, email: user.email, plan: "free", isOnboarded: false },
+          { id: user.id, name: user.name, email: user.email, plan: "free" },
           true,
         ).catch(() => {})
+        // Preserve isOnboarded from the existing persisted state
+        const prev = useAuthStore.getState().user
+        const isOnboarded = prev?.id === user.id && prev.isOnboarded
+        useAuthStore.setState({
+          user: { ...user, isOnboarded },
+          isAuthenticated: true,
+          isInitialised: true,
+        })
+      } else {
+        useAuthStore.setState({
+          user: null,
+          isAuthenticated: false,
+          isInitialised: true,
+        })
       }
-      useAuthStore.setState({
-        user,
-        isAuthenticated: !!user,
-        isInitialised: true,
-      })
     })
   }
 }

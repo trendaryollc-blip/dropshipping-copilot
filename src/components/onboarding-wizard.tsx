@@ -41,14 +41,6 @@ const STEPS = [
     cta: { label: "Open Learning Hub →", href: "/learn" },
     color: "bg-warning-light text-warning",
   },
-  {
-    icon: BookOpen,
-    emoji: "📚",
-    title: "Learn as You Go",
-    description: "The Learning Hub has step-by-step guides for beginners. Start with 'What is Dropshipping?' and work your way up to scaling strategies.",
-    cta: { label: "Open Learning Hub →", href: "/learn" },
-    color: "bg-warning-light text-warning",
-  },
 ]
 
 export function OnboardingWizard() {
