@@ -41,11 +41,18 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const redirected = useRef(false)
 
   useEffect(() => {
-    // Skip the redirect entirely for public routes (login, register, etc.)
-    // to avoid an infinite /auth/login -> /auth/login?callbackUrl=... loop.
+    if (!isInitialised) return
+
+    // Authenticated user on / → redirect to /dashboard
+    if (isAuthenticated && pathname === "/") {
+      router.replace("/dashboard")
+      return
+    }
+
+    // Skip redirect for public routes to avoid auth/login?callbackUrl loops
     if (isPublicPath(pathname)) return
 
-    if (isInitialised && !isAuthenticated && !redirected.current) {
+    if (!isAuthenticated && !redirected.current) {
       redirected.current = true
       const params = new URLSearchParams({ callbackUrl: pathname ?? "/" })
       router.replace(`/auth/login?${params.toString()}`)
