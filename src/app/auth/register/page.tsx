@@ -38,8 +38,7 @@ export default function RegisterPage() {
       const result = await register(name, email, password)
       if (result.ok) {
         toast.success("Account created! Welcome to DropEase 🚀")
-        router.push("/")
-        router.refresh()
+        window.location.href = "/dashboard"
       } else {
         setError(result.error || "Registration failed. Please try again.")
       }

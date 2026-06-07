@@ -33,7 +33,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (isAuthenticated) {
       toast.success("Signed in with Google! 👋")
-      window.location.href = "/"
+      window.location.href = "/dashboard"
     }
   }, [isAuthenticated])
 
@@ -74,9 +74,7 @@ export default function LoginPage() {
       const result = await login(email, password)
       if (result.ok) {
         toast.success("Welcome back! 👋")
-        // Use replace instead of push + refresh to avoid race conditions
-        // with the Zustand persist middleware re-initialising auth state.
-        window.location.href = "/"
+        window.location.href = "/dashboard"
       } else {
         setError(result.error || "Sign in failed. Please try again.")
       }
