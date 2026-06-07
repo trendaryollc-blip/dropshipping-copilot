@@ -102,10 +102,10 @@ export function HeaderBar() {
                 My Account
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="my-1 bg-border/50" />
-              <DropdownMenuItem render={<Link href="/auth/login" />} className="cursor-pointer rounded-xl px-2.5 py-2 text-sm">
+              <DropdownMenuItem render={<Link href="/auth/profile" />} className="cursor-pointer rounded-xl px-2.5 py-2 text-sm">
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem render={<Link href="/settings" />} className="cursor-pointer rounded-xl px-2.5 py-2 text-sm">
+              <DropdownMenuItem render={<Link href="/auth/profile" />} className="cursor-pointer rounded-xl px-2.5 py-2 text-sm">
                 Preferences
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 bg-border/50" />
