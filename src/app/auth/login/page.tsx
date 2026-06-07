@@ -23,8 +23,19 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { login } = useAuthStore()
+  const { login, isAuthenticated } = useAuthStore()
   const router = useRouter()
+
+  // ── Redirect when authentication state becomes active ────────────────────
+  // This handles Google popup sign-in where googleSignIn() resolves before
+  // onAuthStateChanged has fired, ensuring the UI redirects home based on
+  // store state rather than waiting for a Promise return value.
+  useEffect(() => {
+    if (isAuthenticated) {
+      toast.success("Signed in with Google! 👋")
+      window.location.href = "/"
+    }
+  }, [isAuthenticated])
 
   // ── Consume Google OAuth redirect result on mount ──────────────────────────
   // After Google redirects back, `handleGoogleRedirect()` calls `getRedirectResult()`
