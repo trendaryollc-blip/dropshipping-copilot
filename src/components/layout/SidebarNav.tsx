@@ -209,11 +209,12 @@ export function SidebarNav() {
                                             const Icon = item.icon
                                             const isActive = pathname === item.href
                                             return (
-                                                <SidebarMenuItem key={item.href}>
-                                                    <Link
-                                                        href={item.href}
+                        <SidebarMenuItem key={item.href}>
+                                                    <SidebarMenuButton
+                                                        render={<Link href={item.href} />}
+                                                        isActive={isActive}
                                                         className={cn(
-                                                            "group relative flex h-9 w-full items-center gap-2.5 rounded-xl px-3 text-[12px] font-medium transition-all duration-200",
+                                                            "group relative h-9 rounded-xl px-3 text-[12px] font-medium",
                                                             isActive
                                                                 ? "bg-primary/10 text-primary shadow-sm"
                                                                 : "text-muted-foreground hover:bg-card/50 hover:text-foreground"
@@ -231,7 +232,7 @@ export function SidebarNav() {
                                                             <Icon className="size-[13px]" />
                                                         </span>
                                                         {!collapsed && <span className="truncate">{item.label}</span>}
-                                                    </Link>
+                                                    </SidebarMenuButton>
                                                 </SidebarMenuItem>
                                             )
                                         })}
