@@ -140,6 +140,25 @@ class TrendaryoAPI {
     }
   }
 
+  // Create a new product in Trendaryo
+  async createProduct(product: {
+    name: string;
+    description?: string;
+    price?: number;
+    category?: string;
+    image?: string;
+    stock?: number;
+    status?: string;
+    createdAt?: string;
+  }): Promise<unknown> {
+    try {
+      const response = await this.client.post('/products', product);
+      return response.data;
+    } catch (error) {
+      throw this.handleError('Failed to create product', error);
+    }
+  }
+
   // Update product price and/or stock in Trendaryo
   async updateProduct(productId: string, updates: ProductUpdate): Promise<unknown> {
     try {
@@ -182,8 +201,21 @@ class TrendaryoAPI {
     return Array.isArray(data) ? data : ((data as { data?: unknown[] })?.data ?? []);
   }
 
-  async pushProduct(product: { id: string; price?: number; stock?: number }): Promise<void> {
-    await this.updateProduct(product.id, { price: product.price, stock: product.stock });
+  async pushProduct(product: { id: string; name?: string; description?: string; price?: number; stock?: number; category?: string; image?: string }): Promise<void> {
+    if (product.name) {
+      // If name is provided, create the product
+      await this.createProduct({
+        name: product.name,
+        description: product.description || '',
+        price: product.price || 0,
+        stock: product.stock || 0,
+        category: product.category || '',
+        image: product.image || '',
+      });
+    } else {
+      // Otherwise just update price/stock
+      await this.updateProduct(product.id, { price: product.price, stock: product.stock });
+    }
   }
 
   async pushOrder(order: { customer?: string; userId?: string; productName?: string; id?: string; quantity?: number; total?: number }): Promise<void> {

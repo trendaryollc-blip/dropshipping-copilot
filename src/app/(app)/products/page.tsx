@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Package, Search, Star, TrendingUp, ExternalLink } from "lucide-react"
+import { Package, Search, Star, TrendingUp, ExternalLink, Globe } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -114,17 +114,51 @@ export default function ProductsPage() {
                 <span className="text-[10px] text-muted-foreground/40 capitalize">{product.competition}</span>
               </div>
 
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full h-8 rounded-xl text-xs mt-1"
-                onClick={() => {
-                  toast.success(`Imported "${product.name}" to My Products!`)
-                }}
-              >
-                <Package className="mr-1 size-3" />
-                Import to My Products
-              </Button>
+              <div className="flex gap-1.5 mt-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 h-8 rounded-xl text-xs"
+                  onClick={() => {
+                    toast.success(`Imported "${product.name}" to My Products!`)
+                  }}
+                >
+                  <Package className="mr-1 size-3" />
+                  My Products
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 h-8 rounded-xl text-xs"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch("/api/trendaryo/import-product", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: product.name,
+                          description: product.niche || "",
+                          price: product.priceRange?.min || 0,
+                          category: product.niche || "",
+                          imageUrl: product.image || "",
+                          stock: 100,
+                        }),
+                      })
+                      const data = await res.json()
+                      if (data.success) {
+                        toast.success(`Imported "${product.name}" to Trendaryo!`)
+                      } else {
+                        toast.error(data.error || "Failed to import to Trendaryo")
+                      }
+                    } catch {
+                      toast.error("Failed to connect to Trendaryo API")
+                    }
+                  }}
+                >
+                  <Globe className="mr-1 size-3" />
+                  Trendaryo
+                </Button>
+              </div>
             </div>
           </div>
         ))}

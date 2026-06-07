@@ -4,7 +4,7 @@ import { useState } from "react"
 import {
   Settings, Package, DollarSign, Mail, AlertTriangle, Zap,
   MessageCircle, ShoppingCart, Users, Upload, Share2, Workflow,
-  Truck, Sparkles, Calendar, Shield, ChevronLeft, ChevronRight
+  Truck, Sparkles, Calendar, Shield, ChevronLeft, ChevronRight, Globe
 } from "lucide-react"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -27,6 +27,7 @@ import { AiPoweredUpsell } from "@/components/automation/ai-powered-upsell"
 import { SeasonalCampaignAutomation } from "@/components/automation/seasonal-campaign-automation"
 import { AutomatedComplianceReporting } from "@/components/automation/automated-compliance-reporting"
 import { AIActionButton } from "@/components/AIActionButton"
+import { TrendaryoSync } from "@/components/automation/trendaryo-sync"
 
 const tabs = [
   { id: "fulfillment",     label: "Auto-Fulfillment",        icon: Package,      color: "text-success", bg: "bg-success-light", description: "Automatically process and fulfill orders based on your rules" },
@@ -46,6 +47,7 @@ const tabs = [
   { id: "seasonal",        label: "Seasonal Campaigns",       icon: Calendar,     color: "text-sky-600",     bg: "bg-sky-100",     description: "Schedule and automate seasonal promotions and campaigns" },
   { id: "compliance",      label: "Compliance Reporting",     icon: Shield,       color: "text-muted-foreground",    bg: "bg-muted",    description: "Generate compliance reports and audit logs automatically" },
   { id: "ai-hub",            label: "AI Automation Hub",        icon: Sparkles,     color: "text-accent",  bg: "bg-accent-light",  description: "Access all AI models for different automation tasks" },
+  { id: "trendaryo",         label: "Trendaryo Sync",           icon: Globe,        color: "text-blue-600", bg: "bg-blue-100",     description: "Manually sync products, prices, and stock with Trendaryo" },
 ]
 
 export default function AutomationPage() {
@@ -235,6 +237,7 @@ export default function AutomationPage() {
             <TabsContent value="upsell"><AiPoweredUpsell /></TabsContent>
             <TabsContent value="seasonal"><SeasonalCampaignAutomation /></TabsContent>
             <TabsContent value="compliance"><AutomatedComplianceReporting /></TabsContent>
+            <TabsContent value="trendaryo"><TrendaryoSync /></TabsContent>
             <TabsContent value="ai-hub">
               <div className="space-y-6">
                 <div>
