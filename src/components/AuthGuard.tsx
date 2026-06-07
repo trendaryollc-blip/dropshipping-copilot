@@ -7,10 +7,12 @@ import { useAuthStore } from "@/store/useAuthStore"
 
 // Routes that don't require authentication. Anything matched here is
 // rendered as-is so the user can reach sign-in / sign-up screens.
+const PUBLIC_ROUTES = new Set(["/"])
 const PUBLIC_PREFIXES = ["/auth", "/api/auth", "/_next", "/favicon"]
 
 function isPublicPath(pathname: string | null): boolean {
   if (!pathname) return false
+  if (PUBLIC_ROUTES.has(pathname)) return true
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 }
 

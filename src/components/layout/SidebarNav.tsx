@@ -54,7 +54,7 @@ const navGroups = [
   {
     label: "Main",
     items: [
-      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/products", label: "Product Research", icon: Search },
       { href: "/suppliers", label: "Supplier Finder", icon: Users },
       { href: "/my-products", label: "My Products", icon: Package },
