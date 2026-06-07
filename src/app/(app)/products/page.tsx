@@ -13,8 +13,13 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
 
+  const query = search.toLowerCase().trim()
+  const searchWords = query ? query.split(/\s+/) : []
+
   const filtered = products.filter((p) => {
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.niche.toLowerCase().includes(search.toLowerCase())
+    // Match if ANY search word appears in name, niche, or supplier
+    const searchableText = `${p.name} ${p.niche} ${p.supplierName ?? ""} ${p.competition} ${p.status}`.toLowerCase()
+    const matchSearch = searchWords.length === 0 || searchWords.some((word) => searchableText.includes(word))
     const matchStatus = statusFilter === "all" || p.status === statusFilter
     return matchSearch && matchStatus
   })
@@ -128,8 +133,11 @@ export default function ProductsPage() {
       {filtered.length === 0 && (
         <div className="flex flex-col items-center gap-4 py-20 text-center">
           <Search className="size-7 text-muted-foreground/40" />
-          <p className="text-sm font-semibold text-foreground">No products found</p>
-          <p className="text-xs text-muted-foreground/60">Try adjusting your search or filters</p>
+          <p className="text-sm font-semibold text-foreground">No products match "{search}"</p>
+          <p className="text-xs text-muted-foreground/60">Try searching by product name, category, or supplier (e.g. "earbuds", "fashion", "electronics")</p>
+          <Button variant="outline" size="sm" className="rounded-xl" onClick={() => { setSearch(""); setStatusFilter("all") }}>
+            Clear Search & Show All Products
+          </Button>
         </div>
       )}
     </div>
