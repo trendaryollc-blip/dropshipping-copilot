@@ -13,7 +13,9 @@ const DEEPSEEK_API = 'https://api.deepseek.com/v1/chat/completions'
 
 async function callDeepSeek(messages: Array<{ role: string; content: string }>): Promise<string> {
   const apiKey = process.env.DEEPSEEK_API_KEY
-  if (!apiKey) throw new Error('DEEPSEEK_API_KEY not configured')
+  if (!apiKey) {
+    return "AI provider not configured. Please add DEEPSEEK_API_KEY to your environment variables."
+  }
 
   const res = await fetch(DEEPSEEK_API, {
     method: 'POST',

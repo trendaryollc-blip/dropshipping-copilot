@@ -17,7 +17,9 @@ export async function generateCompetitorAnalysisWithDeepSeek(
   competitors: CompetitorProduct[],
 ): Promise<string> {
   const key = process.env.DEEPSEEK_API_KEY
-  if (!key) throw new Error('DEEPSEEK_API_KEY not configured')
+  if (!key) {
+    return "DeepSeek API key not configured. To enable AI competitor analysis, add DEEPSEEK_API_KEY to your .env.local file."
+  }
 
   const list = competitors
     .map(

@@ -33,7 +33,14 @@ export async function getDynamicPricingWithOpenRouter(
   input: PricingInput
 ): Promise<PricingResult> {
   const key = process.env.OPENROUTER_API_KEY
-  if (!key) throw new Error('OPENROUTER_API_KEY not configured')
+  if (!key) {
+    return {
+      suggestedPrice: input.currentPrice,
+      priceRange: { min: input.currentPrice * 0.8, max: input.currentPrice * 1.2 },
+      reasoning: "OpenRouter API key not configured. Using default pricing.",
+      confidence: 'low',
+    }
+  }
 
   const avgCompetitor = input.competitorPrices.length
     ? input.competitorPrices.reduce((a, b) => a + b, 0) / input.competitorPrices.length

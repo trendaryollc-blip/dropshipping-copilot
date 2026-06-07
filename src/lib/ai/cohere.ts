@@ -20,7 +20,13 @@ const COHERE_API = 'https://api.cohere.com/v1/generate'
 
 async function callCohere(prompt: string): Promise<string> {
   const apiKey = process.env.COHERE_API_KEY
-  if (!apiKey) throw new Error('COHERE_API_KEY not configured')
+  if (!apiKey) {
+    // Graceful fallback when called from client-side or key not configured
+    if (prompt.includes('description') || prompt.includes('Description')) {
+      return "This is a placeholder product description. To generate real AI-powered descriptions, please set COHERE_API_KEY in your .env.local file and restart the dev server."
+    }
+    return "AI provider not configured. Please add COHERE_API_KEY to your environment variables."
+  }
 
   const res = await fetch(COHERE_API, {
     method: 'POST',

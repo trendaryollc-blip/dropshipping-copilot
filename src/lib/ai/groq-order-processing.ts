@@ -11,10 +11,11 @@ import Groq from 'groq-sdk'
 
 let groq: Groq | null = null
 
-function getGroqClient(): Groq {
+function getGroqClient(): Groq | null {
+  if (!process.env.GROQ_API_KEY) return null
   if (!groq) {
     groq = new Groq({
-      apiKey: process.env.GROQ_API_KEY ?? '',
+      apiKey: process.env.GROQ_API_KEY,
     })
   }
   return groq
@@ -59,7 +60,16 @@ Respond ONLY with valid JSON:
   "recommendedAction": "what to do next"
 }`
 
-     const completion = await getGroqClient().chat.completions.create({
+     const client = getGroqClient()
+     if (!client) {
+       return {
+         shouldAutoProcess: false,
+         riskLevel: 'medium',
+         reason: 'GROQ_API_KEY not configured - manual review required',
+         recommendedAction: 'Send to manual review queue',
+       }
+     }
+     const completion = await client.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       model: 'llama-3.3-70b-versatile',
       temperature: 0.1,

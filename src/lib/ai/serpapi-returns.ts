@@ -19,7 +19,9 @@ const SERPAPI_BASE = 'https://serpapi.com/search'
 
 async function searchReturnPolicy(productName: string): Promise<string> {
   const apiKey = process.env.SERPAPI_API_KEY
-  if (!apiKey) throw new Error('SERPAPI_API_KEY not configured')
+  if (!apiKey) {
+    return "AI provider not configured. Please add SERPAPI_API_KEY to your environment variables."
+  }
 
   const params = new URLSearchParams({
     q: `${productName} return policy refund`,

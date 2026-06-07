@@ -12,7 +12,9 @@ const MISTRAL_API = 'https://api.mistral.ai/v1/chat/completions'
 
 async function callMistral(messages: Array<{ role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }>): Promise<string> {
   const apiKey = process.env.MISTRAL_API_KEY
-  if (!apiKey) throw new Error('MISTRAL_API_KEY not configured')
+  if (!apiKey) {
+    return "AI provider not configured. Please add MISTRAL_API_KEY to your environment variables."
+  }
 
   const res = await fetch(MISTRAL_API, {
     method: 'POST',
