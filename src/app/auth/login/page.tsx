@@ -80,12 +80,15 @@ export default function LoginPage() {
   async function handleGoogle() {
     setError("")
     try {
-      await googleSignIn("redirect")
+      // Use popup mode instead of redirect to avoid cross-domain authorization issues
+      await googleSignIn("popup")
     } catch (err: any) {
       const code = err?.code || ""
       let msg = "Google sign-in failed."
       if (code === "auth/popup-closed-by-user") {
         msg = "Google sign-in cancelled."
+      } else if (code === "auth/unauthorized-domain") {
+        msg = "This domain is not authorized for Google sign-in. Please add it in Firebase Console → Authentication → Settings → Authorized domains."
       } else if (code.startsWith("auth/")) {
         msg = code.replace("auth/", "").replace(/-/g, " ")
         msg = msg.charAt(0).toUpperCase() + msg.slice(1)
