@@ -1,11 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState } from "react"
-import { ChevronDown, Search } from "lucide-react"
+import { useMemo } from "react"
+import { ChevronDown } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -23,7 +22,6 @@ import { toast } from "sonner"
 
 export function HeaderBar() {
   const { user, isAuthenticated, logout } = useAuthStore()
-  const [query, setQuery] = useState("")
 
   const displayName = user?.name ?? "Drop Shipper"
   const displayEmail = user?.email ?? "beginner@dropease.com"
@@ -44,19 +42,9 @@ export function HeaderBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 glass-strong">
       <div className="mx-auto flex max-w-[1800px] items-center gap-3 px-4 py-2.5 sm:gap-4 sm:px-5 lg:px-6">
-        {/* Left: Sidebar trigger + Search */}
+        {/* Left: Sidebar trigger */}
         <div className="flex items-center gap-2.5">
           <SidebarTrigger className="rounded-xl border border-border/50 bg-card/50 p-2 transition-all duration-300 hover:border-primary/30 hover:bg-primary/5 hover:text-primary" />
-          <div className="hidden min-w-[240px] items-center gap-3 rounded-2xl border border-border/50 bg-card/30 px-3.5 py-2 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-card/50 focus-within:border-primary/30 focus-within:bg-card/60 sm:flex">
-            <Search className="size-4 text-primary/60" />
-            <Input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search anything..."
-              className="h-8 border-0 bg-transparent px-0 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0"
-            />
-            <kbd className="hidden rounded-lg border border-border/50 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground/60 lg:inline">⌘K</kbd>
-          </div>
         </div>
 
         {/* Center spacer */}
