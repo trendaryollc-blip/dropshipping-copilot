@@ -74,3 +74,4 @@ prepare_launch_branch.sh
 # Unused root files
 dashboard.html
 vercel-cache-clear.js
+vercel-env.txt 
