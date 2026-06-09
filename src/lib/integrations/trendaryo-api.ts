@@ -227,6 +227,115 @@ class TrendaryoAPI {
     });
   }
 
+  // ── Copilot Integration Actions (POST to /copilot-integration) ─────
+
+  /**
+   * Sync products from Copilot → Trendaryo
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'product-sync', payload: { products } }
+   */
+  async syncProducts(products: unknown[]): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'product-sync',
+        payload: { products },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError('Failed to sync products', error)
+    }
+  }
+
+  /**
+   * Pull orders from Trendaryo → Copilot
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'order-pull', payload: { status, limit } }
+   */
+  async pullOrders(status?: string, limit?: number): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'order-pull',
+        payload: {
+          status: status || 'pending,processing',
+          limit: limit || 50,
+        },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError('Failed to pull orders', error)
+    }
+  }
+
+  /**
+   * Update order status/tracking in Trendaryo
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'order-update', payload: { orders: [{ orderId, ...updates }] } }
+   */
+  async updateOrder(orderId: string, updates: Record<string, unknown>): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'order-update',
+        payload: {
+          orders: [{ orderId, ...updates }],
+        },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError(`Failed to update order ${orderId}`, error)
+    }
+  }
+
+  /**
+   * Sync suppliers from Copilot → Trendaryo
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'supplier-sync', payload: { suppliers } }
+   */
+  async syncSuppliers(suppliers: unknown[]): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'supplier-sync',
+        payload: { suppliers },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError('Failed to sync suppliers', error)
+    }
+  }
+
+  /**
+   * Sync prices from Copilot → Trendaryo
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'price-sync', payload: { prices } }
+   */
+  async syncPrices(prices: unknown[]): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'price-sync',
+        payload: { prices },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError('Failed to sync prices', error)
+    }
+  }
+
+  /**
+   * Sync stock levels from Copilot → Trendaryo
+   * POST /api/automation-sync/copilot-integration
+   * Body: { action: 'stock-sync', payload: { stock } }
+   */
+  async syncStock(stock: unknown[]): Promise<unknown> {
+    try {
+      const response = await this.client.post('/copilot-integration', {
+        action: 'stock-sync',
+        payload: { stock },
+      })
+      return response.data
+    } catch (error) {
+      throw this.handleError('Failed to sync stock', error)
+    }
+  }
+
   // ── Private Helpers ─────────────────────────────────────────────────
 
   private handleError(context: string, error: unknown): TrendaryoAPIError {
@@ -246,7 +355,7 @@ class TrendaryoAPI {
 // Factory function to create Trendaryo API instance
 export function createTrendaryoAPI(): TrendaryoAPI {
   const config: TrendaryoConfig = {
-    baseUrl: process.env.TRENDARYO_API_URL || 'https://your-trendaryo-site.vercel.app',
+    baseUrl: process.env.TRENDARYO_BASE_URL || process.env.TRENDARYO_API_URL || 'https://trendaryo.com',
     apiKey: process.env.TRENDARYO_API_KEY || '',
   };
 
