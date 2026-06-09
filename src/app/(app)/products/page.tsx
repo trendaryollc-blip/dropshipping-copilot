@@ -1,22 +1,40 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Package, Search, Star, TrendingUp, ExternalLink, Globe } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AIActionButton } from "@/components/AIActionButton"
 import { toast } from "sonner"
-import { products } from "@/lib/mock-data"
+import { products as mockProducts } from "@/lib/mock-data"
+import { useAppStore } from "@/store/useAppStore"
+import { nanoid } from "nanoid"
+import type { Product } from "@/types"
 
 export default function ProductsPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [loading, setLoading] = useState(false)
+
+  const { products: storeProducts, importProduct, loadFromFirestore } = useAppStore()
+
+  // On mount, load products from Firestore (falls back to mock data)
+  useEffect(() => {
+    loadFromFirestore()
+  }, [loadFromFirestore])
+
+  // Merge: show store products + mock products (deduplicate by id)
+  const allProducts = Array.from(
+    new Map(
+      [...storeProducts, ...mockProducts].map((p) => [p.id, p])
+    ).values()
+  )
 
   const query = search.toLowerCase().trim()
   const searchWords = query ? query.split(/\s+/) : []
 
-  const filtered = products.filter((p) => {
+  const filtered = allProducts.filter((p) => {
     // Match if ANY search word appears in name, niche, or supplier
     const searchableText = `${p.name} ${p.niche} ${p.supplierName ?? ""} ${p.competition} ${p.status}`.toLowerCase()
     const matchSearch = searchWords.length === 0 || searchWords.some((word) => searchableText.includes(word))
@@ -119,8 +137,30 @@ export default function ProductsPage() {
                   size="sm"
                   variant="outline"
                   className="flex-1 h-8 rounded-xl text-xs"
-                  onClick={() => {
-                    toast.success(`Imported "${product.name}" to My Products!`)
+                  disabled={loading}
+                  onClick={async () => {
+                    setLoading(true)
+                    try {
+                      const newProduct: Product = {
+                        ...product,
+                        id: nanoid(),
+                        status: "draft",
+                        importedAt: new Date().toISOString().split("T")[0],
+                      }
+                      // Save to Firestore via API
+                      await fetch("/api/products", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newProduct),
+                      })
+                      // Add to local store (Zustand + localStorage)
+                      importProduct(product)
+                      toast.success(`"${product.name}" added to My Products!`)
+                    } catch {
+                      toast.error("Failed to save product. Try again.")
+                    } finally {
+                      setLoading(false)
+                    }
                   }}
                 >
                   <Package className="mr-1 size-3" />
