@@ -98,16 +98,72 @@ class FulfillmentEngine {
 
   /**
    * Place orders with suppliers
+   * Supports Trendaryo, CJ Dropshipping, and custom supplier API via webhook.
    */
   private async placeSupplierOrders(order: FulfillmentOrder): Promise<{ success: boolean; error?: string }> {
-    // TODO: Replace with real supplier API calls
-    // For now, we simulate a successful supplier order placement
     console.log(`[FulfillmentEngine] Placing orders with suppliers for order ${order.id}`);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return { success: true };
+    // Attempt to place via Trendaryo API (primary dropshipping integration)
+    try {
+      const trendaryoAPI = createTrendaryoAPI();
+      await trendaryoAPI.createOrder({
+        userId: order.customerId,
+        items: order.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: 0, // Will be looked up by Trendaryo
+        })),
+        total: order.total,
+        shippingAddress: {},
+      });
+      console.log(`[FulfillmentEngine] Order placed via Trendaryo for order ${order.id}`);
+      return { success: true };
+    } catch (trendaryoError) {
+      console.warn(`[FulfillmentEngine] Trendaryo order placement failed, trying CJ Dropshipping:`, trendaryoError);
+    }
+
+    // Fallback: attempt via CJ Dropshipping API if configured
+    if (process.env.CJ_API_KEY && process.env.CJ_API_KEY !== 'your_cj_api_key_here') {
+      try {
+        const axios = (await import('axios')).default;
+        const cjResponse = await axios.post('https://developers.cjdropshipping.com/api2.0/v1/order/create', {
+          appKey: process.env.CJ_API_KEY,
+          id: order.id,
+          products: order.items.map((item) => ({
+            vid: item.productId,
+            quantity: item.quantity,
+          })),
+          shippingAddress: {},
+        }, { timeout: 15000 });
+        
+        if (cjResponse.data?.code === 200) {
+          console.log(`[FulfillmentEngine] Order placed via CJ Dropshipping for order ${order.id}`);
+          return { success: true };
+        }
+        console.warn(`[FulfillmentEngine] CJ Dropshipping responded: ${cjResponse.data?.message || 'unknown error'}`);
+      } catch (cjError) {
+        console.warn(`[FulfillmentEngine] CJ Dropshipping fallback failed:`, cjError);
+      }
+    }
+
+    // Last resort: fire a fulfillment webhook to a custom supplier system
+    if (process.env.FULFILLMENT_WEBHOOK_URL) {
+      try {
+        const { webhookService } = await import('@/lib/webhook-service');
+        await webhookService.sendWebhook({
+          url: process.env.FULFILLMENT_WEBHOOK_URL,
+          event: 'order.fulfill',
+          data: { orderId: order.id, customerId: order.customerId, items: order.items, total: order.total },
+          secret: process.env.WEBHOOK_SECRET,
+        });
+        console.log(`[FulfillmentEngine] Order dispatched via fulfillment webhook for order ${order.id}`);
+        return { success: true };
+      } catch (webhookError) {
+        console.error(`[FulfillmentEngine] Fulfillment webhook also failed:`, webhookError);
+      }
+    }
+
+    return { success: false, error: 'All supplier fulfillment channels failed. No supplier API configured or all unavailable.' };
   }
 
   /**

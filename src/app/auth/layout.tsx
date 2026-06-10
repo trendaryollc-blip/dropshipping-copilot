@@ -3,7 +3,10 @@ import { Zap } from "lucide-react"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "Sign In – DropEase",
+  title: {
+    default: "DropEase",
+    template: "%s – DropEase",
+  },
   icons: { icon: "/favicon.ico" },
 }
 
@@ -20,9 +23,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {children}
       <p className="mt-6 text-center text-xs text-muted-foreground">
         By continuing you agree to our{" "}
-        <span className="underline cursor-pointer hover:text-foreground">Terms of Service</span>{" "}
+        <Link href="/legal/terms" className="underline hover:text-foreground">Terms of Service</Link>{" "}
         and{" "}
-        <span className="underline cursor-pointer hover:text-foreground">Privacy Policy</span>.
+        <Link href="/legal/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.
       </p>
     </div>
   )

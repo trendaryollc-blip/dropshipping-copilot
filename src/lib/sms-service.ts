@@ -5,14 +5,32 @@
  * Requires: npm install twilio
  */
 
-import twilio from 'twilio';
+// Lazy Twilio client — avoids crash at import time if credentials are invalid placeholders
+let twilioClient: any = null;
 
-// Initialize Twilio with credentials from environment variables
-const client = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN
-  ? twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-  : null;
+function getTwilioClient() {
+  if (twilioClient !== null) return twilioClient;
+  
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  
+  if (!accountSid || !authToken || accountSid === 'your_twilio_account_sid_here') {
+    twilioClient = null;
+    return null;
+  }
+  
+  try {
+    // Dynamic require to avoid eager validation at import time
+    const twilio = require('twilio');
+    twilioClient = twilio(accountSid, authToken);
+    return twilioClient;
+  } catch {
+    twilioClient = null;
+    return null;
+  }
+}
 
-const FROM_PHONE = process.env.TWILIO_PHONE_NUMBER || '+1234567890';
+const FROM_PHONE = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_FROM_NUMBER || '';
 
 export interface SMSPayload {
   to: string;
@@ -24,13 +42,14 @@ export class SMSService {
    * Send an SMS message
    */
   static async sendSMS(payload: SMSPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    if (!client) {
+    const twilio = getTwilioClient();
+    if (!twilio) {
       console.warn('⚠️ Twilio credentials are not configured. SMS not sent.');
       return { success: false, error: 'Twilio credentials not configured' };
     }
 
     try {
-      const message = await client.messages.create({
+      const message = await twilio.messages.create({
         body: payload.body,
         from: FROM_PHONE,
         to: payload.to,

@@ -183,8 +183,19 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "dropease-auth",
+      // Persist the full user object (or at least what we need) so onboarding
+      // status survives page refreshes without relying on Firestore.
       partialize: (state) => ({
-        isOnboarded: state.user?.isOnboarded || false,
+        user: state.user
+          ? {
+              id: state.user.id,
+              email: state.user.email,
+              name: state.user.name,
+              isOnboarded: state.user.isOnboarded,
+              avatar: state.user.avatar,
+            }
+          : null,
+        isAuthenticated: state.isAuthenticated,
       }),
     },
   ),

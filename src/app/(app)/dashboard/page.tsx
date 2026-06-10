@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import Link from "next/link"
 import {
   Package2,
   Users,
@@ -11,7 +13,6 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react"
-import Link from "next/link"
 import { dashboardStats, recentActivity } from "@/lib/mock-data"
 import type { ActivityItem } from "@/types"
 import { DashboardCard } from "@/components/dashboard/DashboardCard"
@@ -19,6 +20,11 @@ import { QuickActionTile } from "@/components/dashboard/QuickActionTile"
 import { ActivityFeedItem } from "@/components/dashboard/ActivityFeedItem"
 import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
 import { InsightsFooter } from "@/components/dashboard/InsightsFooter"
+
+export const metadata: Metadata = {
+  title: "Dashboard – DropEase",
+  description: "Monitor your dropshipping business revenue, orders, suppliers, and automation status from one central dashboard.",
+}
 
 const quickActions = [
   { href: "/products", label: "Find Products", desc: "Discover winning items with strong margins.", icon: <Search className="size-5" />, accent: "bg-gradient-to-br from-emerald-400 to-teal-500" },

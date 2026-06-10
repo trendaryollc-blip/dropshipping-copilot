@@ -120,8 +120,8 @@ export default function AdminBrandingPage() {
         <div className="flex items-start gap-3">
           <Globe className="size-5 text-primary" />
           <div>
-            <p className="font-semibold">White-label placeholder</p>
-            <p className="mt-1">Wire in your custom domain and logo assets in production to fully white-label DropEase.</p>
+            <p className="font-semibold">White-Label Setup</p>
+            <p className="mt-1">To fully white-label, configure your custom domain via Vercel, update the logo URL and brand name above, and replace email templates with your own branding.</p>
           </div>
         </div>
       </div>

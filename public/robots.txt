@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+
+Sitemap: https://dropshipping-copilot-opal.vercel.app/sitemap.xml
