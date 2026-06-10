@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     const activeProducts = products.filter((p: any) => p.status === 'active');
 
     let alertedCount = 0;
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dropease.com';
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM?.replace(/.*<(.+)>/, '$1') || 'admin@dropease.com';
 
     for (const product of activeProducts) {
       // Check if product has stock and a low stock threshold

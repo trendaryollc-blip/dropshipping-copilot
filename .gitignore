@@ -33,8 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
-secrets/dropease-trendaryo-api-key.txt
-secrets/*.json
+
+# secrets — all files in the secrets/ directory are sensitive
+secrets/
 
 # vercel
 .vercel
@@ -74,4 +75,4 @@ prepare_launch_branch.sh
 # Unused root files
 dashboard.html
 vercel-cache-clear.js
-vercel-env.txt 
+vercel-env.txt

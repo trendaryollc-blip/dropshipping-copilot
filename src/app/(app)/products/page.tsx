@@ -1,13 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Package, Search, Star, TrendingUp, ExternalLink, Globe } from "lucide-react"
+import { Package, Search, Star, TrendingUp, ExternalLink, Globe, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AIActionButton } from "@/components/AIActionButton"
 import { toast } from "sonner"
-import { products as mockProducts } from "@/lib/mock-data"
 import { useAppStore } from "@/store/useAppStore"
 import { nanoid } from "nanoid"
 import type { Product } from "@/types"
@@ -19,17 +18,13 @@ export default function ProductsPage() {
 
   const { products: storeProducts, importProduct, loadFromFirestore } = useAppStore()
 
-  // On mount, load products from Firestore (falls back to mock data)
+  // On mount, load products from Firestore
   useEffect(() => {
     loadFromFirestore()
   }, [loadFromFirestore])
 
-  // Merge: show store products + mock products (deduplicate by id)
-  const allProducts = Array.from(
-    new Map(
-      [...storeProducts, ...mockProducts].map((p) => [p.id, p])
-    ).values()
-  )
+  // Show only real products imported by the user (no mock data)
+  const allProducts = storeProducts
 
   const query = search.toLowerCase().trim()
   const searchWords = query ? query.split(/\s+/) : []
