@@ -17,7 +17,7 @@ export async function updateProductPricesFromTrendaryo(): Promise<{
     // Get all active products that have a Trendaryo URL
     const products = await getCollection('copilot_products');
     const trendaryoProducts = products.filter(
-      (p): p is (Product & { trendaryoUrl: string }) =>
+      (p: any): p is (Product & { trendaryoUrl: string }) =>
         p.status === 'active' && typeof p.trendaryoUrl === 'string' && p.trendaryoUrl.length > 0
     );
 
@@ -48,8 +48,8 @@ export async function updateProductPricesFromTrendaryo(): Promise<{
       if (priceResult.success && priceResult.price !== undefined) {
         try {
           await updateDocument(
-            `copilot_products/${product.id}`,
-            { 
+            'copilot_products', product.id,
+            {
               price: priceResult.price,
               currency: priceResult.currency || 'INR',
               priceLastUpdated: serverTimestamp()
@@ -103,19 +103,19 @@ export async function updateSingleProductPriceFromTrendaryo(
     
     if (priceResult.success && priceResult.price !== undefined) {
       await updateDocument(
-        `copilot_products/${productId}`,
-        { 
+        'copilot_products', productId,
+        {
           price: priceResult.price,
           currency: priceResult.currency || 'INR',
           priceLastUpdated: serverTimestamp()
         }
       );
-      
+
       return { success: true };
     } else {
-      return { 
-        success: false, 
-        error: priceResult.error || 'Failed to scrape price' 
+      return {
+        success: false,
+        error: priceResult.error || 'Failed to scrape price'
       };
     }
   } catch (error) {

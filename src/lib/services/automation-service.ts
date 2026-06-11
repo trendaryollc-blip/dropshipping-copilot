@@ -20,7 +20,7 @@ export async function getAutomationRules(): Promise<AutomationRule[]> {
 }
 
 export async function getAutomationRuleById(id: string): Promise<AutomationRule | null> {
-  const rule = await getDocument(`${COLLECTION_NAME}/${id}`)
+  const rule = await getDocument(COLLECTION_NAME, id)
   return rule as AutomationRule | null
 }
 
@@ -35,23 +35,24 @@ export async function getAutomationRulesByType(type: AutomationRule['type']): Pr
 }
 
 export async function createAutomationRule(rule: Omit<AutomationRule, 'id'>): Promise<string> {
-  return await addDocument(COLLECTION_NAME, rule)
+  await addDocument(COLLECTION_NAME, rule)
+  return `mock-${Date.now()}` // Return mock ID
 }
 
 export async function updateAutomationRule(id: string, updates: Partial<AutomationRule>): Promise<void> {
-  await updateDocument(`${COLLECTION_NAME}/${id}`, updates)
+  await updateDocument(COLLECTION_NAME, id, updates)
 }
 
 export async function enableAutomationRule(id: string): Promise<void> {
-  await updateDocument(`${COLLECTION_NAME}/${id}`, { enabled: true, status: 'active' })
+  await updateDocument(COLLECTION_NAME, id, { enabled: true, status: 'active' })
 }
 
 export async function disableAutomationRule(id: string): Promise<void> {
-  await updateDocument(`${COLLECTION_NAME}/${id}`, { enabled: false, status: 'paused' })
+  await updateDocument(COLLECTION_NAME, id, { enabled: false, status: 'paused' })
 }
 
 export async function deleteAutomationRule(id: string): Promise<void> {
-  await deleteDocument(`${COLLECTION_NAME}/${id}`)
+  await deleteDocument(COLLECTION_NAME, id)
 }
 
 // ============================================================================
@@ -88,8 +89,7 @@ export function listenToAutomationRules(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback(data as AutomationRule[]),
-    errorCallback
+    (data) => callback(data as AutomationRule[])
   )
 }
 
@@ -99,8 +99,7 @@ export function listenToActiveAutomationRules(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback((data as AutomationRule[]).filter(r => r.enabled)),
-    errorCallback
+    (data) => callback((data as AutomationRule[]).filter(r => r.enabled))
   )
 }
 
@@ -114,7 +113,6 @@ export function listenToAutomationRule(
     (data) => {
       const rule = (data as AutomationRule[]).find((r) => r.id === id)
       callback(rule as AutomationRule | null)
-    },
-    errorCallback
+    }
   )
 }

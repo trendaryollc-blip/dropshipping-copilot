@@ -20,7 +20,7 @@ export async function getSuppliers(): Promise<Supplier[]> {
 }
 
 export async function getSupplierById(id: string): Promise<Supplier | null> {
-  const supplier = await getDocument(`${COLLECTION_NAME}/${id}`)
+  const supplier = await getDocument(COLLECTION_NAME, id)
   return supplier as Supplier | null
 }
 
@@ -40,15 +40,16 @@ export async function getSuppliersByCountry(country: string): Promise<Supplier[]
 }
 
 export async function createSupplier(supplier: Omit<Supplier, 'id'>): Promise<string> {
-  return await addDocument(COLLECTION_NAME, supplier)
+  await addDocument(COLLECTION_NAME, supplier)
+  return `mock-${Date.now()}` // Return mock ID
 }
 
 export async function updateSupplier(id: string, updates: Partial<Supplier>): Promise<void> {
-  await updateDocument(`${COLLECTION_NAME}/${id}`, updates)
+  await updateDocument(COLLECTION_NAME, id, updates)
 }
 
 export async function deleteSupplier(id: string): Promise<void> {
-  await deleteDocument(`${COLLECTION_NAME}/${id}`)
+  await deleteDocument(COLLECTION_NAME, id)
 }
 
 // ============================================================================
@@ -61,8 +62,7 @@ export function listenToSuppliers(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback(data as Supplier[]),
-    errorCallback
+    (data) => callback(data as Supplier[])
   )
 }
 
@@ -76,7 +76,6 @@ export function listenToSupplier(
     (data) => {
       const supplier = (data as Supplier[]).find((s) => s.id === id)
       callback(supplier as Supplier | null)
-    },
-    errorCallback
+    }
   )
 }

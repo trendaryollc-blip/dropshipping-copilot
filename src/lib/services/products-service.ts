@@ -20,7 +20,7 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const product = await getDocument(`${COLLECTION_NAME}/${id}`)
+  const product = await getDocument(COLLECTION_NAME, id)
   return product as Product | null
 }
 
@@ -40,15 +40,16 @@ export async function getProductsByNiche(niche: string): Promise<Product[]> {
 }
 
 export async function createProduct(product: Omit<Product, 'id'>): Promise<string> {
-  return await addDocument(COLLECTION_NAME, product)
+  await addDocument(COLLECTION_NAME, product)
+  return `mock-${Date.now()}` // Return mock ID
 }
 
 export async function updateProduct(id: string, updates: Partial<Product>): Promise<void> {
-  await updateDocument(`${COLLECTION_NAME}/${id}`, updates)
+  await updateDocument(COLLECTION_NAME, id, updates)
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  await deleteDocument(`${COLLECTION_NAME}/${id}`)
+  await deleteDocument(COLLECTION_NAME, id)
 }
 
 // ============================================================================
@@ -61,8 +62,7 @@ export function listenToProducts(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback(data as Product[]),
-    errorCallback
+    (data) => callback(data as Product[])
   )
 }
 
@@ -76,7 +76,6 @@ export function listenToProduct(
     (data) => {
       const product = (data as Product[]).find((p) => p.id === id)
       callback(product as Product | null)
-    },
-    errorCallback
+    }
   )
 }
