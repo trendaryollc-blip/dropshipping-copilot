@@ -10,6 +10,8 @@ import { toast } from "sonner"
 import { useAppStore } from "@/store/useAppStore"
 import { nanoid } from "nanoid"
 import type { Product } from "@/types"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function ProductsPage() {
   const [search, setSearch] = useState("")
@@ -93,14 +95,14 @@ export default function ProductsPage() {
       {/* Product Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((product) => (
-          <div key={product.id} className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.image}
-              alt={product.name}
-              className="mb-3 h-40 w-full rounded-xl object-cover border border-border/20"
-            />
+          <Link key={product.id} href={`/products/${product.id}`} className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg">
             <div className="space-y-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.image}
+                alt={product.name}
+                className="mb-3 h-40 w-full rounded-xl object-cover border border-border/20"
+              />
               <h3 className="font-semibold text-foreground text-sm truncate">{product.name}</h3>
               <p className="text-xs text-muted-foreground/60">{product.niche}</p>
 
@@ -133,7 +135,9 @@ export default function ProductsPage() {
                   variant="outline"
                   className="flex-1 h-8 rounded-xl text-xs"
                   disabled={loading}
-                  onClick={async () => {
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     setLoading(true)
                     try {
                       const newProduct: Product = {
@@ -165,7 +169,9 @@ export default function ProductsPage() {
                   size="sm"
                   variant="outline"
                   className="flex-1 h-8 rounded-xl text-xs"
-                  onClick={async () => {
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     try {
                       const res = await fetch("/api/trendaryo/import-product", {
                         method: "POST",
@@ -195,7 +201,7 @@ export default function ProductsPage() {
                 </Button>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

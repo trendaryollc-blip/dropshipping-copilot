@@ -19,6 +19,7 @@ import type { OrderStatus } from "@/types"
 import { useOrderUpdates, useWebSocket } from "@/hooks/use-websocket"
 import { testRealTimeFeatures } from "@/lib/websocket-test"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; class: string }> = {
   pending: { label: "Pending", icon: Clock, class: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
@@ -29,6 +30,7 @@ const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType
 }
 
 export default function OrdersPage() {
+  const router = useRouter()
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [realtimeOrders, setRealtimeOrders] = useState(orders)
@@ -256,14 +258,18 @@ export default function OrdersPage() {
               const Icon = status.icon
               const isSelected = selected.has(order.id)
               return (
-                <TableRow key={order.id} className={`border-border/20 transition-colors ${isSelected ? "bg-primary/5" : "hover:bg-card/40"}`}>
-                  <TableCell className="pl-4">
+                <TableRow
+                  key={order.id}
+                  className={`border-border/20 transition-colors ${isSelected ? "bg-primary/5" : "hover:bg-card/40"} cursor-pointer`}
+                  onClick={() => router.push(`/orders/${order.id}`)}
+                >
+                  <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
                     <button onClick={() => toggleOne(order.id)} className="text-muted-foreground/50 hover:text-foreground">
                       {isSelected ? <CheckSquare className="size-4 text-primary" /> : <Square className="size-4" />}
                     </button>
                   </TableCell>
-                  <TableCell className="font-mono text-[11px] font-semibold text-primary">{order.id}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-mono text-[11px] font-semibold text-primary" onClick={(e) => e.stopPropagation()}>{order.id}</TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={order.productImage} alt={order.productName} className="size-8 rounded-lg object-cover border border-border/30" />
@@ -273,15 +279,15 @@ export default function OrdersPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground/70">{order.customer}</TableCell>
-                  <TableCell className="font-mono text-xs font-bold text-foreground">${order.total.toFixed(2)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-xs text-muted-foreground/70" onClick={(e) => e.stopPropagation()}>{order.customer}</TableCell>
+                  <TableCell className="font-mono text-xs font-bold text-foreground" onClick={(e) => e.stopPropagation()}>${order.total.toFixed(2)}</TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Badge className={`flex w-fit items-center gap-1 text-[10px] font-semibold border backdrop-blur-sm ${status.class}`}>
                       <Icon className="size-2.5" />
                       {status.label}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <AIActionButton
                       task="fraud_detection"
                       input={{
@@ -293,7 +299,7 @@ export default function OrdersPage() {
                       size="sm"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     {order.trackingNumber ? (
                       <button onClick={() => toast.success(`Tracking: ${order.trackingNumber}`)} className="font-mono text-[11px] text-primary hover:underline">
                         {order.trackingNumber}
@@ -302,7 +308,7 @@ export default function OrdersPage() {
                       <span className="text-[11px] text-muted-foreground/40">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground/60">{order.estimatedDelivery}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground/60" onClick={(e) => e.stopPropagation()}>{order.estimatedDelivery}</TableCell>
                 </TableRow>
               )
             })}

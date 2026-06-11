@@ -18,6 +18,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { toast } from "sonner"
 import { exportToCSV, exportToXLSX } from "@/lib/csv-export"
 import type { ProductStatus } from "@/types"
+import { useRouter } from "next/navigation"
 
 const statusConfig: Record<ProductStatus, { label: string; class: string }> = {
   active: { label: "Active", class: "bg-success-light text-success border-success" },
@@ -26,6 +27,7 @@ const statusConfig: Record<ProductStatus, { label: string; class: string }> = {
 }
 
 export default function MyProductsPage() {
+  const router = useRouter()
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -198,13 +200,17 @@ export default function MyProductsPage() {
                 const status = statusConfig[product.status]
                 const isSelected = selected.has(product.id)
                 return (
-                  <TableRow key={product.id} className={`hover:bg-muted/20 ${isSelected ? "bg-primary/5" : ""}`}>
-                    <TableCell className="pl-4">
+                  <TableRow
+                    key={product.id}
+                    className={`hover:bg-muted/20 ${isSelected ? "bg-primary/5" : ""} cursor-pointer`}
+                    onClick={() => router.push(`/products/${product.id}`)}
+                  >
+                    <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => toggleOne(product.id)} className="text-muted-foreground hover:text-foreground">
                         {isSelected ? <CheckSquare className="size-4 text-primary" /> : <Square className="size-4" />}
                       </button>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={product.image} alt={product.name} className="size-9 rounded-lg object-cover border border-border" />
@@ -214,13 +220,13 @@ export default function MyProductsPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{product.supplierName}</TableCell>
-                    <TableCell className="text-xs font-medium">${product.priceRange.min}–${product.priceRange.max}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs text-muted-foreground" onClick={(e) => e.stopPropagation()}>{product.supplierName}</TableCell>
+                    <TableCell className="text-xs font-medium" onClick={(e) => e.stopPropagation()}>${product.priceRange.min}–${product.priceRange.max}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <Badge className={`text-[10px] border ${status.class}`}>{status.label}</Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{product.importedAt}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs text-muted-foreground" onClick={(e) => e.stopPropagation()}>{product.importedAt}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
@@ -233,9 +239,9 @@ export default function MyProductsPage() {
                           <DropdownMenuItem onClick={() => toast.info("Edit coming soon!")}>
                             <Edit className="size-3.5 mr-2" /> Edit Product
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Preview coming soon!")}>
-                            <Eye className="size-3.5 mr-2" /> View Product
-                          </DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => router.push(`/products/${product.id}`)}>
+                             <Eye className="size-3.5 mr-2" /> View Product
+                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           {product.status !== "active" && (
                             <DropdownMenuItem onClick={() => { updateProductStatus(product.id, "active"); toast.success("Set to Active") }}>Set Active</DropdownMenuItem>

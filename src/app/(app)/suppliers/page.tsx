@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
 import { AIActionButton } from "@/components/AIActionButton"
 import { useSuppliers } from "@/hooks/useData"
+import Link from "next/link"
 
 const CATEGORIES = ["All", "Electronics", "Fashion", "Home & Garden", "Beauty", "Sports", "Pet Supplies"]
 const COUNTRIES = ["All", "China", "USA", "Turkey", "South Korea", "Germany"]
@@ -108,7 +109,7 @@ export default function SuppliersPage() {
       {/* ═══ Supplier Grid ═══ */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((supplier, i) => (
-          <div key={supplier.id} className={`group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}>
+          <Link key={supplier.id} href={`/suppliers/${supplier.id}`} className={`group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}>
             {/* Hover glow */}
             <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
 
@@ -172,12 +173,16 @@ export default function SuppliersPage() {
               <Button
                 size="sm"
                 className="mt-4 h-9 w-full rounded-xl text-xs font-semibold"
-                onClick={() => toast.success(`Contact request sent to ${supplier.name}!`)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toast.success(`Contact request sent to ${supplier.name}!`)
+                }}
               >
                 <Send className="mr-1.5 size-3" /> Contact Supplier
               </Button>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
