@@ -25,24 +25,30 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [tempProduct, setTempProduct] = useState<any>(null)
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login")
-      return
-    }
+    async function init() {
+      const { id } = await params
 
-    const foundProduct = products.find((p: any) => p.id === params.id)
-    if (foundProduct) {
-      setProduct(foundProduct)
-      setTempProduct({ ...foundProduct })
-    } else {
-      setError("Product not found")
+      if (!isAuthenticated) {
+        router.push("/auth/login")
+        return
+      }
+
+      const foundProduct = products.find((p: any) => p.id === id)
+      if (foundProduct) {
+        setProduct(foundProduct)
+        setTempProduct({ ...foundProduct })
+      } else {
+        setError("Product not found")
+      }
+      setLoading(false)
     }
-    setLoading(false)
-  }, [params.id, isAuthenticated, products])
+    init()
+  }, [params, isAuthenticated, products])
 
   const handleStatusChange = async (newStatus: ProductStatus) => {
+    const { id } = await params
     try {
-      await updateProductStatus(params.id, newStatus)
+      await updateProductStatus(id, newStatus)
       toast.success(`Product status updated to ${newStatus}`)
       setProduct({ ...product, status: newStatus })
     } catch (err) {
@@ -55,8 +61,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       return
     }
 
+    const { id } = await params
     try {
-      await deleteProduct(params.id)
+      await deleteProduct(id)
       toast.success("Product deleted successfully")
       router.push("/products")
     } catch (err) {
@@ -82,7 +89,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setTempProduct(prev => ({
+    setTempProduct((prev: any) => ({
       ...prev,
       [name]: value
     }))
