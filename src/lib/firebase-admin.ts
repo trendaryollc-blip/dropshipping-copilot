@@ -32,7 +32,6 @@ export function getAdminFirestore(): Firestore | null {
     if (!projectId) return null;
 
     // Dynamic import to avoid bundling firebase-admin on client-side
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const admin = require('firebase-admin');
 
     if (admin.apps.length === 0) {

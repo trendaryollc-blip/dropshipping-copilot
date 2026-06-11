@@ -273,8 +273,10 @@ export default function MyProductsPage() {
           <Button
             size="sm"
             variant="outline"
-            render={<a href="/products">Find Products</a>}
-          />
+            onClick={() => router.push('/products')}
+          >
+            Find Products
+          </Button>
         </div>
       )}
     </div>
