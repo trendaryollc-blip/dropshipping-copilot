@@ -44,12 +44,13 @@ const STEPS = [
 ]
 
 export function OnboardingWizard() {
-  const { user, completeOnboarding } = useAuthStore()
+  const { user, isInitialised, completeOnboarding } = useAuthStore()
   const [step, setStep] = useState(0)
   const [open, setOpen] = useState(true)
 
   // Only show for authenticated, non-onboarded users
-  const shouldShow = user !== null && !user.isOnboarded
+  // isInitialised ensures auth state has been loaded (prevents flash on refresh)
+  const shouldShow = user !== null && !user.isOnboarded && isInitialised
 
   if (!shouldShow) return null
 

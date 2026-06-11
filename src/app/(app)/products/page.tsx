@@ -152,8 +152,8 @@ export default function ProductsPage() {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(newProduct),
                       })
-                      // Add to local store (Zustand + localStorage)
-                      importProduct(product)
+                      // Add to local store (Zustand + localStorage) - use newProduct with importedAt
+                      importProduct(newProduct)
                       toast.success(`"${product.name}" added to My Products!`)
                     } catch {
                       toast.error("Failed to save product. Try again.")
