@@ -33,6 +33,8 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env.template
+!.env.comprehensive
 
 # secrets — all files in the secrets/ directory are sensitive
 secrets/
