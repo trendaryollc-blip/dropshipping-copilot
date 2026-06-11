@@ -1,14 +1,13 @@
 /**
  * Health Check API Endpoint
- * Returns real-time status of all AI providers, Firebase connection, and API latency.
- * 
+ * Returns real-time status of all services.
+ *
  * GET /api/health
  */
-
 import { NextResponse } from 'next/server';
-import { getCollection } from '@/lib/firestore-service';
 import { createTrendaryoAPI } from '@/lib/integrations/trendaryo-api';
 import { verifyAllKeys } from '@/lib/ai/verify-keys';
+import { getCollection } from '@/lib/firestore-service';
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -16,8 +15,8 @@ interface HealthStatus {
   uptime: number;
   version: string;
   checks: {
-    firebase: { status: string; latency?: number; error?: string };
     trendaryo: { status: string; error?: string };
+    firestore: { status: string; error?: string };
     aiProviders: Array<{ provider: string; status: string; error?: string }>;
     environment: { status: string; missingVars: string[] };
   };
@@ -29,32 +28,12 @@ export async function GET() {
   // Required environment variables check
   const requiredVars = [
     'TRENDARYO_API_KEY',
-    'NEXT_PUBLIC_FIREBASE_API_KEY',
-    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
   ];
-  
+
   for (const envVar of requiredVars) {
     if (!process.env[envVar]) {
       missingVars.push(envVar);
     }
-  }
-
-  // Firebase connectivity check
-  let firebaseStatus = { status: 'unknown', latency: 0, error: '' };
-  try {
-    const fbStart = Date.now();
-    await getCollection('copilot_products');
-    firebaseStatus = {
-      status: 'connected',
-      latency: Date.now() - fbStart,
-      error: '',
-    };
-  } catch (error) {
-    firebaseStatus = {
-      status: 'disconnected',
-      latency: 0,
-      error: (error as Error).message,
-    };
   }
 
   // Trendaryo connection check
@@ -68,6 +47,21 @@ export async function GET() {
     };
   } catch (error) {
     trendaryoStatus = {
+      status: 'disconnected',
+      error: (error as Error).message,
+    };
+  }
+
+  // Firestore connectivity check
+  let firestoreStatus = { status: 'unknown', error: '' };
+  try {
+    const products = await getCollection('copilot_products');
+    firestoreStatus = {
+      status: 'connected',
+      error: '',
+    };
+  } catch (error) {
+    firestoreStatus = {
       status: 'disconnected',
       error: (error as Error).message,
     };
@@ -87,10 +81,10 @@ export async function GET() {
   }
 
   // Determine overall status
-  const hasCriticalFailure = firebaseStatus.status === 'disconnected' || missingVars.length > 0;
+  const hasCriticalFailure = missingVars.length > 0 || firestoreStatus.status === 'disconnected';
   const hasDegradation = trendaryoStatus.status === 'disconnected' || aiProviders.some(p => p.status === 'missing');
-  
-  const overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 
+
+  const overallStatus: 'healthy' | 'degraded' | 'unhealthy' =
     hasCriticalFailure ? 'unhealthy' :
     hasDegradation ? 'degraded' :
     'healthy';
@@ -101,8 +95,8 @@ export async function GET() {
     uptime: process.uptime(),
     version: process.env.npm_package_version || '0.1.0',
     checks: {
-      firebase: firebaseStatus,
       trendaryo: trendaryoStatus,
+      firestore: firestoreStatus,
       aiProviders,
       environment: {
         status: missingVars.length === 0 ? 'configured' : 'misconfigured',

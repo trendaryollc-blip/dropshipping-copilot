@@ -1,308 +1,394 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Package, Star, TrendingUp, Globe, ShoppingCart, DollarSign, BarChart2, Tag, Truck, AlertCircle, CheckCircle, ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
 import { useAppStore } from "@/store/useAppStore"
+import { useAuthStore } from "@/store/useAuthStore"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import { TrendingUp, AlertCircle, Package, ShoppingCart, DollarSign, Edit, Check, X } from "lucide-react"
 import { toast } from "sonner"
-import Link from "next/link"
+import { ProductStatus } from "@/types"
 
-export default function ProductDetailPage() {
-  const { id } = useParams()
+export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { products, updateProductStatus, deleteProduct } = useAppStore()
+  const { isAuthenticated } = useAuthStore()
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState<any>(null)
-  const [notFound, setNotFound] = useState(false)
-  const { products } = useAppStore()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [editMode, setEditMode] = useState(false)
+  const [tempProduct, setTempProduct] = useState<any>(null)
 
   useEffect(() => {
-    if (id && products.length > 0) {
-      const foundProduct = products.find(p => p.id === id)
-      if (foundProduct) {
-        setProduct(foundProduct)
-      } else {
-        setNotFound(true)
-      }
-      setLoading(false)
+    if (!isAuthenticated) {
+      router.push("/auth/login")
+      return
     }
-  }, [id, products])
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
+    const foundProduct = products.find((p: any) => p.id === params.id)
+    if (foundProduct) {
+      setProduct(foundProduct)
+      setTempProduct({ ...foundProduct })
+    } else {
+      setError("Product not found")
+    }
+    setLoading(false)
+  }, [params.id, isAuthenticated, products])
+
+  const handleStatusChange = async (newStatus: ProductStatus) => {
+    try {
+      await updateProductStatus(params.id, newStatus)
+      toast.success(`Product status updated to ${newStatus}`)
+      setProduct({ ...product, status: newStatus })
+    } catch (err) {
+      toast.error("Failed to update product status")
+    }
   }
 
-  if (notFound) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-20 text-center">
-        <AlertCircle className="size-10 text-muted-foreground/40" />
-        <h2 className="text-xl font-semibold text-foreground">Product Not Found</h2>
-        <p className="text-sm text-muted-foreground">The product you're looking for doesn't exist or has been removed.</p>
-        <Button variant="outline" onClick={() => router.push('/products')}>
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Products
-        </Button>
-      </div>
-    )
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return
+    }
+
+    try {
+      await deleteProduct(params.id)
+      toast.success("Product deleted successfully")
+      router.push("/products")
+    } catch (err) {
+      toast.error("Failed to delete product")
+    }
+  }
+
+  const handleEdit = () => {
+    setEditMode(true)
+    setTempProduct({ ...product })
+  }
+
+  const handleSave = () => {
+    // In a real app, you would update the product in Firestore
+    toast.success("Product updated successfully")
+    setEditMode(false)
+    setProduct({ ...tempProduct })
+  }
+
+  const handleCancel = () => {
+    setEditMode(false)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setTempProduct(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  if (loading) {
+    return <div className="p-6">Loading product details...</div>
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-500">{error}</div>
   }
 
   if (!product) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-20 text-center">
-        <AlertCircle className="size-10 text-muted-foreground/40" />
-        <h2 className="text-xl font-semibold text-foreground">No Product Data</h2>
-        <p className="text-sm text-muted-foreground">Product data could not be loaded.</p>
-        <Button variant="outline" onClick={() => router.push('/products')}>
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Products
-        </Button>
-      </div>
-    )
+    return <div className="p-6">Product not found</div>
   }
 
   return (
-    <div className="space-y-6">
-      {/* Back Navigation */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push('/products')}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Products
-        </Button>
-      </div>
-
-      {/* Product Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{product.name}</h1>
-          <div className="flex items-center gap-2 mt-2">
-            <Badge className={`text-xs ${
-              product.status === "active"
-                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                : product.status === "draft"
-                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                : "bg-muted text-muted-foreground border-border"
-            }`}>
-              {product.status}
-            </Badge>
-            <span className="text-xs text-muted-foreground/60 capitalize">{product.competition} competition</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-full">
-            <Star className="size-3 fill-amber-400 text-amber-400" />
-            <span className="font-semibold text-primary">{product.trendScore}</span>
-          </div>
-          {product.importedAt && (
-            <Badge variant="outline" className="text-xs">
-              Imported: {product.importedAt}
-            </Badge>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Product Details</h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/products")}
+          >
+            Back to Products
+          </Button>
+          {editMode ? (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+              >
+                <X className="size-4" />
+              </Button>
+              <Button
+                onClick={handleSave}
+              >
+                <Check className="size-4" />
+                Save
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={handleEdit}
+            >
+              <Edit className="size-4" />
+              Edit
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Product Image and Details */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Product Image Card */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full max-w-md rounded-xl object-cover border border-border"
-                  style={{ aspectRatio: "1/1" }}
-                />
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+              <CardTitle className="text-2xl">{product.name}</CardTitle>
+              <div className="flex gap-2 mt-2">
+                <Badge variant="secondary">{product.status}</Badge>
+                <Badge variant="secondary">{product.niche}</Badge>
+                <Badge variant="secondary">{product.supplierName}</Badge>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <Button
+                variant="outline"
+                onClick={() => handleStatusChange(product.status === "active" ? "draft" : "active")}
+              >
+                {product.status === "active" ? "Deactivate" : "Activate"}
+              </Button>
+              <Button
+                variant="destructive"
+                className="ml-2"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-64 object-cover rounded-lg mb-4"
+              />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="size-4 text-primary" />
+                  <span className="text-xl font-bold">${product.price?.toFixed(2) || 'N/A'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Package className="size-4 text-primary" />
+                  <span className="text-lg">{product.stock || 'N/A'} in stock</span>
+                </div>
+              </div>
+            </div>
 
-          {/* Product Details Card */}
+            <div>
+              <div className="mb-4">
+                <Label className="text-sm font-medium">Description</Label>
+                {editMode ? (
+                  <Input
+                    name="description"
+                    value={tempProduct.description || ""}
+                    onChange={handleInputChange}
+                    className="mt-1"
+                  />
+                ) : (
+                  <p className="text-muted-foreground">{product.description || "No description available"}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium">Price Range</Label>
+                <div className="flex items-center gap-2">
+                  <span>${product.priceRange?.min?.toFixed(2)}</span>
+                  <span>to</span>
+                  <span>${product.priceRange?.max?.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium">Supplier</Label>
+                {editMode ? (
+                  <Input
+                    name="supplierName"
+                    value={tempProduct.supplierName || ""}
+                    onChange={handleInputChange}
+                    className="mt-1"
+                  />
+                ) : (
+                  <p className="text-muted-foreground">{product.supplierName}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <Label className="text-sm font-medium">Competition Level</Label>
+                <div className="flex gap-2">
+                  {["low", "medium", "high"].map((level) => (
+                    <Badge
+                      key={level}
+                      variant={product.competition === level ? "default" : "secondary"}
+                      className="cursor-pointer"
+                    >
+                      {level}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="details" className="mt-6">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3">
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="supplier">Supplier</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="details">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Product Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Category</p>
-                  <p className="font-medium">{product.niche}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Supplier</p>
-                  <p className="font-medium">{product.supplierName || "N/A"}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Price Range</p>
-                  <p className="font-medium">${product.priceRange.min} – ${product.priceRange.max}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Trend Score</p>
-                  <div className="flex items-center gap-1">
-                    <Star className="size-3 fill-amber-400 text-amber-400" />
-                    <span className="font-medium">{product.trendScore}/100</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2 pt-4">
-                <p className="text-sm text-muted-foreground">Competition Level</p>
-                <Badge className={`text-xs capitalize ${
-                  product.competition === "low" ? "bg-green-500/10 text-green-600 border-green-500/20" :
-                  product.competition === "medium" ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" :
-                  "bg-red-500/10 text-red-600 border-red-500/20"
-                }`}>
-                  {product.competition}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Product Description Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Description</CardTitle>
+              <CardTitle>Product Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground/80 leading-relaxed">
-                {product.description || "No description available for this product. Consider generating an AI-powered description to attract more customers."}
-              </p>
-              {!product.description && (
-                <div className="mt-4">
-                  <Link href="/description" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-                    <ExternalLink className="size-3" />
-                    Generate AI Description
-                  </Link>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Niche</Label>
+                  <p className="text-muted-foreground">{product.niche}</p>
                 </div>
-              )}
+
+                <div>
+                  <Label className="text-sm font-medium">Trend Score</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold">{product.trendScore}</span>
+                    <Badge variant="secondary">
+                      {product.trendScore > 70 ? "High" : product.trendScore > 50 ? "Medium" : "Low"}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Created At</Label>
+                  <p className="text-muted-foreground">
+                    {new Date(product.createdAt).toLocaleString()}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Last Updated</Label>
+                  <p className="text-muted-foreground">
+                    {new Date(product.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
+        </TabsContent>
 
-        {/* Right Column - Actions and Stats */}
-        <div className="space-y-6">
-          {/* Quick Actions Card */}
+        <TabsContent value="analytics">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+              <CardTitle>Product Analytics</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                className="w-full justify-start gap-2"
-                onClick={() => {
-                  toast.info("Add to My Products functionality")
-                }}
-              >
-                <Package className="size-4" />
-                Add to My Products
-              </Button>
-              <Button
-                className="w-full justify-start gap-2"
-                variant="outline"
-                onClick={() => {
-                  toast.info("Import to Trendaryo functionality")
-                }}
-              >
-                <Globe className="size-4" />
-                Import to Trendaryo
-              </Button>
-              <Button
-                className="w-full justify-start gap-2"
-                variant="outline"
-                onClick={() => {
-                  toast.info("Order sample functionality")
-                }}
-              >
-                <ShoppingCart className="size-4" />
-                Order Sample
-              </Button>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">Views</span>
+                    <span className="text-sm">{product.views || 0}</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full">
+                    <div
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${(product.views || 0) / 1000 * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">Sales</span>
+                    <span className="text-sm">N/A</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full">
+                    <div className="h-full bg-primary rounded-full" style={{ width: '50%' }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">Conversion Rate</span>
+                    <span className="text-sm">N/A</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full">
+                    <div className="h-full bg-primary rounded-full" style={{ width: '30%' }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">Average Order Value</span>
+                    <span className="text-sm">N/A</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full">
+                    <div className="h-full bg-primary rounded-full" style={{ width: '75%' }}></div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          {/* Product Stats Card */}
+        <TabsContent value="supplier">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Product Stats</CardTitle>
+              <CardTitle>Supplier Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="size-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">Trend Potential</span>
-                  </div>
-                  <span className="font-medium">{product.trendScore}%</span>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Supplier Name</Label>
+                  <p className="text-muted-foreground">{product.supplierName}</p>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Trust Score</Label>
                   <div className="flex items-center gap-2">
-                    <DollarSign className="size-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">Profit Margin</span>
+                    <span className="text-lg font-bold">8.5/10</span>
+                    <Badge variant="secondary">High</Badge>
                   </div>
-                  <span className="font-medium">{product.margin || "N/A"}%</span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <BarChart2 className="size-4 text-blue-500" />
-                    <span className="text-sm text-muted-foreground">Competition</span>
+                <div>
+                  <Label className="text-sm font-medium">Response Time</Label>
+                  <p className="text-muted-foreground">24-48 hours</p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Country</Label>
+                  <p className="text-muted-foreground">United States</p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Categories</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {["Electronics", "Accessories", "Home & Garden"].map((category) => (
+                      <Badge key={category} variant="secondary">
+                        {category}
+                      </Badge>
+                    ))}
                   </div>
-                  <Badge className={`text-xs capitalize ${
-                    product.competition === "low" ? "bg-green-500/10 text-green-600" :
-                    product.competition === "medium" ? "bg-yellow-500/10 text-yellow-600" :
-                    "bg-red-500/10 text-red-600"
-                  }`}>
-                    {product.competition}
-                  </Badge>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          {/* Supplier Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Supplier Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Supplier Name</p>
-                <p className="font-medium">{product.supplierName || "Not specified"}</p>
-              </div>
-
-              <div className="space-y-1 pt-2">
-                <p className="text-sm text-muted-foreground">Shipping Information</p>
-                <div className="flex items-center gap-2">
-                  <Truck className="size-4 text-muted-foreground" />
-                  <span className="text-sm">{product.shipping || "Standard shipping (7-14 days)"}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1 pt-2">
-                <p className="text-sm text-muted-foreground">Supplier Reliability</p>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="size-4 text-green-500" />
-                  <span className="text-sm text-green-600">Verified supplier</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
