@@ -3,10 +3,10 @@
 // Firebase configuration for local development
 // This file provides a complete mock implementation for Firebase services
 
-import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, type User as FBUser } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
-import type { User } from "@/types";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
+import { getAuth, type Auth, type User as FBUser } from "firebase/auth"
+import { getFirestore, type Firestore } from "firebase/firestore"
+import type { User } from "@/types"
 
 // Mock Firebase configuration
 const FIREBASE_CONFIG = {
@@ -16,59 +16,56 @@ const FIREBASE_CONFIG = {
   storageBucket: "automation-copilot-62b12.firebasestorage.app",
   messagingSenderId: "140344348376",
   appId: "1:140344348376:web:8ff56d66a593eaf6ec11ad",
-};
+}
 
 // Mock Firebase services
-let fbApp: FirebaseApp | null = null;
-let db: Firestore | null = null;
-let auth: Auth | null = null;
-let mockUsers: Record<string, User> = {};
-let mockAuthStateChangeListeners: ((user: User | null) => void)[] = [];
+let fbApp: FirebaseApp | null = null
+let db: Firestore | null = null
+let auth: Auth | null = null
+let mockUsers: Record<string, User> = {}
+let mockAuthStateChangeListeners: ((user: User | null) => void)[] = []
+let currentMockUser: User | null = null
 
 // Initialize Firebase mock
 export function initializeFirebaseMock() {
   if (!getApps().length) {
     // Initialize Firebase app with mock config
-    fbApp = initializeApp(FIREBASE_CONFIG);
-    db = getFirestore(fbApp);
-    auth = getAuth(fbApp);
-
-    // Initialize mock auth state
-    auth.currentUser = null;
+    fbApp = initializeApp(FIREBASE_CONFIG)
+    db = getFirestore(fbApp)
+    auth = getAuth(fbApp)
   }
 }
 
 // Mock Firebase functions
 export function isFirebaseAuthConfigured(): boolean {
-  return true;
+  return true
 }
 
 export function getAuthInstance(): Auth {
-  initializeFirebaseMock();
-  return auth;
+  initializeFirebaseMock()
+  return auth!
 }
 
 export function getFirestoreClient(): Firestore | null {
-  initializeFirebaseMock();
-  return db;
+  initializeFirebaseMock()
+  return db
 }
 
 export function onAuthChange(callback: (user: User | null) => void): () => void {
   // Add listener
-  mockAuthStateChangeListeners.push(callback);
+  mockAuthStateChangeListeners.push(callback)
 
   // Check current state
-  const currentUser = Object.values(mockUsers).find(u => u.email === auth?.currentUser?.email);
-  callback(currentUser || null);
+  callback(currentMockUser)
 
   // Return cleanup function
   return () => {
-    mockAuthStateChangeListeners = mockAuthStateChangeListeners.filter(listener => listener !== callback);
-  };
+    mockAuthStateChangeListeners = mockAuthStateChangeListeners.filter(listener => listener !== callback)
+  }
 }
 
 export async function signIn(email: string, password: string): Promise<User> {
-  console.log(`[Firebase] Signing in with email: ${email}`);
+  console.log(`[Firebase] Signing in with email: ${email}`)
 
   // Create mock user
   const mockUser = {
@@ -77,7 +74,7 @@ export async function signIn(email: string, password: string): Promise<User> {
     email,
     emailVerified: true,
     metadata: { creationTime: Date.now().toString() }
-  };
+  }
 
   // Store the user
   mockUsers[email] = {
@@ -88,17 +85,17 @@ export async function signIn(email: string, password: string): Promise<User> {
     plan: "free",
     createdAt: new Date(mockUser.metadata.creationTime).toISOString().split("T")[0],
     isOnboarded: false
-  };
+  }
 
   // Update auth state
-  auth.currentUser = mockUser;
-  mockAuthStateChangeListeners.forEach(listener => listener(mockUsers[email]));
+  currentMockUser = mockUsers[email]
+  mockAuthStateChangeListeners.forEach(listener => listener(mockUsers[email]))
 
-  return mockUsers[email];
+  return mockUsers[email]
 }
 
 export async function signUp(email: string, password: string, displayName?: string): Promise<User> {
-  console.log(`[Firebase] Signing up with email: ${email}`);
+  console.log(`[Firebase] Signing up with email: ${email}`)
 
   // Create mock user
   const mockUser = {
@@ -107,7 +104,7 @@ export async function signUp(email: string, password: string, displayName?: stri
     email,
     emailVerified: false,
     metadata: { creationTime: Date.now().toString() }
-  };
+  }
 
   // Store the user
   mockUsers[email] = {
@@ -118,45 +115,45 @@ export async function signUp(email: string, password: string, displayName?: stri
     plan: "free",
     createdAt: new Date(mockUser.metadata.creationTime).toISOString().split("T")[0],
     isOnboarded: false
-  };
+  }
 
   // Update auth state
-  auth.currentUser = mockUser;
-  mockAuthStateChangeListeners.forEach(listener => listener(mockUsers[email]));
+  currentMockUser = mockUsers[email]
+  mockAuthStateChangeListeners.forEach(listener => listener(mockUsers[email]))
 
-  return mockUsers[email];
+  return mockUsers[email]
 }
 
 export async function signOut(): Promise<void> {
-  console.log("[Firebase] Signing out");
-  auth.currentUser = null;
-  mockAuthStateChangeListeners.forEach(listener => listener(null));
+  console.log("[Firebase] Signing out")
+  currentMockUser = null
+  mockAuthStateChangeListeners.forEach(listener => listener(null))
 }
 
 export async function updateAuthProfile(data: { displayName?: string, photoURL?: string }): Promise<User> {
-  if (!auth.currentUser) throw new Error("No authenticated user");
+  if (!currentMockUser) throw new Error("No authenticated user")
 
-  const email = auth.currentUser.email;
-  if (!email) throw new Error("No email found for current user");
+  const email = currentMockUser.email
+  if (!email) throw new Error("No email found for current user")
 
-  const user = mockUsers[email];
-  if (!user) throw new Error("User not found");
+  const user = mockUsers[email]
+  if (!user) throw new Error("User not found")
 
-  if (data.displayName) user.name = data.displayName;
-  if (data.photoURL) user.avatar = data.photoURL;
+  if (data.displayName) user.name = data.displayName
+  if (data.photoURL) user.avatar = data.photoURL
 
-  return user;
+  return user
 }
 
 export async function sendVerification(): Promise<void> {
-  console.log("[Firebase] Sending verification email");
+  console.log("[Firebase] Sending verification email")
 }
 
 export async function resetPassword(email: string): Promise<void> {
-  console.log(`[Firebase] Sending password reset email to: ${email}`);
+  console.log(`[Firebase] Sending password reset email to: ${email}`)
 }
 
 // Initialize Firebase mock on client side
 if (typeof window !== "undefined") {
-  initializeFirebaseMock();
+  initializeFirebaseMock()
 }

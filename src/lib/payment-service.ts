@@ -140,12 +140,11 @@ class PaymentService {
           // Update user's plan in Firestore to 'pro'
           try {
             const { updateDocument } = await import('@/lib/firestore-service');
-            const { COLLECTIONS } = await import('@/lib/firestore-service');
             const customerId = session.customer as string;
             if (customerId) {
               // Find the user document by Stripe customer ID and upgrade their plan
               // In a real implementation, you'd map stripeCustomerId -> userId in a metadata field
-              await updateDocument(`${COLLECTIONS.USERS}/${session.client_reference_id || customerId}`, {
+              await updateDocument('users', session.client_reference_id || customerId, {
                 plan: 'pro' as any,
                 stripeCustomerId: customerId,
                 subscriptionId: session.subscription as string,
@@ -163,11 +162,10 @@ class PaymentService {
           // Downgrade user's plan in Firestore to 'free'
           try {
             const { updateDocument } = await import('@/lib/firestore-service');
-            const { COLLECTIONS } = await import('@/lib/firestore-service');
             const customerId = subscription.customer as string;
             if (customerId) {
               // Find user by stripeCustomerId and downgrade their plan
-              await updateDocument(`${COLLECTIONS.USERS}/${subscription.metadata?.userId || customerId}`, {
+              await updateDocument('users', subscription.metadata?.userId || customerId, {
                 plan: 'free' as any,
                 subscriptionId: null as any,
               });
