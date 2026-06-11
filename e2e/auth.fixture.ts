@@ -87,4 +87,3 @@ export const authTest = base.extend<AuthFixtures>({
 });
 
 export { expect } from '@playwright/test';
-</write_to_file>
