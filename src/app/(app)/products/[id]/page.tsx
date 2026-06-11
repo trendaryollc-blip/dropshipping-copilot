@@ -15,6 +15,8 @@ import { toast } from "sonner"
 import { ProductStatus } from "@/types"
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params
+
   const { products, updateProductStatus, deleteProduct } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
@@ -26,8 +28,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     async function init() {
-      const { id } = params
-
       if (!isAuthenticated) {
         router.push("/auth/login")
         return
@@ -43,7 +43,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       setLoading(false)
     }
     init()
-  }, [params, isAuthenticated, products])
+  }, [id, isAuthenticated, products])
 
   const handleStatusChange = async (newStatus: ProductStatus) => {
     const { id } = params
