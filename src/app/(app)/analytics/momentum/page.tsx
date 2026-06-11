@@ -15,15 +15,15 @@ import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
 import { toast } from "sonner"
 
 export default function MomentumPage() {
-  const { products, getProducts } = useAppStore()
+  const { products } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getProducts()
+    if (!isAuthenticated) {
+      router.push("/auth/login")
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, router])
 
   // Mock momentum data
   const mockMomentum = {
