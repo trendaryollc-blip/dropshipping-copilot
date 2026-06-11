@@ -13,8 +13,5 @@
       "path": "/api/cron/check-automation-rules",
       "schedule": "0 2 * * *"
     }
-  ],
-  "env": {
-    "CRON_SECRET": "@cron-secret"
-  }
+  ]
 }
