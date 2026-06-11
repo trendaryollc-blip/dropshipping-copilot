@@ -26,7 +26,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     async function init() {
-      const { id } = await params
+      const { id } = params
 
       if (!isAuthenticated) {
         router.push("/auth/login")
@@ -46,7 +46,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }, [params, isAuthenticated, products])
 
   const handleStatusChange = async (newStatus: ProductStatus) => {
-    const { id } = await params
+    const { id } = params
     try {
       await updateProductStatus(id, newStatus)
       toast.success(`Product status updated to ${newStatus}`)
@@ -61,7 +61,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       return
     }
 
-    const { id } = await params
+    const { id } = params
     try {
       await deleteProduct(id)
       toast.success("Product deleted successfully")
