@@ -14,8 +14,9 @@ import { TrendingUp, AlertCircle, Package, ShoppingCart, DollarSign, Edit, Check
 import { toast } from "sonner"
 import { ProductStatus } from "@/types"
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params
+export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
+  const { id } = resolvedParams
 
   const { products, updateProductStatus, deleteProduct } = useAppStore()
   const { isAuthenticated } = useAuthStore()
@@ -46,7 +47,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }, [id, isAuthenticated, products])
 
   const handleStatusChange = async (newStatus: ProductStatus) => {
-    const { id } = params
+    const { id } = await params
     try {
       await updateProductStatus(id, newStatus)
       toast.success(`Product status updated to ${newStatus}`)
@@ -61,7 +62,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       return
     }
 
-    const { id } = params
+    const { id } = await params
     try {
       await deleteProduct(id)
       toast.success("Product deleted successfully")
