@@ -128,9 +128,32 @@ async function deleteDocument<T>(collectionName: string, id: string): Promise<vo
   mockData[collectionName] = mockData[collectionName].filter(item => item.id !== id)
 }
 
+// Helper function to get a single document by ID
+async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
+  // Return mock document or null if not found
+  const collection = mockData[collectionName] || []
+  const doc = collection.find(item => item.id === id)
+  return doc || null
+}
+
+// Helper function to listen to collection changes (mock implementation)
+async function listenToCollection<T>(collectionName: string, callback: (data: T[]) => void): Promise<() => void> {
+  // Return mock data immediately and provide cleanup function
+  const collection = mockData[collectionName] || []
+  callback(collection as T[])
+
+  // Return cleanup function
+  return () => {
+    // In a real implementation, this would unsubscribe from Firestore
+    console.log(`[Mock] Unsubscribed from collection: ${collectionName}`)
+  }
+}
+
 export {
   getCollection,
+  getDocument,
   addDocument,
   updateDocument,
-  deleteDocument
+  deleteDocument,
+  listenToCollection
 }
