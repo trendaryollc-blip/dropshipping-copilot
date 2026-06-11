@@ -1,47 +1,97 @@
-const CACHE_NAME = 'dropease-v2'
+// DropEase Service Worker - v3
+// Increment this version when deploying to force cache refresh
+const CACHE_VERSION = 'dropease-v3'
+const CACHE_NAME = CACHE_VERSION
 const STATIC_ASSETS = [
   '/',
   '/favicon.svg',
   '/manifest.json',
 ]
 
-// Only cache same-origin static assets, never cache API calls
+// Force new service worker to activate immediately
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing version:', CACHE_VERSION)
+  // Delete all old caches immediately on install
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    Promise.all([
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
+      // Delete any caches that don't match current version
+      caches.keys().then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => {
+              console.log('[SW] Deleting old cache:', key)
+              return caches.delete(key)
+            })
+        )
+      )
+    ])
   )
   self.skipWaiting()
 })
 
 self.addEventListener('activate', (event) => {
-  // Clean up old caches
+  console.log('[SW] Activated version:', CACHE_VERSION)
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
-    ).then(() => self.clients.claim())
+    Promise.all([
+      // Clean up any remaining old caches
+      caches.keys().then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        )
+      ),
+      // Claim all clients immediately
+      self.clients.claim()
+    ])
   )
 })
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
-  // Only cache GET requests to same-origin static assets
+  // Only handle GET requests
   if (request.method !== 'GET') return
-  if (request.url.includes('/api/')) return
+  
+  const url = new URL(request.url)
+  
+  // Never cache API calls
+  if (url.pathname.startsWith('/api/')) return
+  
+  // Never cache dynamic app pages
+  if (url.pathname.match(/^\/(app|auth|dashboard|products|suppliers|orders|customers|analytics|marketing|inventory)/)) return
 
+  // Never cache HTML navigations - always fetch fresh
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => response)
+        .catch(() => caches.match('/'))
+    )
+    return
+  }
+
+  // Network-first strategy for all other requests
   event.respondWith(
-    caches.match(request).then((cached) => {
-      // Network-first strategy for navigation, cache-first for static assets
-      if (request.mode === 'navigate') {
-        return fetch(request).catch(() => cached || caches.match('/'))
-      }
-      return cached || fetch(request).then((response) => {
-        // Only cache successful same-origin responses
+    fetch(request)
+      .then((response) => {
+        // Only cache successful same-origin static assets
         if (response.ok && response.type === 'basic') {
-          const clone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          const contentType = response.headers.get('content-type') || ''
+          // Only cache images, fonts, CSS and JS files
+          if (
+            contentType.startsWith('image/') ||
+            contentType.startsWith('font/') ||
+            contentType.includes('javascript') ||
+            contentType.includes('css')
+          ) {
+            const clone = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          }
         }
         return response
       })
-    })
+      .catch(() => caches.match(request))
   )
 })
