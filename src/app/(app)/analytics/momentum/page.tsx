@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Search, BarChart2, DollarSign, ShoppingCart, Users, TrendingUp, Clock, ArrowUpRight, ArrowDownRight, ArrowUpLeft } from "lucide-react"
-import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
+import { InsightPanel } from "@/components/dashboard/InsightPanel"
 import { toast } from "sonner"
 
 export default function MomentumPage() {
@@ -59,7 +59,7 @@ export default function MomentumPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <AIInsightsPanel
+        <InsightPanel
           title="Revenue Growth"
           description="Weekly revenue growth"
           value={`${mockMomentum.weeklyRevenueGrowth}%`}
@@ -67,7 +67,7 @@ export default function MomentumPage() {
           icon={<ArrowUpRight className="h-4 w-4 text-primary" />}
           trendColor="success"
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="Conversion Rate"
           description="Top product conversion rate"
           value={`${mockMomentum.topProduct.conversionRate * 100}%`}
@@ -75,7 +75,7 @@ export default function MomentumPage() {
           icon={<TrendingUp className="h-4 w-4 text-primary" />}
           trendColor="success"
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="Repeat Customers"
           description="Customer repeat rate"
           value={`${mockMomentum.customerFavorites[0].repeatRate * 100}%`}
@@ -83,7 +83,7 @@ export default function MomentumPage() {
           icon={<Users className="h-4 w-4 text-primary" />}
           trendColor="success"
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="Supplier Performance"
           description="Top supplier performance"
           value={`${mockMomentum.topSuppliers[0].performanceScore}/100`}
