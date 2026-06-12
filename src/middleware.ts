@@ -10,6 +10,7 @@ import { rateLimit, getRateLimitKey } from "@/lib/rate-limiter"
 
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = [
+  "/",
   "/auth/login",
   "/auth/register",
   "/auth/forgot-password",
@@ -43,9 +44,10 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Skip auth checks for public routes and static files ──
-  const isPublic = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route)
-  )
+  const isPublic = PUBLIC_ROUTES.some((route) => {
+    if (route === "/") return pathname === "/"
+    return pathname === route || pathname.startsWith(route)
+  })
   if (isPublic) {
     const response = NextResponse.next()
     applySecurityHeaders(response, result.remaining)
