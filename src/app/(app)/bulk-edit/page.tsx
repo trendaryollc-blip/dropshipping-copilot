@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useMemo, useEffect, useRef } from "react"
-import { Search, PenLine, Package, Check, X, ChevronDown } from "lucide-react"
+import Link from "next/link"
+import { Search, PenLine, Package, Check, X, ChevronDown, Zap, ArrowRight, DollarSign, Sparkles, Tag } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -17,8 +19,6 @@ import { products as mockProducts } from "@/lib/mock-data"
 import { AIActionButton } from "@/components/AIActionButton"
 import type { Product, ProductStatus } from "@/types"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type PriceEditMode = "percent" | "fixed" | "set"
 type StatusFilter = ProductStatus | "all"
 
@@ -26,22 +26,55 @@ interface EditableProduct extends Product {
   displayPrice: number
 }
 
-// ─── Config ───────────────────────────────────────────────────────────────────
-
 const statusConfig: Record<ProductStatus, { label: string; color: string; bg: string }> = {
   active: { label: "Active", color: "text-success", bg: "bg-success-light" },
   draft: { label: "Draft", color: "text-warning", bg: "bg-warning-light" },
   archived: { label: "Archived", color: "text-muted-foreground", bg: "bg-muted" },
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+const RELATED_TOOLS = [
+  {
+    href: "/calculator",
+    icon: DollarSign,
+    label: "Profit Calculator",
+    description: "Calculate profit margins and compare platforms",
+    color: "from-blue-500/10 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/50",
+    iconBg: "bg-blue-500/10 text-blue-600",
+    badge: "Finance",
+  },
+  {
+    href: "/description",
+    icon: Sparkles,
+    label: "Description Generator",
+    description: "Create compelling product descriptions",
+    color: "from-violet-500/10 to-purple-500/10 border-violet-500/20 hover:border-violet-500/50",
+    iconBg: "bg-violet-500/10 text-violet-600",
+    badge: "Content",
+  },
+  {
+    href: "/seo",
+    icon: Tag,
+    label: "SEO Tools",
+    description: "Optimize your listings for search engines",
+    color: "from-emerald-500/10 to-teal-500/10 border-emerald-500/20 hover:border-emerald-500/50",
+    iconBg: "bg-emerald-500/10 text-emerald-600",
+    badge: "Ranking",
+  },
+  {
+    href: "/automation",
+    icon: Zap,
+    label: "Automation",
+    description: "Automate your business operations",
+    color: "from-amber-500/10 to-orange-500/10 border-amber-500/20 hover:border-amber-500/50",
+    iconBg: "bg-amber-500/10 text-amber-600",
+    badge: "Workflow",
+  },
+]
 
 const seededStock = (id: string): number => {
   const seed = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0)
   return (seed % 191) + 10
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BulkEditPage() {
   const { products: apiProducts, loading } = useProducts()
@@ -57,6 +90,7 @@ export default function BulkEditPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
   const [panelOpen, setPanelOpen] = useState(false)
+  const [changesApplied, setChangesApplied] = useState(0)
 
   // Edit panel state
   const [priceMode, setPriceMode] = useState<PriceEditMode>("percent")
@@ -132,6 +166,7 @@ export default function BulkEditPage() {
       })
     )
 
+    setChangesApplied(prev => prev + targetIds.size)
     toast.success(`Changes applied to ${targetIds.size} product${targetIds.size > 1 ? "s" : ""}`)
     clearSelection()
     setPriceValue("")
@@ -172,23 +207,14 @@ export default function BulkEditPage() {
         </div>
       </section>
 
-      {selectedCount > 0 && (
-        <div className="flex justify-end">
-          <Button onClick={() => setPanelOpen(o => !o)} className="shrink-0">
-            <PenLine className="size-4 mr-1.5" />
-            Edit {selectedCount} Selected
-          </Button>
-        </div>
-      )}
-
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      {/* Stats Overview */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardContent className="pt-5 pb-4">
+          <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-primary-light text-primary">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary-light text-primary">
                 <Package className="size-4" />
-            </div>
+              </div>
               <div>
                 <p className="text-2xl font-bold">{products.length}</p>
                 <p className="text-xs text-muted-foreground">Total Products</p>
@@ -197,9 +223,9 @@ export default function BulkEditPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-5 pb-4">
+          <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
                 <Check className="size-4" />
               </div>
               <div>
@@ -210,11 +236,11 @@ export default function BulkEditPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-5 pb-4">
+          <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-success-light text-success">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-success-light text-success">
                 <PenLine className="size-4" />
-            </div>
+              </div>
               <div>
                 <p className="text-2xl font-bold">
                   {products.filter(p => p.status === "active").length}
@@ -224,7 +250,29 @@ export default function BulkEditPage() {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-warning-light text-warning">
+                <Zap className="size-4" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{changesApplied}</p>
+                <p className="text-xs text-muted-foreground">Changes Applied</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {selectedCount > 0 && (
+        <div className="flex justify-end">
+          <Button onClick={() => setPanelOpen(o => !o)} className="shrink-0">
+            <PenLine className="size-4 mr-1.5" />
+            Edit {selectedCount} Selected
+          </Button>
+        </div>
+      )}
 
       {/* Bulk Edit Panel */}
       {panelOpen && selectedCount > 0 && (
@@ -496,6 +544,46 @@ export default function BulkEditPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Related Tools */}
+      <section className="space-y-4 animate-in">
+        <div className="flex items-center gap-2">
+          <Zap className="size-4 text-primary" />
+          <h2 className="text-sm font-semibold text-foreground">Related Tools</h2>
+          <span className="text-xs text-muted-foreground">— optimize your workflow</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {RELATED_TOOLS.map((tool) => {
+            const Icon = tool.icon
+            return (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className={cn(
+                  "group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg",
+                  tool.color
+                )}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className={cn("flex size-9 items-center justify-center rounded-xl", tool.iconBg)}>
+                      <Icon className="size-4" />
+                    </div>
+                    <Badge variant="secondary" className="text-[9px] font-bold uppercase tracking-wide">{tool.badge}</Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{tool.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{tool.description}</p>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-medium text-primary/80 group-hover:text-primary transition-colors">
+                    Open Tool <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
     </div>
   )
 }
