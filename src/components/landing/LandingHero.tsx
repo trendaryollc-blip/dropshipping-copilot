@@ -3,10 +3,10 @@ import { ArrowRight, BarChart3, BrainCircuit, Cpu, PackageCheck, ShieldCheck, Sp
 import { Reveal } from "./Reveal"
 
 const floatingCards = [
-  { icon: BrainCircuit, title: "AI product score", value: "94/100", className: "left-0 top-8" },
-  { icon: PackageCheck, title: "Supplier match", value: "98%", className: "right-2 top-20" },
-  { icon: BarChart3, title: "Margin boost", value: "+37%", className: "left-4 bottom-16" },
-  { icon: Cpu, title: "Auto listing", value: "Live", className: "right-8 bottom-8" },
+  { icon: BrainCircuit, title: "AI product score", value: "94/100", className: "lg:absolute lg:left-0 lg:top-10" },
+  { icon: PackageCheck, title: "Supplier match", value: "98%", className: "lg:absolute lg:right-0 lg:top-16" },
+  { icon: BarChart3, title: "Margin boost", value: "+37%", className: "lg:absolute lg:left-4 lg:bottom-14" },
+  { icon: Cpu, title: "Auto listing", value: "Live", className: "lg:absolute lg:right-8 lg:bottom-6" },
 ]
 
 export function LandingHero() {
@@ -54,34 +54,38 @@ export function LandingHero() {
         </Reveal>
 
         <Reveal className="relative mx-auto w-full max-w-xl lg:ml-auto" delay={120}>
-          <div className="landing-hero-orbit relative aspect-square">
-            <div className="absolute inset-8 rounded-full border border-white/40 bg-white/10 shadow-2xl shadow-violet-500/20 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5" aria-hidden="true" />
-            <div className="absolute inset-20 rounded-full border border-dashed border-violet-400/30" aria-hidden="true" />
+          <div className="relative mx-auto w-full max-w-xl lg:ml-auto">
+            <div className="landing-hero-orbit relative aspect-square">
+              <div className="absolute inset-8 rounded-full border border-white/40 bg-white/10 shadow-2xl shadow-violet-500/20 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5" aria-hidden="true" />
+              <div className="absolute inset-20 rounded-full border border-dashed border-violet-400/30" aria-hidden="true" />
 
-            <div className="landing-hero-core absolute left-1/2 top-1/2 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/40 bg-white/80 p-6 text-center shadow-2xl shadow-violet-500/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/80">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-amber-400 shadow-lg shadow-fuchsia-500/25">
-                <Zap className="size-8 text-white" />
+              <div className="landing-hero-core absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/40 bg-white/80 p-6 text-center shadow-2xl shadow-violet-500/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/80">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-amber-400 shadow-lg shadow-fuchsia-500/25">
+                  <Zap className="size-8 text-white" />
+                </div>
+                <p className="text-sm font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">AI opportunity score</p>
+                <p className="mt-3 text-7xl font-black tracking-tighter text-slate-950 dark:text-white">94</p>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Winning product detected</p>
               </div>
-              <p className="text-sm font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">AI opportunity score</p>
-              <p className="mt-3 text-7xl font-black tracking-tighter text-slate-950 dark:text-white">94</p>
-              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Winning product detected</p>
             </div>
 
-            {floatingCards.map((card, index) => {
-              const Icon = card.icon
-              return (
-                <div key={card.title} className={`landing-float ${card.className} ${index % 2 ? "landing-float-delayed" : ""} w-48 rounded-3xl border border-white/40 bg-white/75 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80`}>
-                  <div className="mb-3 flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600 dark:text-violet-300">
-                      <Icon className="size-5" />
+            <div className="mt-6 grid grid-cols-2 gap-3 lg:absolute lg:inset-0 lg:mt-0">
+              {floatingCards.map((card, index) => {
+                const Icon = card.icon
+                return (
+                  <div key={card.title} className={`landing-float ${card.className} ${index % 2 ? "landing-float-delayed" : ""} w-full rounded-3xl border border-white/40 bg-white/75 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 lg:w-48`}>
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600 dark:text-violet-300">
+                        <Icon className="size-5" />
+                      </div>
+                      <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-600 dark:text-emerald-300">Live</span>
                     </div>
-                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-600 dark:text-emerald-300">Live</span>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{card.title}</p>
+                    <p className="mt-1 text-2xl font-black text-slate-950 dark:text-white">{card.value}</p>
                   </div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{card.title}</p>
-                  <p className="mt-1 text-2xl font-black text-slate-950 dark:text-white">{card.value}</p>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </Reveal>
       </div>
