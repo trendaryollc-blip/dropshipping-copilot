@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import { Search, Copy, Check, Tag, Globe, Eye, AlertTriangle, CheckCircle, Zap, ArrowRight, DollarSign, FileText } from "lucide-react"
+import { Search, Copy, Check, Tag, Globe, Eye, AlertTriangle, CheckCircle, Zap, ArrowRight, DollarSign, FileText, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
