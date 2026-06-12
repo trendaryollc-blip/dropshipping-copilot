@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { BarChart3, Sparkles, Heart, Star } from "lucide-react"
 
 const insights = [
@@ -7,21 +8,25 @@ const insights = [
     icon: BarChart3,
     title: "Weekly momentum",
     detail: "Revenue climbed 18% this week, driven by electronics and home goods.",
+    href: "/analytics/momentum",
   },
   {
     icon: Sparkles,
     title: "Top product pick",
     detail: "Wireless Earbuds Pro remains the highest converting product.",
+    href: "/products?search=Wireless%20Earbuds%20Pro",
   },
   {
     icon: Heart,
     title: "Customer favorite",
     detail: "Beauty and wellness products show the strongest repeat demand.",
+    href: "/products?filter=popular",
   },
   {
     icon: Star,
     title: "Motivation",
     detail: "Keep optimizing your top 3 suppliers and automate follow-up funnels.",
+    href: "/automation",
   },
 ]
 
@@ -43,7 +48,7 @@ export function InsightsFooter() {
       <div className="relative z-10 mt-5 grid gap-3 sm:grid-cols-2">
         {insights.map((insight) => {
           const Icon = insight.icon
-          return (
+          const card = (
             <div key={insight.title} className="group rounded-2xl border border-border/30 bg-card/40 p-4 transition-all duration-300 hover:border-primary/15 hover:bg-card/60">
               <div className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/15">
@@ -55,6 +60,14 @@ export function InsightsFooter() {
                 </div>
               </div>
             </div>
+          )
+
+          if (!insight.href) return card
+
+          return (
+            <Link key={insight.title} href={insight.href} className="block" aria-label={insight.title}>
+              {card}
+            </Link>
           )
         })}
       </div>
