@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { register } = useAuthStore()
+  const { register, login } = useAuthStore()
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,11 +34,17 @@ export default function RegisterPage() {
     }
     setLoading(true)
     try {
-      await register(name, email, password)
-      toast.success("Account created! Welcome to DropEase 🚀")
-      window.location.href = "/dashboard"
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed. Please try again.")
+      // Firebase register — errors surface here if the email already exists
+      const result = await register(name, email, password)
+      if (result.ok) {
+        toast.success("Account created! Welcome to DropEase 🚀")
+        window.location.href = "/dashboard"
+      } else {
+        setError(result.error || "Registration failed. Please try again.")
+      }
+    } catch (err: any) {
+      const code = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Registration failed."
+      setError(code.charAt(0).toUpperCase() + code.slice(1) + ".")
     } finally {
       setLoading(false)
     }

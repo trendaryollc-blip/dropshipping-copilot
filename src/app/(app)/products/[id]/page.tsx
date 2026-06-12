@@ -189,7 +189,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
                 <div className="flex items-center gap-2">
                   <Package className="size-4 text-primary" />
-                  <span className="text-lg">{product.stock || 'N/A'} in stock</span>
+                  <span className="text-lg">N/A in stock</span>
                 </div>
               </div>
             </div>

@@ -35,25 +35,11 @@ export async function GET(request: Request) {
     const activeProducts = products.filter((p: any) => p.status === 'active');
 
     let alertedCount = 0;
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM?.replace(/.*<(.+)>/, '$1') || 'admin@dropease.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dropease.com';
 
-    for (const product of activeProducts) {
-      // Check if product has stock and a low stock threshold
-      if (product.stock !== undefined && product.lowStockThreshold !== undefined) {
-        if (product.stock <= product.lowStockThreshold) {
-          console.log(`[Cron] Low stock alert for: ${product.name} (Stock: ${product.stock}, Threshold: ${product.lowStockThreshold})`);
-          
-          // Send email alert
-          await EmailService.sendLowStockAlert(adminEmail, {
-            name: product.name,
-            currentStock: product.stock,
-            threshold: product.lowStockThreshold,
-          });
-          
-          alertedCount++;
-        }
-      }
-    }
+    // Stock property has been removed from Product type
+    // Low stock functionality is no longer available
+    console.log(`[Cron] Low stock checking disabled - stock property removed`);
 
     console.log(`[Cron] Low stock check completed. Alerts sent: ${alertedCount}`);
     

@@ -20,7 +20,7 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  const user = await getDocument(COLLECTION_NAME, id)
+  const user = await getDocument(`${COLLECTION_NAME}/${id}`)
   return user as User | null
 }
 
@@ -45,24 +45,23 @@ export async function getOnboardedUsers(): Promise<User[]> {
 }
 
 export async function createUser(user: Omit<User, 'id'>): Promise<string> {
-  await addDocument(COLLECTION_NAME, user)
-  return `mock-${Date.now()}` // Return mock ID
+  return await addDocument(COLLECTION_NAME, user)
 }
 
 export async function updateUser(id: string, updates: Partial<User>): Promise<void> {
-  await updateDocument(COLLECTION_NAME, id, updates)
+  await updateDocument(`${COLLECTION_NAME}/${id}`, updates)
 }
 
 export async function updateUserPlan(id: string, plan: User['plan']): Promise<void> {
-  await updateDocument(COLLECTION_NAME, id, { plan })
+  await updateDocument(`${COLLECTION_NAME}/${id}`, { plan })
 }
 
 export async function markUserAsOnboarded(id: string): Promise<void> {
-  await updateDocument(COLLECTION_NAME, id, { isOnboarded: true })
+  await updateDocument(`${COLLECTION_NAME}/${id}`, { isOnboarded: true })
 }
 
 export async function deleteUser(id: string): Promise<void> {
-  await deleteDocument(COLLECTION_NAME, id)
+  await deleteDocument(`${COLLECTION_NAME}/${id}`)
 }
 
 // ============================================================================
@@ -75,7 +74,8 @@ export function listenToUsers(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback(data as User[])
+    (data) => callback(data as User[]),
+    errorCallback
   )
 }
 
@@ -89,6 +89,7 @@ export function listenToUser(
     (data) => {
       const user = (data as User[]).find((u) => u.id === id)
       callback(user as User | null)
-    }
+    },
+    errorCallback
   )
 }

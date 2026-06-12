@@ -25,23 +25,20 @@ export const AI = {
         const { processOrderWithGroq } = await import('./groq-order-processing')
         return processOrderWithGroq(input)
       }
-      case 'google': {
+      case 'cohere': {
         if (task === 'product_description') {
-          const { generateProductDescriptionWithGemini } = await import('./gemini-description')
-          return generateProductDescriptionWithGemini(input)
-        }
-        throw new Error(`Unknown google task: ${task}`)
-      }
-      case 'deepseek': {
-        if (task === 'seo_optimization') {
-          const { optimizeSEO } = await import('./deepseek-seo')
-          return optimizeSEO(input)
+          const { generateProductDescription } = await import('./cohere')
+          return generateProductDescription(input)
         }
         if (task === 'competitor_analysis') {
-          const { generateCompetitorAnalysisWithDeepSeek } = await import('./deepseek-competitor')
-          return generateCompetitorAnalysisWithDeepSeek(input)
+          const { analyzeCompetitors } = await import('./cohere')
+          return analyzeCompetitors(input)
         }
-        throw new Error(`Unknown deepseek task: ${task}`)
+        throw new Error(`Unknown cohere task: ${task}`)
+      }
+      case 'deepseek': {
+        const { optimizeSEO } = await import('./deepseek-seo')
+        return optimizeSEO(input)
       }
       case 'openrouter': {
         const { getDynamicPricingWithOpenRouter } = await import('./openrouter-pricing')
@@ -73,15 +70,23 @@ export const AI = {
       }
     }
   },
+  get cohere() {
+    return {
+      generateDescription: async (input: any) => {
+        const { generateProductDescription } = await import('./cohere')
+        return generateProductDescription(input)
+      },
+      analyzeCompetitors: async (input: any) => {
+        const { analyzeCompetitors } = await import('./cohere')
+        return analyzeCompetitors(input)
+      }
+    }
+  },
   get deepseek() {
     return {
       optimizeSEO: async (input: any) => {
         const { optimizeSEO } = await import('./deepseek-seo')
         return optimizeSEO(input)
-      },
-      analyzeCompetitors: async (input: any) => {
-        const { generateCompetitorAnalysisWithDeepSeek } = await import('./deepseek-competitor')
-        return generateCompetitorAnalysisWithDeepSeek(input)
       }
     }
   },
@@ -114,14 +119,6 @@ export const AI = {
       reviewReturns: async (input: any) => {
         const { reviewReturn } = await import('./serpapi-returns')
         return reviewReturn(input)
-      }
-    }
-  },
-  get google() {
-    return {
-      generateDescription: async (input: any) => {
-        const { generateProductDescriptionWithGemini } = await import('./gemini-description')
-        return generateProductDescriptionWithGemini(input)
       }
     }
   },

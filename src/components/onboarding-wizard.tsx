@@ -1,156 +1,128 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/useAuthStore"
-import { toast } from "sonner"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Search, Users, BookOpen, Zap, ChevronRight, CheckCircle } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Check, ArrowRight } from "lucide-react"
+import { useAuthStore } from "@/store/useAuthStore"
+import Link from "next/link"
 
-interface Step {
-  id: string
-  title: string
-  description: string
-  completed: boolean
-}
+const STEPS = [
+  {
+    icon: Zap,
+    emoji: "👋",
+    title: "Welcome to DropEase!",
+    description: "You're about to start your dropshipping journey. DropEase helps you find products, discover suppliers, and manage your store — all in one place.",
+    cta: null,
+    color: "bg-primary/10 text-primary",
+  },
+  {
+    icon: Search,
+    emoji: "🔍",
+    title: "Find Your First Product",
+    description: "Start with the Product Research page to discover trending items with low competition. Aim for a trend score above 75 and low competition level.",
+    cta: { label: "Browse Products →", href: "/products" },
+    color: "bg-success-light text-success",
+  },
+  {
+    icon: Users,
+    emoji: "🤝",
+    title: "Connect with Suppliers",
+    description: "Use the Suppliers page to find reliable suppliers for your products. Look for verified suppliers with high ratings and fast shipping.",
+    cta: { label: "Find Suppliers →", href: "/suppliers" },
+    color: "bg-primary-light text-primary",
+  },
+  {
+    icon: BookOpen,
+    emoji: "📚",
+    title: "Learn as You Go",
+    description: "The Learning Hub has step-by-step guides for beginners. Start with 'What is Dropshipping?' and work your way up to scaling strategies.",
+    cta: { label: "Open Learning Hub →", href: "/learn" },
+    color: "bg-warning-light text-warning",
+  },
+]
 
-export default function OnboardingWizard() {
-  const [currentStep, setCurrentStep] = useState(0)
-  const { user, completeOnboarding, isInitialised } = useAuthStore()
-  const router = useRouter()
+export function OnboardingWizard() {
+  const { user, completeOnboarding } = useAuthStore()
+  const [step, setStep] = useState(0)
+  const [open, setOpen] = useState(true)
 
-  const steps: Step[] = [
-    {
-      id: "setup-profile",
-      title: "Complete Your Profile",
-      description: "Add your business details to get started with DropEase.",
-      completed: false
-    },
-    {
-      id: "connect-suppliers",
-      title: "Connect Your Suppliers",
-      description: "Link your supplier accounts to automate product imports.",
-      completed: false
-    },
-    {
-      id: "set-up-automations",
-      title: "Set Up Automations",
-      description: "Configure automated workflows to save time and increase sales.",
-      completed: false
-    }
-  ]
+  // Only show for authenticated, non-onboarded users
+  const shouldShow = user !== null && !user.isOnboarded
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
+  if (!shouldShow) return null
+
+  const current = STEPS[step]
+  const Icon = current.icon
+  const isLast = step === STEPS.length - 1
+
+  function handleNext() {
+    if (isLast) {
+      completeOnboarding()
+      setOpen(false)
     } else {
-      completeOnboarding(user?.id || "")
-      toast.success("Onboarding completed successfully!")
-      router.push("/dashboard")
+      setStep((s) => s + 1)
     }
   }
 
-  const handleComplete = () => {
-    completeOnboarding(user?.id || "")
-    toast.success("Onboarding completed successfully!")
-    router.push("/dashboard")
-  }
-
-  if (!user || isInitialised) {
-    return null
+  function handleSkip() {
+    completeOnboarding()
+    setOpen(false)
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <Card className="shadow-lg">
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-xl font-bold">Onboarding Wizard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Progress bar */}
-            <Progress
-              value={(currentStep / steps.length) * 100}
-              className="h-2"
-            />
-            <div className="flex justify-between text-sm text-muted-foreground">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${index <= currentStep ? 'bg-primary' : 'bg-muted'}`} />
-                  <span>{step.title}</span>
-                </div>
-              ))}
-            </div>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) handleSkip() }} modal={false}>
+      <DialogContent showCloseButton={false} showOverlay={false} className="sm:max-w-md">
+        <DialogHeader>
+          <div className={`mx-auto flex size-14 items-center justify-center rounded-2xl text-2xl mb-2 ${current.color}`}>
+            {current.emoji}
+          </div>
+          <DialogTitle className="text-center text-base">{current.title}</DialogTitle>
+        </DialogHeader>
 
-            {/* Current step content */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold">{steps[currentStep].title}</h2>
-              <p className="text-muted-foreground">{steps[currentStep].description}</p>
+        <p className="text-center text-sm text-muted-foreground leading-relaxed px-2">
+          {current.description}
+        </p>
 
-              {/* Step content */}
-              {currentStep === 0 && (
-                <div className="space-y-3">
-                  <p>Please fill out your business information to complete your profile.</p>
-                  <Button variant="outline" className="w-full">
-                    Connect Your Business
-                  </Button>
-                </div>
-              )}
+        {/* Progress dots */}
+        <div className="flex items-center justify-center gap-1.5">
+          {STEPS.map((_, i) => (
+            <div key={i} className={`h-1.5 rounded-full transition-all ${i === step ? "w-6 bg-primary" : i < step ? "w-3 bg-primary/40" : "w-3 bg-muted"}`} />
+          ))}
+        </div>
 
-              {currentStep === 1 && (
-                <div className="space-y-3">
-                  <p>Connect your supplier accounts to automatically import products.</p>
-                  <Button variant="outline" className="w-full">
-                    Connect Suppliers
-                  </Button>
-                </div>
-              )}
+        <Progress value={((step + 1) / STEPS.length) * 100} className="h-1" />
 
-              {currentStep === 2 && (
-                <div className="space-y-3">
-                  <p>Set up automated workflows to save time and increase sales.</p>
-                  <Button variant="outline" className="w-full">
-                    Configure Automations
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Navigation buttons */}
-            <div className="flex justify-between">
-              {currentStep > 0 && (
+        <DialogFooter className="-mx-4 -mb-4 rounded-b-xl border-t bg-muted/50 p-4">
+          <div className="flex w-full items-center justify-between">
+            <Button variant="ghost" size="sm" className="text-xs" onClick={handleSkip}>
+              Skip tour
+            </Button>
+            <div className="flex gap-2">
+              {current.cta && (
                 <Button
                   variant="outline"
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                  className="text-sm"
-                >
-                  Back
-                </Button>
+                  size="sm"
+                  className="text-xs"
+                  render={
+                    <Link href={current.cta.href} onClick={() => setStep((s) => s + 1)}>
+                      {current.cta.label}
+                    </Link>
+                  }
+                />
               )}
-
-              {currentStep < steps.length - 1 ? (
-                <Button
-                  onClick={handleNext}
-                  className="text-sm"
-                >
-                  <ArrowRight className="mr-2 size-4" />
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleComplete}
-                  className="text-sm"
-                >
-                  <Check className="mr-2 size-4" />
-                  Complete Onboarding
-                </Button>
-              )}
+              <Button size="sm" onClick={handleNext}>
+                {isLast ? (
+                  <><CheckCircle className="size-3.5" /> Get Started!</>
+                ) : (
+                  <>Next <ChevronRight className="size-3.5" /></>
+                )}
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

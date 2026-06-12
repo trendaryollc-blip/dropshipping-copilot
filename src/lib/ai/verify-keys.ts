@@ -3,6 +3,8 @@
  * Used by the /api/health endpoint to report which keys are configured.
  */
 
+import 'dotenv/config';
+
 export interface KeyStatus {
   valid: boolean;
   error?: string;
@@ -23,15 +25,11 @@ export async function verifyAllKeys(): Promise<KeyHealthReport> {
     { name: 'zai', envKey: 'ZAI_API_KEY' },
     { name: 'groq', envKey: 'GROQ_API_KEY' },
     { name: 'cloudflare', envKey: 'CLOUDFLARE_AI_API_KEY' },
+    { name: 'huggingface', envKey: 'HUGGINGFACE_API_KEY' },
     { name: 'openrouter', envKey: 'OPENROUTER_API_KEY' },
     { name: 'deepseek', envKey: 'DEEPSEEK_API_KEY' },
     { name: 'google', envKey: 'GOOGLE_AI_API_KEY' },
-    { name: 'mistral', envKey: 'MISTRAL_API_KEY' },
-    { name: 'serpapi', envKey: 'SERPAPI_API_KEY' },
-    { name: 'scraperapi', envKey: 'SCRAPER_API_KEY' },
-    { name: 'apify', envKey: 'APIFY_TOKEN' },
-    { name: 'scrape_do', envKey: 'SCRAPE_DO_TOKEN' },
-    { name: 'zendrop', envKey: 'ZENDROP_API_KEY' },
+    { name: 'openai', envKey: 'NEXT_PUBLIC_OPENAI_API_KEY' },
   ];
 
   for (const provider of providers) {
@@ -39,14 +37,6 @@ export async function verifyAllKeys(): Promise<KeyHealthReport> {
     report[provider.name] = {
       valid: key.length > 0,
       error: key.length > 0 ? undefined : `${provider.envKey} is not set`,
-    };
-  }
-
-  // Cloudflare account ID check
-  if (report['cloudflare']?.valid) {
-    report['cloudflare_account'] = {
-      valid: !!(process.env.CLOUDFLARE_ACCOUNT_ID),
-      error: !process.env.CLOUDFLARE_ACCOUNT_ID ? 'CLOUDFLARE_ACCOUNT_ID is not set' : undefined,
     };
   }
 

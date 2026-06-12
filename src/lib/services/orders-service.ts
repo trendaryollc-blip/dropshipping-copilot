@@ -20,7 +20,7 @@ export async function getOrders(): Promise<Order[]> {
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {
-  const order = await getDocument(COLLECTION_NAME, id)
+  const order = await getDocument(`${COLLECTION_NAME}/${id}`)
   return order as Order | null
 }
 
@@ -47,20 +47,19 @@ export async function getDeliveredOrders(): Promise<Order[]> {
 }
 
 export async function createOrder(order: Omit<Order, 'id'>): Promise<string> {
-  await addDocument(COLLECTION_NAME, order)
-  return `mock-${Date.now()}` // Return mock ID
+  return await addDocument(COLLECTION_NAME, order)
 }
 
 export async function updateOrder(id: string, updates: Partial<Order>): Promise<void> {
-  await updateDocument(COLLECTION_NAME, id, updates)
+  await updateDocument(`${COLLECTION_NAME}/${id}`, updates)
 }
 
 export async function updateOrderStatus(id: string, status: Order['status']): Promise<void> {
-  await updateDocument(COLLECTION_NAME, id, { status })
+  await updateDocument(`${COLLECTION_NAME}/${id}`, { status })
 }
 
 export async function deleteOrder(id: string): Promise<void> {
-  await deleteDocument(COLLECTION_NAME, id)
+  await deleteDocument(`${COLLECTION_NAME}/${id}`)
 }
 
 // ============================================================================
@@ -73,7 +72,8 @@ export function listenToOrders(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback(data as Order[])
+    (data) => callback(data as Order[]),
+    errorCallback
   )
 }
 
@@ -87,7 +87,8 @@ export function listenToOrder(
     (data) => {
       const order = (data as Order[]).find((o) => o.id === id)
       callback(order as Order | null)
-    }
+    },
+    errorCallback
   )
 }
 
@@ -97,6 +98,7 @@ export function listenToPendingOrders(
 ) {
   return listenToCollection(
     COLLECTION_NAME,
-    (data) => callback((data as Order[]).filter(o => o.status === 'pending'))
+    (data) => callback((data as Order[]).filter(o => o.status === 'pending')),
+    errorCallback
   )
 }

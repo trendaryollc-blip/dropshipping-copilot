@@ -48,7 +48,7 @@ class ProfitDashboardService {
       let totalRefunds = 0;
       const productRevenueMap = new Map<string, { revenue: number; cogs: number; name: string }>();
 
-      for (const order of filteredOrders as any[]) {
+      for (const order of filteredOrders) {
         // Skip cancelled/refunded for revenue but track refunds
         if (order.status === 'cancelled' || order.status === 'refunded') {
           totalRefunds += order.total || 0;

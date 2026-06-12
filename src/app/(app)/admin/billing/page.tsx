@@ -112,8 +112,8 @@ export default function AdminBillingPage() {
         <div className="flex items-start gap-3">
           <DollarSign className="size-5 text-primary" />
           <div>
-            <p className="font-semibold">Enterprise Billing</p>
-            <p className="mt-1">To enable real payment processing, configure your Stripe, PayPal, or Razorpay API keys in the environment variables. Webhook-based billing sync is available via Integrations.</p>
+            <p className="font-semibold">Enterprise billing placeholder</p>
+            <p className="mt-1">Connect Stripe, PayPal, or Razorpay from Integrations for real billing updates.</p>
           </div>
         </div>
       </div>

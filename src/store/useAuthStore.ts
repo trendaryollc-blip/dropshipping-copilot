@@ -1,20 +1,91 @@
 "use client"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { toast } from "sonner"
+import type { User } from "@/types"
+import {
+  signIn,
+  signUp,
+  signOut,
+  onAuthChange,
+  updateAuthProfile,
+  getAuthInstance,
+  isFirebaseAuthConfigured,
+} from "@/lib/firebase-auth"
+import { setDocument } from "@/lib/firestore-service"
+
+/**
+ * Convert any error thrown by Firebase (or our own `requireAuth` guard) into
+ * a human-readable, UI-friendly string.  This replaces the previous behaviour
+ * which silently returned `false` and showed the generic "Invalid email or
+ * password" message for *every* failure — even when Firebase was simply not
+ * configured, when the network was down, or when the user's account was
+ * disabled.
+ */
+function describeAuthError(err: unknown): string {
+  const e = err as { code?: string; message?: string }
+  const code = e?.code || ""
+  const message = typeof e?.message === "string" ? e.message : ""
+  // Common Firebase Auth error codes -> friendly message
+  const map: Record<string, string> = {
+    "auth/invalid-email": "That email address isn't valid.",
+    "auth/user-disabled": "This account has been disabled.",
+    "auth/user-not-found": "No account exists with that email.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/invalid-login-credentials": "Incorrect email or password.",
+    "auth/email-already-in-use": "An account with that email already exists.",
+    "auth/weak-password": "Password is too weak. Use at least 6 characters.",
+    "auth/too-many-requests": "Too many attempts. Please wait a moment and try again.",
+    "auth/network-request-failed": "Network error. Check your connection and try again.",
+    "auth/popup-closed-by-user": "Sign-in popup was closed before completing.",
+    "auth/popup-blocked": "Sign-in popup was blocked by the browser.",
+    "auth/unauthorized-domain": "This domain isn't authorised for OAuth sign-in.",
+    "auth/operation-not-allowed": "This sign-in method isn't enabled. Contact the admin.",
+    "auth/invalid-api-key": "Firebase isn't configured correctly. Contact the admin.",
+    "auth/configuration-not-found": "Firebase project isn't configured. Contact the admin.",
+  }
+  if (code && map[code]) return map[code]
+  // The raw Google API error string can be very long; surface a digest so
+  // the user (and you) can act on it without filling the toast.
+  if (
+    message.includes("identitytoolkit") &&
+    message.includes("are blocked")
+  ) {
+    return (
+      "Firebase Authentication is disabled for this API key / project. " +
+      "Open Google Cloud Console → APIs & Services → Library, search for " +
+      "\u201cIdentity Toolkit API\u201d, and Enable it. Then re-deploy."
+    )
+  }
+  if (message.includes("API_KEY_SERVICE_BLOCKED")) {
+    return (
+      "Firebase API key is blocked from calling Identity Toolkit. " +
+      "Open Google Cloud Console → APIs & Services → Credentials, " +
+      "edit the API key, and add \u201cIdentity Toolkit API\u201d to its allowed APIs."
+    )
+  }
+  if (typeof message === "string" && message.length > 0) {
+    // Trim Firebase's verbose raw error to something readable.
+    const trimmed = message.length > 200 ? message.slice(0, 197) + "…" : message
+    return trimmed
+  }
+  if (code) return code.replace(/^auth\//, "").replace(/-/g, " ")
+  return "Sign-in failed. Please try again."
+}
 
 interface AuthState {
-  user: any | null
+  user: User | null
   isAuthenticated: boolean
-  isLoading: boolean
-  error: string | null
   isInitialised: boolean
-
-  login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
-  logout: () => void
-  checkAuth: () => Promise<void>
-  completeOnboarding: (userId: string) => Promise<void>
+  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>
+  register: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<{ ok: boolean; error?: string }>
+  logout: () => Promise<void>
+  updateProfile: (data: Partial<User>) => Promise<void>
+  completeOnboarding: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -22,167 +93,132 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
-      error: null,
       isInitialised: false,
 
       login: async (email, password) => {
-        set({ isLoading: true, error: null })
-
-        // Mock authentication logic
         try {
-          // Check if user exists in mock data
-          const users = JSON.parse(localStorage.getItem('dropease-app') || '{}').users || [];
-
-          const user = users.find((u: any) => u.email === email);
-
-          if (!user) {
-            toast.error("User not found");
-            return;
+          const user = await signIn(email, password)
+          // Best-effort: ensure a Firestore user doc exists.
+          // Use merge: true WITHOUT overwriting isOnboarded — the persisted
+          // localStorage value (or Firestore value) is the source of truth.
+          try {
+            await setDocument(
+              `copilot_users/${user.id}`,
+              { id: user.id, name: user.name, email, plan: "free" },
+              true,
+            )
+          } catch (fsErr) {
+            console.warn("[Auth] login: Firestore profile upsert failed:", fsErr)
           }
-
-          // Verify password (mock)
-          if (user.password !== password) {
-            toast.error("Incorrect password");
-            return;
-          }
-
-          // Successful login
-          set({
-            user,
-            isAuthenticated: true,
-            isLoading: false
-          });
-
-          toast.success("Login successful!");
+          // Preserve isOnboarded from the persisted store if it exists
+          const prev = useAuthStore.getState().user
+          const isOnboarded = prev?.id === user.id ? prev.isOnboarded : false
+          set({ user: { ...user, isOnboarded }, isAuthenticated: true, isInitialised: true })
+          return { ok: true }
         } catch (err) {
-          set({ error: err instanceof Error ? err.message : "Login failed" });
-          toast.error("Login failed");
+          const msg = describeAuthError(err)
+          console.warn("[Auth] login failed:", msg, err)
+          return { ok: false, error: msg }
         }
       },
 
       register: async (name, email, password) => {
-        set({ isLoading: true, error: null })
-
         try {
-          // Check if user already exists
-          const users = JSON.parse(localStorage.getItem('dropease-app') || '{}').users || [];
-
-          if (users.some((u: any) => u.email === email)) {
-            toast.error("Email already in use");
-            return;
+          const user = await signUp(email, password, name)
+          // New user — isOnboarded is false by default
+          try {
+            await setDocument(
+              `copilot_users/${user.id}`,
+              { id: user.id, name, email, plan: "free", isOnboarded: false },
+              true,
+            )
+          } catch (fsErr) {
+            console.warn("[Auth] register: Firestore profile upsert failed:", fsErr)
           }
-
-          // Create new user
-          const newUser = {
-            id: `user-${Date.now()}`,
-            name,
-            email,
-            avatar: `https://i.pravatar.cc/80?u=${email}`,
-            plan: "free",
-            createdAt: new Date().toISOString(),
-            isOnboarded: false,
-            password // Store password in mock data (not secure, just for demo)
-          };
-
-          // Add to mock data
-          const updatedUsers = [...users, newUser];
-
-          // Update local storage
-          const state = JSON.parse(localStorage.getItem('dropease-app') || '{}');
-          state.users = updatedUsers;
-          localStorage.setItem('dropease-app', JSON.stringify(state));
-
-          // Set user in store
-          set({
-            user: newUser,
-            isAuthenticated: true,
-            isLoading: false
-          });
-
-          toast.success("Account created successfully!");
+          set({ user: { ...user, isOnboarded: false }, isAuthenticated: true, isInitialised: true })
+          return { ok: true }
         } catch (err) {
-          set({ error: err instanceof Error ? err.message : "Registration failed" });
-          toast.error("Registration failed");
+          const msg = describeAuthError(err)
+          console.warn("[Auth] register failed:", msg, err)
+          return { ok: false, error: msg }
         }
       },
 
-      completeOnboarding: async (userId) => {
-        set({ isLoading: true, error: null })
-
+      logout: async () => {
         try {
-          // Update user in mock data
-          const users = JSON.parse(localStorage.getItem('dropease-app') || '{}').users || [];
-          const updatedUsers = users.map((user: any) =>
-            user.id === userId ? { ...user, isOnboarded: true } : user
-          );
-
-          // Update local storage
-          const state = JSON.parse(localStorage.getItem('dropease-app') || '{}');
-          state.users = updatedUsers;
-          localStorage.setItem('dropease-app', JSON.stringify(state));
-
-          // Update user in store
-          set({
-            user: { ...state.user, isOnboarded: true },
-            isInitialised: true
-          });
-
-          toast.success("Onboarding completed!");
+          await signOut()
         } catch (err) {
-          set({ error: err instanceof Error ? err.message : "Failed to complete onboarding" });
-          toast.error("Failed to complete onboarding");
+          console.warn("[Auth] logout failed:", err)
         } finally {
-          set({ isLoading: false });
+          set({ user: null, isAuthenticated: false })
         }
       },
 
-      logout: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-          isInitialised: false
-        });
-        toast.info("You have been logged out");
-      },
-
-      checkAuth: async () => {
-        set({ isLoading: true, error: null });
-
+      updateProfile: async (data) => {
         try {
-          // Check if user exists in local storage
-          const state = JSON.parse(localStorage.getItem('dropease-app') || '{}');
-          const user = state.users && state.users.length > 0 ? state.users[0] : null;
-
-          if (user) {
-            set({
-              user,
-              isAuthenticated: true,
-              isInitialised: user.isOnboarded,
-              isLoading: false
-            });
+          const current = getAuthInstance().currentUser
+          if (current) {
+            const updated = await updateAuthProfile({
+              displayName: data.name,
+              photoURL: data.avatar,
+            })
+            set({ user: updated })
           } else {
-            set({
-              isAuthenticated: false,
-              isLoading: false
-            });
+            set((state) => ({
+              user: state.user ? { ...state.user, ...data } : null,
+            }))
           }
         } catch (err) {
-          set({ error: err instanceof Error ? err.message : "Failed to check authentication" });
+          console.warn("[Auth] updateProfile failed:", err)
+          set((state) => ({
+            user: state.user ? { ...state.user, ...data } : null,
+          }))
         }
-      }
+      },
+
+      completeOnboarding: () =>
+        set((state) => ({
+          user: state.user ? { ...state.user, isOnboarded: true } : null,
+        })),
     }),
     {
       name: "dropease-auth",
       partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-        isLoading: state.isLoading,
-        error: state.error,
-        isInitialised: state.isInitialised
-      })
-    }
-  )
+        isOnboarded: state.user?.isOnboarded || false,
+      }),
+    },
+  ),
 )
+
+// ── Bootstrap: subscribe to Firebase Auth on first client mount ────────────────
+if (typeof window !== "undefined") {
+  if (!isFirebaseAuthConfigured()) {
+    useAuthStore.setState({ isInitialised: true })
+  } else {
+    onAuthChange((user) => {
+      if (user) {
+        // Upsert the Firestore user doc WITHOUT overwriting isOnboarded.
+        // The persisted localStorage value is the source of truth for onboarding.
+        setDocument(
+          `copilot_users/${user.id}`,
+          { id: user.id, name: user.name, email: user.email, plan: "free" },
+          true,
+        ).catch(() => {})
+        // Preserve isOnboarded from the existing persisted state
+        const prev = useAuthStore.getState().user
+        const isOnboarded = prev?.id === user.id && prev.isOnboarded
+        useAuthStore.setState({
+          user: { ...user, isOnboarded },
+          isAuthenticated: true,
+          isInitialised: true,
+        })
+      } else {
+        useAuthStore.setState({
+          user: null,
+          isAuthenticated: false,
+          isInitialised: true,
+        })
+      }
+    })
+  }
+}

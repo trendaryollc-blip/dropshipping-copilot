@@ -51,7 +51,6 @@ export default function createModalystAdapter() {
           source: 'modalyst',
           sourceId: String(p.id),
           originalPrice: Number(p.price),
-          stock: p.stock || 999,
           variants: p.variants || [],
           shipping: p.shipping || { from: p.supplier_country || 'US', estimatedDays: '5-15' },
         }))

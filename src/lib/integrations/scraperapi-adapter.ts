@@ -374,7 +374,6 @@ export default function createScraperAPIAdapter() {
         source: 'scraperapi',
         sourceId: p.url,
         originalPrice: parseFloat(p.price.replace(/[^0-9.]/g, '')),
-        stock: p.availability === 'In Stock' ? 999 : 0,
         variants: [],
         shipping: { from: p.source, estimatedDays: '5-20' },
         scrapedData: p,

@@ -208,13 +208,12 @@ class TrendaryoAPI {
         name: product.name,
         description: product.description || '',
         price: product.price || 0,
-        stock: product.stock || 0,
         category: product.category || '',
         image: product.image || '',
       });
     } else {
       // Otherwise just update price/stock
-      await this.updateProduct(product.id, { price: product.price, stock: product.stock });
+      await this.updateProduct(product.id, { price: product.price });
     }
   }
 

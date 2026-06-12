@@ -24,7 +24,6 @@ type StatusFilter = ProductStatus | "all"
 
 interface EditableProduct extends Product {
   displayPrice: number
-  stock: number
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -51,7 +50,6 @@ export default function BulkEditPage() {
     (apiProducts.length > 0 ? apiProducts : mockProducts).map(p => ({
       ...p,
       displayPrice: p.priceRange.max,
-      stock: seededStock(p.id),
     }))
   )
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -130,10 +128,7 @@ export default function BulkEditPage() {
           else price = adj
           price = Math.max(0.01, parseFloat(price.toFixed(2)))
         }
-        const stock = stockValue && !isNaN(parseInt(stockValue))
-          ? Math.max(0, parseInt(stockValue))
-          : p.stock
-        return { ...p, displayPrice: price, status: newStatus, stock }
+        return { ...p, displayPrice: price, status: newStatus }
       })
     )
 
@@ -467,8 +462,8 @@ export default function BulkEditPage() {
 
                     {/* Stock */}
                     <TableCell className="text-right">
-                      <span className={`text-sm font-medium ${product.stock <= 10 ? "text-red-600" : product.stock <= 30 ? "text-amber-600" : "text-foreground"}`}>
-                        {product.stock}
+                      <span className="text-sm font-medium text-foreground">
+                        N/A
                       </span>
                     </TableCell>
 

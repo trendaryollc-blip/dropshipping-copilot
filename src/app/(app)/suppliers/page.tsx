@@ -1,127 +1,201 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Users, Package, Globe, Search } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAppStore } from "@/store/useAppStore"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useState } from "react"
+import { Search, Star, Clock, CheckCircle, Package, Users, Send } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
-import Link from "next/link"
+import { AIActionButton } from "@/components/AIActionButton"
+import { useSuppliers } from "@/hooks/useData"
+
+const CATEGORIES = ["All", "Electronics", "Fashion", "Home & Garden", "Beauty", "Sports", "Pet Supplies"]
+const COUNTRIES = ["All", "China", "USA", "Turkey", "South Korea", "Germany"]
 
 export default function SuppliersPage() {
-  const { products, loadFromFirestore } = useAppStore()
-  const [isLoading, setIsLoading] = useState(true)
+  const { suppliers, loading } = useSuppliers()
+  const [search, setSearch] = useState("")
+  const [category, setCategory] = useState("All")
+  const [country, setCountry] = useState("All")
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        await loadFromFirestore()
-      } catch (error) {
-        toast.error("Failed to load supplier data")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchData()
-  }, [loadFromFirestore])
-
-  // Get unique suppliers from products
-  const suppliers = [...new Set(products.map(p => p.supplierName || "Unknown"))]
-    .filter(name => name)
-    .sort()
-
-  // Group products by supplier
-  const productsBySupplier: Record<string, any[]> = {}
-  products.forEach(product => {
-    if (product.supplierName && !productsBySupplier[product.supplierName]) {
-      productsBySupplier[product.supplierName] = []
-    }
-    if (product.supplierName) {
-      productsBySupplier[product.supplierName].push(product)
-    }
+  const filtered = suppliers.filter((s) => {
+    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase())
+    const matchCat = category === "All" || s.categories.some((c) => c === category)
+    const matchCountry = country === "All" || s.country === country
+    return matchSearch && matchCat && matchCountry
   })
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4 p-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-lg" />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-6 p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Suppliers</h1>
-          <p className="text-sm text-muted-foreground">Find reliable suppliers for your products</p>
-        </div>
-        <Badge className="bg-primary/10 text-primary">
-          {suppliers.length} suppliers
-        </Badge>
-      </div>
+    <div className="space-y-6">
+      {/* ═══ Hero Section ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm sm:p-8 animate-in">
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
 
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">
+              <Users className="size-3" />
+              Supplier Finder
+            </span>
+            <h1 className="hero-title">Find trusted partners</h1>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
+              Discover reliable suppliers with high ratings, fast response times, and verified status.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 rounded-2xl border border-border/30 bg-card/40 px-4 py-2 text-sm backdrop-blur-sm">
+              <span className="font-mono text-lg font-bold text-foreground">{filtered.length}</span>
+              <span className="text-xs text-muted-foreground/60">suppliers</span>
+            </div>
+            <AIActionButton
+              task="order_processing"
+              input={{
+                orderId: "SUPPLIER-ANALYSIS",
+                customerName: "Supplier Evaluation",
+                totalAmount: 500,
+                items: [{ name: "Supplier Analysis", quantity: 1, price: 500 }],
+              }}
+              label="AI Analysis"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ Filters ═══ */}
+      <section className="space-y-3 animate-in delay-1">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
+          <Input
             placeholder="Search suppliers..."
-            className="flex-1 rounded-lg border border-border/30 bg-card/50 pl-8 pr-3 py-2 text-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
           />
         </div>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
+                category === c
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                  : "bg-card/50 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-foreground hover:bg-card/70"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+          <span className="self-center text-xs text-muted-foreground/30">|</span>
+          {COUNTRIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCountry(c)}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
+                country === c
+                  ? "bg-foreground text-background border-foreground shadow-sm"
+                  : "bg-card/50 text-muted-foreground border-border/50 hover:text-foreground hover:bg-card/70"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </section>
 
-        <Tabs defaultValue="all" className="mt-4">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-            <TabsTrigger value="all">All Suppliers</TabsTrigger>
-          </TabsList>
+      {/* ═══ Supplier Grid ═══ */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {filtered.map((supplier, i) => (
+          <div key={supplier.id} className={`group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}>
+            {/* Hover glow */}
+            <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
 
-          <TabsContent value="all">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {suppliers.map((supplier) => (
-                <Card key={supplier} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Supplier: {supplier}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Package className="h-4 w-4 text-amber-500" />
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Products: {productsBySupplier[supplier]?.length || 0}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-semibold text-foreground">{supplier}</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {productsBySupplier[supplier]?.length || 0} products available
-                      </p>
-                      <Link
-                        href={`/suppliers/${supplier}`}
-                        className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
-                        View Supplier
-                        <Globe className="h-3 w-3" />
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="relative z-10">
+              <div className="flex items-start gap-3">
+                <Avatar className="size-12 rounded-2xl border border-border/30 ring-2 ring-primary/5">
+                  <AvatarImage src={supplier.avatar} alt={supplier.name} />
+                  <AvatarFallback className="rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 text-xs font-bold text-primary">
+                    {supplier.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-sm font-bold text-foreground">{supplier.name}</p>
+                    {supplier.verified && (
+                      <CheckCircle className="size-3.5 shrink-0 text-emerald-500" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground/60">{supplier.country}</p>
+                </div>
+              </div>
+
+              {/* Trust Score */}
+              <div className="mt-3 flex items-center gap-1.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`size-3.5 ${i < Math.floor(supplier.trustScore) ? "fill-amber-400 text-amber-400" : "fill-muted/30 text-muted-foreground/20"}`} />
+                ))}
+                <span className="ml-0.5 font-mono text-xs font-bold text-foreground">{supplier.trustScore}</span>
+                {supplier.verified && (
+                  <Badge className="ml-auto border-emerald-500/20 bg-emerald-500/10 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    Verified
+                  </Badge>
+                )}
+              </div>
+
+              {/* Stats */}
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-card/50 p-2.5 border border-border/20">
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                    <Clock className="size-3 text-primary/60" /> Response
+                  </div>
+                  <p className="mt-0.5 font-mono text-xs font-bold text-foreground">{supplier.responseTime}</p>
+                </div>
+                <div className="rounded-xl bg-card/50 p-2.5 border border-border/20">
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                    <Package className="size-3 text-primary/60" /> Products
+                  </div>
+                  <p className="mt-0.5 font-mono text-xs font-bold text-foreground">{supplier.totalProducts.toLocaleString()}</p>
+                </div>
+              </div>
+
+              {/* Categories */}
+              <div className="mt-3 flex flex-wrap gap-1">
+                {supplier.categories.map((cat) => (
+                  <span key={cat} className="rounded-lg border border-primary/10 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary/70">
+                    {cat}
+                  </span>
+                ))}
+              </div>
+
+              <Button
+                size="sm"
+                className="mt-4 h-9 w-full rounded-xl text-xs font-semibold"
+                onClick={() => toast.success(`Contact request sent to ${supplier.name}!`)}
+              >
+                <Send className="mr-1.5 size-3" /> Contact Supplier
+              </Button>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        ))}
       </div>
+
+      {/* ═══ Empty State ═══ */}
+      {filtered.length === 0 && (
+        <div className="flex flex-col items-center gap-4 py-20 text-center animate-in">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50 text-muted-foreground/40">
+            <Search className="size-7" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">No suppliers found</p>
+            <p className="mt-1 text-xs text-muted-foreground/60">Try adjusting your filters or search term</p>
+          </div>
+          <Button variant="outline" size="sm" className="rounded-xl" onClick={() => { setSearch(""); setCategory("All"); setCountry("All") }}>
+            Clear All Filters
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

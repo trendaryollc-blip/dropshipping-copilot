@@ -50,7 +50,6 @@ export default function createPrintfulAdapter() {
           source: 'printful',
           sourceId: String(p.id),
           originalPrice: Number(p.price),
-          stock: 999,
           variants: p.variants || [],
           shipping: p.shipping || { from: 'US/EU', estimatedDays: '3-10' },
         }))

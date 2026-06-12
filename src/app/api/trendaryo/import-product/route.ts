@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       price: price || 0,
       category: category || '',
       image: imageUrl || '',
-      stock: stock || 0,
       status: 'active',
       createdAt: new Date().toISOString(),
     })

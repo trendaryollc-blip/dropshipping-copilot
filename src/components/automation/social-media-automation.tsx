@@ -122,7 +122,7 @@ export function SocialMediaAutomation() {
     await scheduleSocialPost({
       platform: campaign.platform,
       caption: campaign.content.template,
-      imageUrl: campaign.content.includeImage ? "https://picsum.photos/600/400" : undefined,
+      imageUrl: campaign.content.includeImage ? "https://via.placeholder.com/600x400" : undefined,
       hashtags: campaign.content.hashtags,
       callToAction: campaign.content.callToAction,
       scheduledAt: new Date(Date.now() + 1000 * 60 * 5).toISOString(),

@@ -51,7 +51,6 @@ export default function createSpocketAdapter() {
           source: 'spocket',
           sourceId: String(p.id),
           originalPrice: Number(p.price),
-          stock: p.stock || 999,
           variants: p.variants || [],
           shipping: p.shipping || { from: p.supplier?.country || 'US/EU', estimatedDays: '2-14' },
           supplier: p.supplier || { name: 'Spocket Supplier', country: p.supplier?.country || 'US' },

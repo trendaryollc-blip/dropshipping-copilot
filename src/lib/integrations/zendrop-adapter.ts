@@ -53,7 +53,6 @@ export default function createZendropAdapter() {
           source: 'zendrop',
           sourceId: String(p.id),
           originalPrice: Number(p.price),
-          stock: p.stock || p.quantity || 0,
           variants: p.variants || [],
           shipping: p.shipping || { from: 'US', estimatedDays: '5-12' },
         }))

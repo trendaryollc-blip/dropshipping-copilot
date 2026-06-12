@@ -134,48 +134,14 @@ class PaymentService {
       
       // Handle specific event types
       switch (event.type) {
-        case 'checkout.session.completed': {
+        case 'checkout.session.completed':
           console.log('[PaymentService] Checkout session completed:', event.data.object.id);
-          const session = event.data.object as Stripe.Checkout.Session;
-          // Update user's plan in Firestore to 'pro'
-          try {
-            const { updateDocument } = await import('@/lib/firestore-service');
-            const customerId = session.customer as string;
-            if (customerId) {
-              // Find the user document by Stripe customer ID and upgrade their plan
-              // In a real implementation, you'd map stripeCustomerId -> userId in a metadata field
-              await updateDocument('users', session.client_reference_id || customerId, {
-                plan: 'pro' as any,
-                stripeCustomerId: customerId,
-                subscriptionId: session.subscription as string,
-              });
-              console.log('[PaymentService] User plan upgraded to pro');
-            }
-          } catch (fbError) {
-            console.error('[PaymentService] Failed to update user plan:', fbError);
-          }
+          // TODO: Update user's plan in Firestore to 'pro'
           break;
-        }
-        case 'customer.subscription.deleted': {
+        case 'customer.subscription.deleted':
           console.log('[PaymentService] Subscription canceled:', event.data.object.id);
-          const subscription = event.data.object as Stripe.Subscription;
-          // Downgrade user's plan in Firestore to 'free'
-          try {
-            const { updateDocument } = await import('@/lib/firestore-service');
-            const customerId = subscription.customer as string;
-            if (customerId) {
-              // Find user by stripeCustomerId and downgrade their plan
-              await updateDocument('users', subscription.metadata?.userId || customerId, {
-                plan: 'free' as any,
-                subscriptionId: null as any,
-              });
-              console.log('[PaymentService] User plan downgraded to free');
-            }
-          } catch (fbError) {
-            console.error('[PaymentService] Failed to update user plan:', fbError);
-          }
+          // TODO: Downgrade user's plan in Firestore to 'free'
           break;
-        }
         default:
           console.log(`[PaymentService] Unhandled event type: ${event.type}`);
       }
