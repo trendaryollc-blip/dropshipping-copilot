@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import type { ReactNode } from "react"
 
 interface DashboardCardProps {
@@ -9,10 +10,11 @@ interface DashboardCardProps {
   icon: ReactNode
   gradient: string
   trend: string
+  href?: string
 }
 
-export function DashboardCard({ title, value, subtitle, icon, gradient, trend }: DashboardCardProps) {
-  return (
+export function DashboardCard({ title, value, subtitle, icon, gradient, trend, href }: DashboardCardProps) {
+  const card = (
     <div className="group relative overflow-hidden rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 animate-in card-interactive">
       {/* Gradient overlay on hover */}
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-[0.04]`} />
@@ -43,5 +45,13 @@ export function DashboardCard({ title, value, subtitle, icon, gradient, trend }:
         </div>
       </div>
     </div>
+  )
+
+  if (!href) return card
+
+  return (
+    <Link href={href} className="block" aria-label={`View ${title} details`}>
+      {card}
+    </Link>
   )
 }

@@ -1,17 +1,8 @@
-"use client"
-
-import Link from "next/link"
-import type { ReactNode } from "react"
-
-interface ActivityFeedItemProps {
-  icon: ReactNode
-  title: string
-  time: string
-  accent: string
-  href?: string
-}
-
-export function ActivityFeedItem({ icon, title, time, accent, href }: ActivityFeedItemProps) {
+const fs=require('fs');
+const p='src/components/dashboard/ActivityFeedItem.tsx';
+let t=fs.readFileSync(p,'utf8');
+const m=/export function ActivityFeedItem\(\{ icon, title, time, accent \}: ActivityFeedItemProps\) \{[\s\S]*?\n\}/m;
+const replacement = `export function ActivityFeedItem({ icon, title, time, accent, href }: ActivityFeedItemProps) {
   const item = (
     <div className="group flex items-center gap-4 rounded-2xl border border-border/30 bg-card/40 p-3.5 backdrop-blur-sm transition-all duration-300 hover:border-primary/15 hover:bg-card/60">
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent} text-white shadow-md transition-all duration-300 group-hover:scale-110`}>
@@ -32,4 +23,7 @@ export function ActivityFeedItem({ icon, title, time, accent, href }: ActivityFe
       {item}
     </Link>
   )
-}
+}`;
+if (!m.test(t)) { console.error('no match'); process.exit(1); }
+fs.writeFileSync(p, t.replace(m, replacement), 'utf8');
+console.log('patched');

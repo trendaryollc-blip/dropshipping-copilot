@@ -91,6 +91,7 @@ export default function DashboardPage() {
               trend="+18% vs last month"
               icon={<DollarSign className="size-5" />}
               gradient="from-primary via-accent to-foreground"
+              href="/analytics"
             />
           </div>
           <div className="delay-2">
@@ -101,6 +102,7 @@ export default function DashboardPage() {
               trend={`+${stats.ordersChange}% order flow`}
               icon={<ShoppingCart className="size-5" />}
               gradient="from-accent via-primary to-foreground"
+              href="/orders"
             />
           </div>
           <div className="delay-3">
@@ -111,6 +113,7 @@ export default function DashboardPage() {
               trend={`+${stats.suppliersChange}% network growth`}
               icon={<Users className="size-5" />}
               gradient="from-info via-accent to-foreground"
+              href="/suppliers"
             />
           </div>
         </div>
@@ -178,6 +181,7 @@ export default function DashboardPage() {
                     title={item.message}
                     time={item.time}
                     accent={activityAccent[item.type]}
+                    href="/activity"
                   />
                 ))}
               </div>
