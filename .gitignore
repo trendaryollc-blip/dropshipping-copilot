@@ -34,7 +34,7 @@ yarn-error.log*
 # ⚠️ Keep only .env.example in git - use comprehensive .env file for deployment
 .env*
 !.env.example
-!vercel-env.txt
+vercel-env.txt
 secrets/dropease-trendaryo-api-key.txt
 secrets/*.json
 
