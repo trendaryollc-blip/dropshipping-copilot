@@ -15,7 +15,7 @@ import { InsightPanel } from "@/components/dashboard/InsightPanel"
 import { toast } from "sonner"
 
 export default function PnLPage() {
-  const { products, getProducts } = useAppStore()
+  const { products } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
