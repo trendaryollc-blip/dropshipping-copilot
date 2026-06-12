@@ -13,27 +13,19 @@ import { Mail, MessageCircle, TrendingUp, TrendingDown, ArrowUp, ArrowDown, Sear
 import { toast } from "sonner"
 
 export default function MarketingPage() {
-  const { products, getProducts } = useAppStore()
+  const { products } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const fetchData = async () => {
-        try {
-          setLoading(true)
-          await getProducts()
-        } catch (error) {
-          toast.error("Failed to load marketing data")
-        } finally {
-          setLoading(false)
-        }
-      }
-      fetchData()
+    if (!isAuthenticated) {
+      router.push("/auth/login")
+    } else {
+      setLoading(false)
     }
-  }, [isAuthenticated, getProducts])
+  }, [isAuthenticated, router])
 
   // Mock marketing campaign data
   const [campaigns] = useState([
@@ -253,7 +245,7 @@ export default function MarketingPage() {
                         {campaigns.filter(c => c.products.includes(product.id)).length}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="success">High Performer</Badge>
+                      <Badge>High Performer</Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -266,7 +258,7 @@ export default function MarketingPage() {
   )
 }
 
-function CampaignTable({ campaigns, getProductNames }) {
+function CampaignTable({ campaigns, getProductNames }: { campaigns: any[], getProductNames: (ids: string[]) => string }) {
   return (
     <Card>
       <CardContent className="p-0">
@@ -299,7 +291,7 @@ function CampaignTable({ campaigns, getProductNames }) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={campaign.status === "active" ? "success" : "secondary"}>
+                    <Badge variant={campaign.status === "active" ? "secondary" : "secondary"}>
                       {campaign.status}
                     </Badge>
                   </TableCell>
