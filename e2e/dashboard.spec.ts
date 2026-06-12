@@ -46,4 +46,3 @@ authTest.describe("Public Routes", () => {
     await expect(page.locator('button[type="submit"]')).toBeVisible()
   })
 })
-</write_to_file>

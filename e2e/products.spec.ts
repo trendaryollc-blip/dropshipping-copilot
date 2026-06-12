@@ -13,4 +13,3 @@ test.describe("Products Page", () => {
     await expect(page.locator("h1, h2").first()).toBeVisible()
   })
 })
-</write_to_file>
