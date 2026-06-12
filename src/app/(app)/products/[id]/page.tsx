@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { useAppStore } from "@/store/useAppStore"
 import { useAuthStore } from "@/store/useAuthStore"
@@ -14,9 +14,8 @@ import { TrendingUp, AlertCircle, Package, ShoppingCart, DollarSign, Edit, Check
 import { toast } from "sonner"
 import { ProductStatus } from "@/types"
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params
-  const { id } = resolvedParams
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
 
   const { products, updateProductStatus, deleteProduct } = useAppStore()
   const { isAuthenticated } = useAuthStore()
@@ -47,7 +46,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }, [id, isAuthenticated, products])
 
   const handleStatusChange = async (newStatus: ProductStatus) => {
-    const { id } = await params
     try {
       await updateProductStatus(id, newStatus)
       toast.success(`Product status updated to ${newStatus}`)
@@ -62,7 +60,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       return
     }
 
-    const { id } = await params
     try {
       await deleteProduct(id)
       toast.success("Product deleted successfully")

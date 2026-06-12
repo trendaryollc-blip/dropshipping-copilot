@@ -5,6 +5,7 @@ import { Search, MoreVertical, Trash2, Edit, Eye, Package, Download, CheckSquare
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -264,11 +265,11 @@ export default function MyProductsPage() {
           <Package className="size-10 text-muted-foreground/40" />
           <p className="text-sm font-medium text-muted-foreground">No imported products yet.</p>
           <p className="text-xs text-muted-foreground">Go to Product Research to find and import products.</p>
-          <Button
-            size="sm"
-            variant="outline"
-            render={<a href="/products">Find Products</a>}
-          />
+          <Link href="/products">
+            <Button size="sm" variant="outline">
+              Find Products
+            </Button>
+          </Link>
         </div>
       )}
     </div>
