@@ -10,20 +10,20 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Search, TrendingUp, AlertCircle, DollarSign, Package } from "lucide-react"
-import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
+import { InsightPanel } from "@/components/dashboard/InsightPanel"
 import { toast } from "sonner"
 
 export default function TrendingProductsPage() {
-  const { products, getProducts } = useAppStore()
+  const { products } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getProducts()
+    if (!isAuthenticated) {
+      router.push("/auth/login")
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, router])
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,7 +47,7 @@ export default function TrendingProductsPage() {
 
       {/* Insights Panel */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <AIInsightsPanel
+        <InsightPanel
           title="Trending Products"
           description="Products with highest trend scores"
           value={trendingProducts.length.toString()}
@@ -103,9 +103,9 @@ export default function TrendingProductsPage() {
                         </Badge>
                       </div>
                     </TableCell>
-                    <TableCell>${product.price?.toFixed(2) || 'N/A'}</TableCell>
-                    <TableCell>{product.stock !== undefined ? product.stock : 'N/A'}</TableCell>
-                    <TableCell>
+                  <TableCell>${product.price?.toFixed(2) || 'N/A'}</TableCell>
+                  <TableCell>N/A</TableCell>
+                  <TableCell>
                       <Button
                         size="sm"
                         variant="outline"
