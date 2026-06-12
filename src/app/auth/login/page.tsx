@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, LogIn, Loader2, AlertCircle } from "lucide-react"
@@ -10,12 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
-import {
-  googleSignIn,
-  isGoogleRedirectInFlight,
-  clearGoogleRedirectFlag,
-  handleGoogleRedirect,
-} from "@/lib/firebase-auth"
+import { googleSignIn } from "@/lib/firebase-auth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -23,44 +18,8 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { login, isAuthenticated } = useAuthStore()
+  const { login } = useAuthStore()
   const router = useRouter()
-
-  // ── Redirect when authentication state becomes active ────────────────────
-  // This handles Google popup sign-in where googleSignIn() resolves before
-  // onAuthStateChanged has fired, ensuring the UI redirects home based on
-  // store state rather than waiting for a Promise return value.
-  useEffect(() => {
-    if (isAuthenticated) {
-      toast.success("Signed in with Google! 👋")
-      window.location.href = "/dashboard"
-    }
-  }, [isAuthenticated])
-
-  // ── Consume Google OAuth redirect result on mount ──────────────────────────
-  // After Google redirects back, `handleGoogleRedirect()` calls `getRedirectResult()`
-  // which synchronously sets `currentUser` so `onAuthStateChanged` fires → store is
-  // populated.  We do NOT use `isGoogleRedirectInFlight()` to guard here because
-  // a redirect round-trip is a normal post-login page navigation, not an error.
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        const resolved = await handleGoogleRedirect()
-        if (resolved && !cancelled) {
-          clearGoogleRedirectFlag()
-          toast.success("Signed in with Google! 👋")
-        }
-      } catch {
-        // no-op — redirect wasn't pending
-      } finally {
-        clearGoogleRedirectFlag()
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -74,10 +33,10 @@ export default function LoginPage() {
       const result = await login(email, password)
       if (result.ok) {
         toast.success("Welcome back! 👋")
-        window.location.href = "/dashboard"
-      } else {
-        setError(result.error || "Sign in failed. Please try again.")
+        router.replace("/dashboard")
+        return
       }
+      setError(result.error || "Sign in failed. Please try again.")
     } catch (err: any) {
       const code = err?.code?.replace("auth/", "").replace(/-/g, " ") || "Sign in failed."
       setError(code.charAt(0).toUpperCase() + code.slice(1) + ".")
@@ -88,9 +47,11 @@ export default function LoginPage() {
 
   async function handleGoogle() {
     setError("")
+    setLoading(true)
     try {
-      // Use popup mode instead of redirect to avoid cross-domain authorization issues
       await googleSignIn("popup")
+      toast.success("Signed in with Google! 👋")
+      router.replace("/dashboard")
     } catch (err: any) {
       const code = err?.code || ""
       let msg = "Google sign-in failed."
@@ -103,6 +64,8 @@ export default function LoginPage() {
         msg = msg.charAt(0).toUpperCase() + msg.slice(1)
       }
       setError(msg)
+    } finally {
+      setLoading(false)
     }
   }
 
