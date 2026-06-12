@@ -55,21 +55,21 @@ export function LandingHero() {
 
         <Reveal className="relative mx-auto w-full max-w-xl lg:ml-auto" delay={120}>
           <div className="relative mx-auto w-full max-w-xl lg:ml-auto">
-            <div className="landing-hero-orbit relative aspect-square">
-              <div className="absolute inset-8 rounded-full border border-white/40 bg-white/10 shadow-2xl shadow-violet-500/20 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5" aria-hidden="true" />
-              <div className="absolute inset-20 rounded-full border border-dashed border-violet-400/30" aria-hidden="true" />
-
-              <div className="landing-hero-core absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/40 bg-white/80 p-6 text-center shadow-2xl shadow-violet-500/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/80">
-                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-amber-400 shadow-lg shadow-fuchsia-500/25">
-                  <Zap className="size-8 text-white" />
-                </div>
-                <p className="text-sm font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">AI opportunity score</p>
-                <p className="mt-3 text-7xl font-black tracking-tighter text-slate-950 dark:text-white">94</p>
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Winning product detected</p>
-              </div>
+            <div className="landing-hero-orbit absolute inset-0" aria-hidden="true">
+              <div className="absolute inset-8 rounded-full border border-white/40 bg-white/10 shadow-2xl shadow-violet-500/20 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5" />
+              <div className="absolute inset-20 rounded-full border border-dashed border-violet-400/30" />
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3 lg:absolute lg:inset-0 lg:mt-0">
+            <div className="landing-hero-core absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/40 bg-white/80 p-6 text-center shadow-2xl shadow-violet-500/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/80">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-amber-400 shadow-lg shadow-fuchsia-500/25">
+                <Zap className="size-8 text-white" />
+              </div>
+              <p className="text-sm font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">AI opportunity score</p>
+              <p className="mt-3 text-7xl font-black tracking-tighter text-slate-950 dark:text-white">94</p>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Winning product detected</p>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3 lg:absolute lg:inset-0 lg:z-30 lg:mt-0">
               {floatingCards.map((card, index) => {
                 const Icon = card.icon
                 return (

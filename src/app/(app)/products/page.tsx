@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Package, Search, Star, TrendingUp, ExternalLink, Globe } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -17,6 +18,7 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [loading, setLoading] = useState(false)
 
+  const router = useRouter()
   const { products: storeProducts, importProduct, loadFromFirestore } = useAppStore()
 
   // On mount, load products from Firestore (falls back to mock data)
@@ -98,24 +100,64 @@ export default function ProductsPage() {
       {/* Product Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((product) => (
-          <div key={product.id} className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg">
+          <div
+            key={product.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push(`/products/${product.id}`)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                router.push(`/products/${product.id}`)
+              }
+            }}
+            className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg cursor-pointer"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={product.image}
               alt={product.name}
               className="mb-3 h-40 w-full rounded-xl object-cover border border-border/20"
             />
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground text-sm truncate">{product.name}</h3>
-              <p className="text-xs text-muted-foreground/60">{product.niche}</p>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <h3 className="font-semibold text-foreground text-sm truncate">{product.name}</h3>
+                <p className="text-xs text-muted-foreground/60">{product.niche}</p>
+              </div>
 
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-foreground">
-                  ${product.priceRange.min}–${product.priceRange.max}
-                </span>
-                <div className="flex items-center gap-1">
-                  <Star className="size-3 fill-amber-400 text-amber-400" />
-                  <span className="text-xs font-semibold">{product.trendScore}</span>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="rounded-2xl bg-card/50 p-3 text-xs text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Supplier</p>
+                  <p className="mt-1 font-semibold text-foreground">{product.supplierName || "Unknown"}</p>
+                </div>
+                <div className="rounded-2xl bg-card/50 p-3 text-xs text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Imported</p>
+                  <p className="mt-1 font-semibold text-foreground">{product.importedAt || "N/A"}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Price range</p>
+                  <p className="font-semibold text-foreground">${product.priceRange.min}–${product.priceRange.max}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Trend</p>
+                  <p className="flex items-center gap-1 font-semibold text-foreground">
+                    <Star className="size-3 fill-amber-400 text-amber-400" />
+                    {product.trendScore}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="rounded-2xl bg-card/50 p-3 text-xs text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Views</p>
+                  <p className="mt-1 font-semibold text-foreground">{product.views ?? "—"}</p>
+                </div>
+                <div className="rounded-2xl bg-card/50 p-3 text-xs text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">Updated</p>
+                  <p className="mt-1 font-semibold text-foreground">{product.priceLastUpdated || "N/A"}</p>
                 </div>
               </div>
 
@@ -138,7 +180,8 @@ export default function ProductsPage() {
                   variant="outline"
                   className="flex-1 h-8 rounded-xl text-xs"
                   disabled={loading}
-                  onClick={async () => {
+                  onClick={async (event) => {
+                    event.stopPropagation()
                     setLoading(true)
                     try {
                       const newProduct: Product = {
@@ -147,13 +190,11 @@ export default function ProductsPage() {
                         status: "draft",
                         importedAt: new Date().toISOString().split("T")[0],
                       }
-                      // Save to Firestore via API
                       await fetch("/api/products", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(newProduct),
                       })
-                      // Add to local store (Zustand + localStorage)
                       importProduct(product)
                       toast.success(`"${product.name}" added to My Products!`)
                     } catch {
@@ -170,7 +211,8 @@ export default function ProductsPage() {
                   size="sm"
                   variant="outline"
                   className="flex-1 h-8 rounded-xl text-xs"
-                  onClick={async () => {
+                  onClick={async (event) => {
+                    event.stopPropagation()
                     try {
                       const res = await fetch("/api/trendaryo/import-product", {
                         method: "POST",
