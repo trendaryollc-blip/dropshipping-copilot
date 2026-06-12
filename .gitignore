@@ -35,8 +35,7 @@ yarn-error.log*
 .env*
 !.env.example
 vercel-env.txt
-secrets/dropease-trendaryo-api-key.txt
-secrets/*.json
+secrets/
 
 # vercel
 .vercel
