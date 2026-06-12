@@ -31,8 +31,10 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
+# ⚠️ Keep only .env.example in git - use comprehensive .env file for deployment
 .env*
 !.env.example
+!vercel-env.txt
 secrets/dropease-trendaryo-api-key.txt
 secrets/*.json
 
