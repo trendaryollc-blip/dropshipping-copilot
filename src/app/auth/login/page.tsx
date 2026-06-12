@@ -33,7 +33,7 @@ export default function LoginPage() {
       const result = await login(email, password)
       if (result.ok) {
         toast.success("Welcome back! 👋")
-        router.replace("/dashboard")
+        window.location.href = "/dashboard"
         return
       }
       setError(result.error || "Sign in failed. Please try again.")
@@ -51,7 +51,7 @@ export default function LoginPage() {
     try {
       await googleSignIn("popup")
       toast.success("Signed in with Google! 👋")
-      router.replace("/dashboard")
+      window.location.href = "/dashboard"
     } catch (err: any) {
       const code = err?.code || ""
       let msg = "Google sign-in failed."
