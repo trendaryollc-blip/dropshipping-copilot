@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { TrendingUp, ShieldCheck, Sparkles } from "lucide-react"
 
 const insights = [
@@ -9,6 +10,7 @@ const insights = [
     detail: "High demand, low competition, 40% margin potential.",
     accent: "from-cyan-400 to-emerald-400",
     icon: TrendingUp,
+    href: "/products?search=Wireless%20Earbuds%20Pro",
   },
   {
     label: "Supplier reliability",
@@ -16,6 +18,7 @@ const insights = [
     detail: "95% on-time delivery with fast response rates.",
     accent: "from-violet-500 to-fuchsia-500",
     icon: ShieldCheck,
+    href: "/suppliers",
   },
   {
     label: "AI recommendation",
@@ -23,6 +26,7 @@ const insights = [
     detail: "Suggested for customers who bought wellness products.",
     accent: "from-emerald-400 to-teal-400",
     icon: Sparkles,
+    href: "/products?filter=cross-sell",
   },
 ]
 
@@ -45,7 +49,7 @@ export function AIInsightsPanel() {
         <div className="mt-5 space-y-3">
           {insights.map((insight, i) => {
             const Icon = insight.icon
-            return (
+            const card = (
               <div key={insight.label} className={`group/item relative rounded-2xl border border-border/30 bg-card/40 p-4 transition-all duration-300 hover:border-primary/15 hover:bg-card/60 animate-in delay-${i + 1}`}>
                 <div className="flex items-start gap-3">
                   <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${insight.accent} text-white shadow-md transition-transform duration-300 group-hover/item:scale-110`}>
@@ -58,6 +62,14 @@ export function AIInsightsPanel() {
                   </div>
                 </div>
               </div>
+            )
+
+            if (!insight.href) return card
+
+            return (
+              <Link key={insight.label} href={insight.href} className="block" aria-label={insight.label}>
+                {card}
+              </Link>
             )
           })}
         </div>
