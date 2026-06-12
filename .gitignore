@@ -61,6 +61,10 @@ firebase-debug.log
 
 # Backup files
 *.bak
+auth_layout_backup.txt
+
+# Windows artifacts
+nul
 
 # Server artifacts
 server.pid
