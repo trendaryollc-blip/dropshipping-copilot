@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
-import { googleSignIn } from "@/lib/firebase-auth"
+import { googleSignIn, refreshSessionCookie } from "@/lib/firebase-auth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -33,7 +33,7 @@ export default function LoginPage() {
       const result = await login(email, password)
       if (result.ok) {
         toast.success("Welcome back! 👋")
-        window.location.href = "/dashboard"
+        router.push("/dashboard")
         return
       }
       setError(result.error || "Sign in failed. Please try again.")
@@ -50,8 +50,9 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await googleSignIn("popup")
+      await refreshSessionCookie()
       toast.success("Signed in with Google! 👋")
-      window.location.href = "/dashboard"
+      router.push("/dashboard")
     } catch (err: any) {
       const code = err?.code || ""
       let msg = "Google sign-in failed."

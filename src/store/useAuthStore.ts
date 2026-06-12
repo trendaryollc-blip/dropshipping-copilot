@@ -10,6 +10,8 @@ import {
   updateAuthProfile,
   getAuthInstance,
   isFirebaseAuthConfigured,
+  refreshSessionCookie,
+  clearSessionCookie,
 } from "@/lib/firebase-auth"
 import { setDocument } from "@/lib/firestore-service"
 
@@ -98,6 +100,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         try {
           const user = await signIn(email, password)
+          await refreshSessionCookie()
           // Best-effort: ensure a Firestore user doc exists.
           // Use merge: true WITHOUT overwriting isOnboarded — the persisted
           // localStorage value (or Firestore value) is the source of truth.
@@ -125,6 +128,7 @@ export const useAuthStore = create<AuthState>()(
       register: async (name, email, password) => {
         try {
           const user = await signUp(email, password, name)
+          await refreshSessionCookie()
           // New user — isOnboarded is false by default
           try {
             await setDocument(
@@ -150,6 +154,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (err) {
           console.warn("[Auth] logout failed:", err)
         } finally {
+          clearSessionCookie()
           set({ user: null, isAuthenticated: false })
         }
       },
@@ -204,6 +209,7 @@ if (typeof window !== "undefined") {
           { id: user.id, name: user.name, email: user.email, plan: "free" },
           true,
         ).catch(() => {})
+        refreshSessionCookie().catch(() => {})
         // Preserve isOnboarded from the existing persisted state
         const prev = useAuthStore.getState().user
         const isOnboarded = prev?.id === user.id && prev.isOnboarded
@@ -213,6 +219,7 @@ if (typeof window !== "undefined") {
           isInitialised: true,
         })
       } else {
+        clearSessionCookie()
         useAuthStore.setState({
           user: null,
           isAuthenticated: false,

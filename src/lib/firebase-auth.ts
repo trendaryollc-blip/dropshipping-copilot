@@ -13,6 +13,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider,
+  getIdToken,
   type Auth,
   type User as FBUser,
 } from "firebase/auth"
@@ -128,6 +129,45 @@ export async function signUp(
  */
 export async function signOut(): Promise<void> {
   await fbSignOut(requireAuth())
+}
+
+const SESSION_COOKIE_NAME = "__session"
+const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60
+
+export function setSessionCookie(token: string): void {
+  if (typeof document === "undefined") return
+
+  const secure = typeof window !== "undefined" && window.location.protocol === "https:"
+
+  document.cookie = [
+    `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}`,
+    `path=/`,
+    `max-age=${SESSION_COOKIE_MAX_AGE_SECONDS}`,
+    "SameSite=Lax",
+    ...(secure ? ["Secure"] : []),
+  ].join("; ")
+}
+
+export function clearSessionCookie(): void {
+  if (typeof document === "undefined") return
+
+  document.cookie = [
+    `${SESSION_COOKIE_NAME}=`,
+    `path=/`,
+    "max-age=0",
+    "SameSite=Lax",
+  ].join("; ")
+}
+
+export async function refreshSessionCookie(): Promise<string | null> {
+  const instance = requireAuth()
+  if (!instance.currentUser) return null
+
+  const token = await getIdToken(instance.currentUser)
+  if (!token) return null
+
+  setSessionCookie(token)
+  return token
 }
 
 /**
