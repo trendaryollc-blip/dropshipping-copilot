@@ -11,21 +11,20 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Search, DollarSign, BarChart2, ShoppingCart, Users, TrendingUp, Clock, ArrowUpRight, FileText, Calendar, ArrowDownRight, ArrowUpLeft } from "lucide-react"
-import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
+import { InsightPanel } from "@/components/dashboard/InsightPanel"
 import { toast } from "sonner"
 
 export default function PnLPage() {
-  const { products, users, getProducts, getUsers } = useAppStore()
+  const { products, getProducts } = useAppStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getProducts()
-      getUsers()
+    if (!isAuthenticated) {
+      router.push("/auth/login")
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, router])
 
   // Mock P&L data
   const mockPnL = {
@@ -83,21 +82,21 @@ export default function PnLPage() {
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <AIInsightsPanel
+        <InsightPanel
           title="Total Revenue"
           description="Total sales for this period"
           value={`$${mockPnL.revenue.toFixed(2)}`}
           trend="↑ 12.5%"
           icon={<DollarSign className="h-4 w-4 text-primary" />}
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="Gross Profit"
           description="Revenue minus cost of goods sold"
           value={`$${mockPnL.grossProfit.toFixed(2)}`}
           trend="↑ 8.3%"
           icon={<BarChart2 className="h-4 w-4 text-primary" />}
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="Net Profit"
           description="Final profit after all expenses"
           value={`$${mockPnL.netProfit.toFixed(2)}`}
@@ -105,7 +104,7 @@ export default function PnLPage() {
           icon={<TrendingUp className="h-4 w-4 text-primary" />}
           trendColor="success"
         />
-        <AIInsightsPanel
+        <InsightPanel
           title="COGS"
           description="Cost of goods sold"
           value={`$${mockPnL.costOfGoodsSold.toFixed(2)}`}
