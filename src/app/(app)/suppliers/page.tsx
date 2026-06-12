@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Search, Star, Clock, CheckCircle, Package, Users, Send } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +19,7 @@ export default function SuppliersPage() {
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
   const [country, setCountry] = useState("All")
+  const router = useRouter()
 
   const filtered = suppliers.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase())
@@ -108,7 +110,19 @@ export default function SuppliersPage() {
       {/* ═══ Supplier Grid ═══ */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((supplier, i) => (
-          <div key={supplier.id} className={`group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}>
+          <div
+            key={supplier.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push(`/suppliers/${supplier.id}`)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                router.push(`/suppliers/${supplier.id}`)
+              }
+            }}
+            className={`group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:bg-card/80 card-interactive animate-in delay-${Math.min(i % 8 + 1, 8)}`}
+          >
             {/* Hover glow */}
             <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 blur-xl transition-all duration-500 group-hover:scale-[2] group-hover:bg-primary/10" />
 
@@ -172,7 +186,7 @@ export default function SuppliersPage() {
               <Button
                 size="sm"
                 className="mt-4 h-9 w-full rounded-xl text-xs font-semibold"
-                onClick={() => toast.success(`Contact request sent to ${supplier.name}!`)}
+                onClick={(e) => { e.stopPropagation(); toast.success(`Contact request sent to ${supplier.name}!`) }}
               >
                 <Send className="mr-1.5 size-3" /> Contact Supplier
               </Button>
