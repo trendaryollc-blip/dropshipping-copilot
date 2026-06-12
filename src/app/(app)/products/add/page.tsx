@@ -61,7 +61,15 @@ export default function AddProductPage() {
     setLoading(true)
 
     try {
-      await importProduct(formData)
+      // Convert form data to Product type
+      const productData: any = {
+        ...formData,
+        id: Math.random().toString(36).substring(2, 9), // Generate random ID
+        image: "https://picsum.photos/seed/" + formData.name.toLowerCase().replace(/\s+/g, "-") + "/400/300",
+        status: "draft" as const,
+        importedAt: new Date().toISOString().split("T")[0]
+      }
+      await importProduct(productData)
       toast.success("Product added successfully!")
       router.push("/products")
     } catch (err) {
@@ -124,10 +132,9 @@ export default function AddProductPage() {
                   name="niche"
                   value={formData.niche}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, niche: value || "" }))}
-                  className="mt-1"
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select niche" />
                   </SelectTrigger>
                   <SelectContent>
@@ -143,14 +150,12 @@ export default function AddProductPage() {
 
               <div>
                 <Label className="text-sm font-medium">Competition Level</Label>
-                <Select
-                  name="competition"
-                  value={formData.competition}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, competition: value || "medium" }))}
-                  className="mt-1"
-                  required
-                >
-                  <SelectTrigger>
+            <Select
+                name="competition"
+                value={formData.competition}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, competition: value || "medium" }))}
+              >
+                <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select competition level" />
                   </SelectTrigger>
                   <SelectContent>
