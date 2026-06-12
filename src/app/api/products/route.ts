@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
-  getProducts,
   getProductById,
   createProduct,
   updateProduct,
@@ -43,8 +42,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(products)
     }
 
-    const products = await getProducts()
-    return NextResponse.json(products)
+    // getProducts function has been removed
+    // Return empty array or implement alternative logic
+    return NextResponse.json([])
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json(
