@@ -4,7 +4,9 @@ import { useState } from "react"
 import {
   Settings, Package, DollarSign, Mail, AlertTriangle, Zap,
   MessageCircle, ShoppingCart, Users, Upload, Share2, Workflow,
-  Truck, Sparkles, Calendar, Shield, ChevronLeft, ChevronRight, Globe
+  Truck, Sparkles, Calendar, Shield, ChevronLeft, ChevronRight, Globe,
+  BarChart3, Clock, Play, Pause, TrendingUp, Filter as FilterIcon,
+  Download, RefreshCw, ExternalLink, Plus, Trash2, CheckCircle,
 } from "lucide-react"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -30,24 +32,24 @@ import { AIActionButton } from "@/components/AIActionButton"
 import { TrendaryoSync } from "@/components/automation/trendaryo-sync"
 
 const tabs = [
-  { id: "fulfillment",     label: "Auto-Fulfillment",        icon: Package,      color: "text-success", bg: "bg-success-light", description: "Automatically process and fulfill orders based on your rules" },
-  { id: "price",           label: "Price Monitoring",         icon: DollarSign,   color: "text-primary",    bg: "bg-primary-light",    description: "Track competitor prices and receive real-time alerts" },
-  { id: "email",           label: "Email Marketing",          icon: Mail,         color: "text-accent",  bg: "bg-accent-light",  description: "Send automated marketing and transactional emails" },
-  { id: "inventory",       label: "Inventory Management",     icon: AlertTriangle,color: "text-orange-600",  bg: "bg-orange-100",  description: "Monitor stock levels and trigger reorders automatically" },
-  { id: "sms",             label: "SMS Marketing",            icon: MessageCircle,color: "text-cyan-600",    bg: "bg-cyan-100",    description: "Send automated text messages to your customers" },
-  { id: "workflow",        label: "Workflow Automation",       icon: Zap,          color: "text-teal-600",    bg: "bg-teal-100",    description: "Build custom automation workflows with conditional logic" },
-  { id: "cart",            label: "Abandoned Cart Recovery",  icon: ShoppingCart, color: "text-destructive",     bg: "bg-destructive-light",     description: "Recover lost sales from abandoned shopping carts" },
-  { id: "lifecycle",       label: "Customer Lifecycle",       icon: Users,        color: "text-primary",  bg: "bg-primary-light",  description: "Automate customer journeys based on behavior and events" },
-  { id: "dynamic-pricing", label: "Dynamic Pricing",          icon: DollarSign,   color: "text-warning",  bg: "bg-warning-light",  description: "Automatically adjust prices based on demand and competition" },
-  { id: "listing",         label: "Product Listing",          icon: Upload,       color: "text-success",   bg: "bg-success-light",   description: "Auto-generate and optimize product listings across channels" },
-  { id: "social",          label: "Social Media",             icon: Share2,       color: "text-pink-600",    bg: "bg-pink-100",    description: "Schedule and automate social media posts and engagement" },
-  { id: "order",           label: "Order Processing",         icon: Workflow,     color: "text-accent",  bg: "bg-accent-light",  description: "Advanced order routing, splitting, and processing rules" },
-  { id: "supplier",        label: "Supplier Reordering",      icon: Truck,        color: "text-warning",   bg: "bg-warning-light",   description: "Automate supplier purchase orders and stock replenishment" },
-  { id: "upsell",          label: "AI Upsell & Cross-sell",   icon: Sparkles,     color: "text-rose-600",    bg: "bg-rose-100",    description: "AI-powered product recommendations to increase order value" },
-  { id: "seasonal",        label: "Seasonal Campaigns",       icon: Calendar,     color: "text-sky-600",     bg: "bg-sky-100",     description: "Schedule and automate seasonal promotions and campaigns" },
-  { id: "compliance",      label: "Compliance Reporting",     icon: Shield,       color: "text-muted-foreground",    bg: "bg-muted",    description: "Generate compliance reports and audit logs automatically" },
-  { id: "ai-hub",            label: "AI Automation Hub",        icon: Sparkles,     color: "text-accent",  bg: "bg-accent-light",  description: "Access all AI models for different automation tasks" },
-  { id: "trendaryo",         label: "Trendaryo Sync",           icon: Globe,        color: "text-blue-600", bg: "bg-blue-100",     description: "Manually sync products, prices, and stock with Trendaryo" },
+  { id: "fulfillment", label: "Auto-Fulfillment", icon: Package, color: "text-success", bg: "bg-success-light", description: "Automatically process and fulfill orders based on your rules" },
+  { id: "price", label: "Price Monitoring", icon: DollarSign, color: "text-primary", bg: "bg-primary-light", description: "Track competitor prices and receive real-time alerts" },
+  { id: "email", label: "Email Marketing", icon: Mail, color: "text-accent", bg: "bg-accent-light", description: "Send automated marketing and transactional emails" },
+  { id: "inventory", label: "Inventory Management", icon: AlertTriangle, color: "text-orange-600", bg: "bg-orange-100", description: "Monitor stock levels and trigger reorders automatically" },
+  { id: "sms", label: "SMS Marketing", icon: MessageCircle, color: "text-cyan-600", bg: "bg-cyan-100", description: "Send automated text messages to your customers" },
+  { id: "workflow", label: "Workflow Automation", icon: Zap, color: "text-teal-600", bg: "bg-teal-100", description: "Build custom automation workflows with conditional logic" },
+  { id: "cart", label: "Abandoned Cart Recovery", icon: ShoppingCart, color: "text-destructive", bg: "bg-destructive-light", description: "Recover lost sales from abandoned shopping carts" },
+  { id: "lifecycle", label: "Customer Lifecycle", icon: Users, color: "text-primary", bg: "bg-primary-light", description: "Automate customer journeys based on behavior and events" },
+  { id: "dynamic-pricing", label: "Dynamic Pricing", icon: DollarSign, color: "text-warning", bg: "bg-warning-light", description: "Automatically adjust prices based on demand and competition" },
+  { id: "listing", label: "Product Listing", icon: Upload, color: "text-success", bg: "bg-success-light", description: "Auto-generate and optimize product listings across channels" },
+  { id: "social", label: "Social Media", icon: Share2, color: "text-pink-600", bg: "bg-pink-100", description: "Schedule and automate social media posts and engagement" },
+  { id: "order", label: "Order Processing", icon: Workflow, color: "text-accent", bg: "bg-accent-light", description: "Advanced order routing, splitting, and processing rules" },
+  { id: "supplier", label: "Supplier Reordering", icon: Truck, color: "text-warning", bg: "bg-warning-light", description: "Automate supplier purchase orders and stock replenishment" },
+  { id: "upsell", label: "AI Upsell & Cross-sell", icon: Sparkles, color: "text-rose-600", bg: "bg-rose-100", description: "AI-powered product recommendations to increase order value" },
+  { id: "seasonal", label: "Seasonal Campaigns", icon: Calendar, color: "text-sky-600", bg: "bg-sky-100", description: "Schedule and automate seasonal promotions and campaigns" },
+  { id: "compliance", label: "Compliance Reporting", icon: Shield, color: "text-muted-foreground", bg: "bg-muted", description: "Generate compliance reports and audit logs automatically" },
+  { id: "ai-hub", label: "AI Automation Hub", icon: Sparkles, color: "text-accent", bg: "bg-accent-light", description: "Access all AI models for different automation tasks" },
+  { id: "trendaryo", label: "Trendaryo Sync", icon: Globe, color: "text-blue-600", bg: "bg-blue-100", description: "Manually sync products, prices, and stock with Trendaryo" },
 ]
 
 export default function AutomationPage() {
@@ -77,7 +79,7 @@ export default function AutomationPage() {
             </span>
             <h1 className="hero-title">Automation Tools</h1>
             <p className="max-w-lg text-sm leading-relaxed text-muted-foreground/70">
-              Automate your dropshipping workflow with powerful automation rules.
+              Automate your dropshipping workflow with powerful automation rules, AI insights, and performance tracking.
             </p>
           </div>
         </div>
@@ -131,6 +133,70 @@ export default function AutomationPage() {
           <CardContent>
             <div className="text-2xl font-bold">18</div>
             <p className="text-xs text-muted-foreground mt-1">Price & inventory alerts</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Stats Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <TrendingUp className="size-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Recovery Rate</p>
+                <p className="text-2xl font-bold">3.2%</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Abandoned cart recovery</p>
+            <Link href="#cart" className="mt-4 block">
+              <Button variant="ghost" size="sm" className="w-full">
+                <ExternalLink className="size-3 mr-1" />
+                View Details
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-warning/10 text-warning">
+                <DollarSign className="size-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Revenue Saved</p>
+                <p className="text-2xl font-bold">$2,850</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">From price monitoring</p>
+            <Link href="#price" className="mt-4 block">
+              <Button variant="ghost" size="sm" className="w-full">
+                <ExternalLink className="size-3 mr-1" />
+                View Details
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-success/10 text-success">
+                <Package className="size-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Stock Protected</p>
+                <p className="text-2xl font-bold">12</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Auto-reorders placed</p>
+            <Link href="#supplier" className="mt-4 block">
+              <Button variant="ghost" size="sm" className="w-full">
+                <ExternalLink className="size-3 mr-1" />
+                View Details
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

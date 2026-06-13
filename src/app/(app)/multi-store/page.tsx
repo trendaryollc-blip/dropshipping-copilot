@@ -1,4 +1,5 @@
-import { Store } from "lucide-react"
+import Link from 'next/link'
+import { Store, Globe, CreditCard, Users } from "lucide-react"
 import { MultiStore } from "@/components/multi-store"
 
 export default function MultiStorePage() {
@@ -20,6 +21,44 @@ export default function MultiStorePage() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: 'Connect a new store',
+            description: 'Add another storefront or marketplace channel.',
+            href: '/multi-store',
+            icon: Globe,
+          },
+          {
+            title: 'Billing setup',
+            description: 'Review payment and invoice settings.',
+            href: '/admin/billing',
+            icon: CreditCard,
+          },
+          {
+            title: 'Brand controls',
+            description: 'Customize brand identity for each store.',
+            href: '/admin/branding',
+            icon: Users,
+          },
+        ].map((item) => {
+          const Icon = item.icon
+          return (
+            <Link key={item.title} href={item.href} className="group rounded-3xl border border-border/70 bg-background p-5 transition hover:border-primary/70 hover:bg-primary/5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </section>
 
       <MultiStore />

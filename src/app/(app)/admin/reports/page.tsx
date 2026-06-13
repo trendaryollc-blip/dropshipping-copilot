@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { FileText, Clock, ArrowRight, Repeat } from "lucide-react"
+import Link from "next/link"
+import { FileText, Clock, ArrowRight, Repeat, BarChart3, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -63,6 +64,44 @@ export default function AdminReportsPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: 'Monthly revenue',
+            description: 'Automate monthly P&L and sales reports.',
+            href: '/finance/pnl',
+            icon: BarChart3,
+          },
+          {
+            title: 'Compliance reports',
+            description: 'Create tax, audit, and operational summaries.',
+            href: '/admin/billing',
+            icon: ShieldCheck,
+          },
+          {
+            title: 'Learning resources',
+            description: 'Review best practices for reporting.',
+            href: '/learn',
+            icon: FileText,
+          },
+        ].map((card) => {
+          const Icon = card.icon
+          return (
+            <Link key={card.title} href={card.href} className="group rounded-3xl border border-border/70 bg-background p-5 transition hover:border-primary/70 hover:bg-primary/5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{card.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{card.description}</p>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </section>
 
       <div className="grid gap-5 lg:grid-cols-2">

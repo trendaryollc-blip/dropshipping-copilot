@@ -19,6 +19,7 @@ const routeLabels: Record<string, string> = {
   reviews: "Reviews",
   analytics: "Analytics",
   automation: "Automation",
+  "business-opportunities": "Opportunities",
   business: "Business Ops",
   trends: "Trends",
   competitors: "Competitors",

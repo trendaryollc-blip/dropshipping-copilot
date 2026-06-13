@@ -1,4 +1,5 @@
-import { Smartphone } from "lucide-react"
+import Link from 'next/link'
+import { Smartphone, Download, BookOpen, Zap } from "lucide-react"
 import { MobileApp } from "@/components/mobile-app"
 
 export default function MobilePage() {
@@ -20,6 +21,44 @@ export default function MobilePage() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: 'Download Guide',
+            description: 'Step-by-step mobile onboarding and setup tips.',
+            href: '/learn',
+            icon: BookOpen,
+          },
+          {
+            title: 'Enable Push',
+            description: 'Make sure notifications are turned on for the app.',
+            href: '/mobile',
+            icon: Zap,
+          },
+          {
+            title: 'Billing & Plan',
+            description: 'Review your payment plan for mobile store usage.',
+            href: '/admin/billing',
+            icon: Download,
+          },
+        ].map((action) => {
+          const Icon = action.icon
+          return (
+            <Link key={action.title} href={action.href} className="group rounded-3xl border border-border/70 bg-background p-5 transition hover:border-primary/70 hover:bg-primary/5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{action.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{action.description}</p>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </section>
 
       <MobileApp />

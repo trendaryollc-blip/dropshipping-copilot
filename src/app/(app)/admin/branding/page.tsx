@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Brush, Globe, RotateCcw } from "lucide-react"
+import Link from "next/link"
+import { Brush, Globe, RotateCcw, LayoutDashboard, FileText } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -41,6 +42,44 @@ export default function AdminBrandingPage() {
           Customize your app identity, brand colors, and customer-facing domain.
         </p>
       </div>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: 'Publish brand guide',
+            description: 'Standardize messaging and customer-facing assets.',
+            href: '/learn',
+            icon: FileText,
+          },
+          {
+            title: 'Store preview',
+            description: 'Preview branded storefronts across channels.',
+            href: '/multi-store',
+            icon: LayoutDashboard,
+          },
+          {
+            title: 'Custom domain',
+            description: 'Set your own domain for customer-facing pages.',
+            href: '/admin/billing',
+            icon: Globe,
+          },
+        ].map((card) => {
+          const Icon = card.icon
+          return (
+            <Link key={card.title} href={card.href} className="group rounded-3xl border border-border/70 bg-background p-5 transition hover:border-primary/70 hover:bg-primary/5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{card.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{card.description}</p>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card>

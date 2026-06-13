@@ -93,7 +93,7 @@ const navGroups = [
     items: [
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/automation", label: "Automation", icon: Zap },
-      { href: "/business", label: "Business Ops", icon: Settings },
+      { href: "/business-opportunities", label: "Opportunities", icon: Target },
     ],
   },
   {

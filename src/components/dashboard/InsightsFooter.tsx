@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { BarChart3, Sparkles, Heart, Star } from "lucide-react"
+import { BarChart3, Sparkles, Heart, Star, TrendingUp } from "lucide-react"
 
 const insights = [
   {
@@ -23,10 +23,10 @@ const insights = [
     href: "/products?filter=popular",
   },
   {
-    icon: Star,
-    title: "Motivation",
-    detail: "Keep optimizing your top 3 suppliers and automate follow-up funnels.",
-    href: "/automation",
+    icon: TrendingUp,
+    title: "Opportunities",
+    detail: "Discover trending products and untapped markets with high profit potential.",
+    href: "/business-opportunities",
   },
 ]
 

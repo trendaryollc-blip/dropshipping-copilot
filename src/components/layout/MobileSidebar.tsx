@@ -73,8 +73,8 @@ const navGroups = [
       { href: "/trends", label: "Trends", icon: TrendingUp },
       { href: "/competitors", label: "Competitors", icon: Target },
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
-      { href: "/automation", label: "Automation", icon: Settings },
-      { href: "/business", label: "Business Ops", icon: Zap },
+      { href: "/automation", label: "Automation", icon: Zap },
+      { href: "/business-opportunities", label: "Opportunities", icon: Target },
     ],
   },
   {

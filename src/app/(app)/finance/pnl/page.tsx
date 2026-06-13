@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAppStore } from "@/store/useAppStore"
 import { useAuthStore } from "@/store/useAuthStore"
@@ -55,18 +56,61 @@ export default function PnLPage() {
   )
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Profit & Loss Statement</h1>
-        <Button
-          variant="outline"
-          onClick={() => router.push("/dashboard")}
-        >
-          Back to Dashboard
-        </Button>
-      </div>
+    <div className="p-6 space-y-8">
+      <section className="space-y-6 rounded-3xl border border-border/50 bg-card/60 p-6 backdrop-blur-sm shadow-sm sm:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+              <FileText className="size-4" /> Finance
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Profit & Loss Statement</h1>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                Review revenue, costs, and cashflow trends with simple, actionable financial insights for your dropshipping business.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/admin/reports">
+              <Button className="min-w-[160px]">Open Reports</Button>
+            </Link>
+            <Link href="/admin/billing">
+              <Button variant="outline" className="min-w-[160px]">Billing Settings</Button>
+            </Link>
+          </div>
+        </div>
 
-      {/* Search and Insights */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            {
+              title: "Forecast Target",
+              description: "Set quarterly profit goals.",
+              href: "/admin/reports",
+            },
+            {
+              title: "Connect payments",
+              description: "Sync Stripe or PayPal billing.",
+              href: "/admin/billing",
+            },
+            {
+              title: "Sync sales data",
+              description: "Pull order history from integrations.",
+              href: "/integrations",
+            },
+          ].map((tile) => (
+            <Link key={tile.href} href={tile.href} className="group rounded-3xl border border-border/70 bg-background p-5 transition hover:border-primary/70 hover:bg-primary/5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{tile.title}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{tile.description}</p>
+                </div>
+                <ArrowRight className="size-4 text-muted-foreground transition group-hover:text-primary" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <div className="mb-6">
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
