@@ -88,7 +88,7 @@ export default function AnalyticsPage() {
           })}
         </div>
         <div className="flex items-center gap-2">
-          <Select value={dateRange} onValueChange={setDateRange}>
+          <Select value={dateRange} onValueChange={(value) => value && setDateRange(value)}>
             <SelectTrigger className="w-32 h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -275,12 +275,10 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
-          <Link href="/finance/pnl">
-            <Button variant="outline">
+          <Button variant="outline" className="w-full" onClick={() => window.location.href = '/finance/pnl'}>
               <ExternalLink className="size-4 mr-2" />
               View Full P&L Report
             </Button>
-          </Link>
         </div>
       )}
 
@@ -295,7 +293,7 @@ export default function AnalyticsPage() {
                   <p className="text-xs text-muted-foreground">Total Orders</p>
                 </div>
               </CardContent>
-            </div>
+            </Card>
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center">
@@ -321,12 +319,10 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
           </div>
-          <Link href="/orders">
-            <Button variant="outline">
+          <Button variant="outline" onClick={() => window.location.href = '/orders'}>
               <ExternalLink className="size-4 mr-2" />
               Manage All Orders
             </Button>
-          </Link>
         </div>
       )}
 
@@ -371,12 +367,10 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
-          <Link href="/my-products">
-            <Button variant="outline">
+          <Button variant="outline" onClick={() => window.location.href = '/my-products'}>
               <ExternalLink className="size-4 mr-2" />
               View All Products
             </Button>
-          </Link>
         </div>
       )}
 
@@ -403,12 +397,10 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
-          <Link href="/customers">
-            <Button variant="outline">
+          <Button variant="outline" onClick={() => window.location.href = '/customers'}>
               <ExternalLink className="size-4 mr-2" />
               View Customer CRM
             </Button>
-          </Link>
         </div>
       )}
 

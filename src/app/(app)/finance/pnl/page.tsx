@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Search, DollarSign, BarChart2, ShoppingCart, Users, TrendingUp, Clock, ArrowUpRight, FileText, Calendar, ArrowDownRight, ArrowUpLeft } from "lucide-react"
+import { Search, DollarSign, BarChart2, ShoppingCart, Users, TrendingUp, Clock, ArrowUpRight, ArrowRight, FileText, Calendar, ArrowDownRight, ArrowUpLeft } from "lucide-react"
 import { InsightPanel } from "@/components/dashboard/InsightPanel"
 import { toast } from "sonner"
 
@@ -71,12 +71,10 @@ export default function PnLPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/admin/reports">
-              <Button className="min-w-[160px]">Open Reports</Button>
-            </Link>
-            <Link href="/admin/billing">
-              <Button variant="outline" className="min-w-[160px]">Billing Settings</Button>
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Button className="min-w-[160px]" onClick={() => window.location.href = '/admin/reports'}>Open Reports</Button>
+              <Button variant="outline" className="min-w-[160px]" onClick={() => window.location.href = '/admin/billing'}>Billing Settings</Button>
+            </div>
           </div>
         </div>
 

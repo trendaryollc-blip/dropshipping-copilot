@@ -151,12 +151,10 @@ export default function AutomationPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">Abandoned cart recovery</p>
-            <Link href="#cart" className="mt-4 block">
-              <Button variant="ghost" size="sm" className="w-full">
-                <ExternalLink className="size-3 mr-1" />
-                View Details
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" className="mt-4 w-full" onClick={() => setActiveTab('cart')}>
+              <ExternalLink className="size-3 mr-1" />
+              View Details
+            </Button>
           </CardContent>
         </Card>
         <Card className="hover:shadow-md transition-shadow">
@@ -171,12 +169,10 @@ export default function AutomationPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">From price monitoring</p>
-            <Link href="#price" className="mt-4 block">
-              <Button variant="ghost" size="sm" className="w-full">
-                <ExternalLink className="size-3 mr-1" />
-                View Details
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" className="mt-4 w-full" onClick={() => setActiveTab('price')}>
+              <ExternalLink className="size-3 mr-1" />
+              View Details
+            </Button>
           </CardContent>
         </Card>
         <Card className="hover:shadow-md transition-shadow">
@@ -191,12 +187,10 @@ export default function AutomationPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">Auto-reorders placed</p>
-            <Link href="#supplier" className="mt-4 block">
-              <Button variant="ghost" size="sm" className="w-full">
-                <ExternalLink className="size-3 mr-1" />
-                View Details
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" className="mt-4 w-full" onClick={() => setActiveTab('supplier')}>
+              <ExternalLink className="size-3 mr-1" />
+              View Details
+            </Button>
           </CardContent>
         </Card>
       </div>
