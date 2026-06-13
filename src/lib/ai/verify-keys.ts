@@ -3,7 +3,7 @@
  * Used by the /api/health endpoint to report which keys are configured.
  */
 
-import 'dotenv/config';
+// Note: dotenv/config removed - Vercel sets env vars directly on platform
 
 export interface KeyStatus {
   valid: boolean;

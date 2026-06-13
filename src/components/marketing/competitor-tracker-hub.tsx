@@ -174,7 +174,7 @@ export function CompetitorTrackerHub() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Select value={platformFilter} onValueChange={setPlatformFilter}>
+          <Select value={platformFilter} onValueChange={v => setPlatformFilter(v || "all")}>
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Platform" />
             </SelectTrigger>
