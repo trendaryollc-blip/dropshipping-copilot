@@ -384,39 +384,86 @@ export function AdCampaignsHub() {
 
       {/* Platform Performance Summary */}
       <div className="grid gap-4 sm:grid-cols-3">
-        {(["google", "meta", "tiktok"] as AdPlatform[]).map(p => {
-          const platCampaigns = campaigns.filter(c => c.platform === p && c.roas > 0)
-          const avgR = platCampaigns.length
-            ? platCampaigns.reduce((s, c) => s + c.roas, 0) / platCampaigns.length
-            : 0
-          const totalSpend = campaigns.filter(c => c.platform === p).reduce((s, c) => s + c.spent, 0)
-          const active = campaigns.filter(c => c.platform === p && c.status === "active").length
-          const plat = platformConfig[p]
-          return (
-            <Card key={p}>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">{plat.label}</CardTitle>
-                  <Badge className={`${plat.bg} ${plat.color} border-transparent text-xs`}>
-                    {active} active
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Avg. ROAS</span>
-                  <span className={`font-semibold ${avgR >= 3 ? "text-emerald-600" : avgR >= 2 ? "text-amber-600" : "text-muted-foreground"}`}>
-                    {avgR > 0 ? `${avgR.toFixed(1)}x` : "—"}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total Spend</span>
-                  <span className="font-medium">${totalSpend.toFixed(2)}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+{(["google", "meta", "tiktok"] as AdPlatform[]).map(p => {
+           const platCampaigns = campaigns.filter(c => c.platform === p && c.roas > 0)
+           const avgR = platCampaigns.length
+             ? platCampaigns.reduce((s, c) => s + c.roas, 0) / platCampaigns.length
+             : 0
+           const totalSpend = campaigns.filter(c => c.platform === p).reduce((s, c) => s + c.spent, 0)
+           const active = campaigns.filter(c => c.platform === p && c.status === "active").length
+           const totalClicks = campaigns.filter(c => c.platform === p).reduce((s, c) => s + c.clicks, 0)
+           const totalConversions = campaigns.filter(c => c.platform === p).reduce((s, c) => s + c.conversions, 0)
+           const plat = platformConfig[p]
+           const platformData = {
+             google: {
+               landingPage: "/campaigns/google",
+               description: "Search and display ads across Google network",
+               icon: Megaphone,
+             },
+             meta: {
+               landingPage: "/campaigns/meta",
+               description: "Facebook, Instagram, and Messenger ads",
+               icon: Megaphone,
+             },
+             tiktok: {
+               landingPage: "/campaigns/tiktok",
+               description: "Short-form video advertising on TikTok",
+               icon: Megaphone,
+             },
+           }
+           return (
+             <Link
+               key={p}
+               href={platformData[p].landingPage}
+               className="group relative block overflow-hidden rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:border-primary/20"
+             >
+               <div className="space-y-4">
+                 <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                     <div className={cn("flex size-10 items-center justify-center rounded-xl", plat.bg, plat.color)}>
+                       <Megaphone className="size-5" />
+                     </div>
+                     <div>
+                       <h3 className="text-sm font-bold text-foreground">{plat.label}</h3>
+                       <p className="text-xs text-muted-foreground">{platformData[p].description}</p>
+                     </div>
+                   </div>
+                   <Badge className={`${plat.bg} ${plat.color} border-transparent text-xs font-medium`}>
+                     {active} active
+                   </Badge>
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-3 text-sm">
+                   <div className="space-y-1">
+                     <p className="text-xs text-muted-foreground">Avg. ROAS</p>
+                     <p className={cn(
+                       "text-lg font-semibold",
+                       avgR >= 3 ? "text-emerald-600" : avgR >= 2 ? "text-amber-600" : "text-muted-foreground"
+                     )}>
+                       {avgR > 0 ? `${avgR.toFixed(1)}x` : "—"}
+                     </p>
+                   </div>
+                   <div className="space-y-1">
+                     <p className="text-xs text-muted-foreground">Total Spend</p>
+                     <p className="text-lg font-medium">${totalSpend.toFixed(2)}</p>
+                   </div>
+                   <div className="space-y-1">
+                     <p className="text-xs text-muted-foreground">Clicks</p>
+                     <p className="text-base font-medium">{totalClicks > 0 ? fmtNum(totalClicks) : "—"}</p>
+                   </div>
+                   <div className="space-y-1">
+                     <p className="text-xs text-muted-foreground">Conversions</p>
+                     <p className="text-base font-medium">{totalConversions > 0 ? totalConversions : "—"}</p>
+                   </div>
+                 </div>
+
+                 <div className="flex items-center gap-1 text-xs font-medium text-primary/80 group-hover:text-primary transition-colors pt-2 border-t border-border/50">
+                   View Platform Details <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
+                 </div>
+               </div>
+             </Link>
+           )
+         })}
       </div>
 
       {/* Create Campaign Dialog */}
