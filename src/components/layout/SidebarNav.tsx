@@ -211,7 +211,7 @@ export function SidebarNav() {
                                             return (
                         <SidebarMenuItem key={item.href}>
                                                     <SidebarMenuButton
-                                                        render={<Link href={item.href} />}
+                                                        render={<a href={item.href} />}
                                                         isActive={isActive}
                                                         className={cn(
                                                             "group relative h-9 rounded-xl px-3 text-[12px] font-medium",
