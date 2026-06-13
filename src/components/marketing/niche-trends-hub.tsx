@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { TrendingUp, TrendingDown, ArrowUp, ArrowDown, Search, Calendar, Filter, Plus, Star, Zap, Megaphone, ArrowRight } from "lucide-react"
+import { TrendingUp, ArrowUp, ArrowDown, Search, Filter, Plus, Star, Zap, Megaphone, ArrowRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import type { NicheTrend, CompetitionLevel } from "@/types"
+import type { NicheTrend } from "@/types"
 
 const mockTrends: NicheTrend[] = [
   { niche: "Wireless Earbuds", trendScore: 92, weeklyChange: 15.3, searchVolume: "128K", competition: "high", topProducts: ["prod-1", "prod-2"], peakSeason: "Q4", emoji: "🎧" },
