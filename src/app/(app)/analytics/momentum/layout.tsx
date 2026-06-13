@@ -1,4 +1,10 @@
-export const metadata = {
-  title: "Analytics – DropEase",
-  description: "Track your store performance with detailed analytics and insights."
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Weekly Momentum – DropEase",
+  description: "Deep dive analysis of your weekly store performance.",
+}
+
+export default function MomentumLayout({ children }: { children: React.ReactNode }) {
+  return children
 }

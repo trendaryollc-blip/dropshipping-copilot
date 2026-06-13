@@ -130,7 +130,7 @@ export default function LearnPage() {
               <p className="text-sm font-semibold text-foreground">Popular guides</p>
               <p className="mt-1 text-sm text-muted-foreground">Browse the most useful articles that help you take immediate action.</p>
             </div>
-            <Button asChild>
+            <Button>
               <Link href="/learn">See all</Link>
             </Button>
           </div>
@@ -147,7 +147,7 @@ export default function LearnPage() {
                     <span>{article.category}</span>
                     <span>{article.readTime}</span>
                   </div>
-                  <Button asChild size="sm">
+                  <Button size="sm">
                     <Link href={`/learn#${article.id}`}>Read guide</Link>
                   </Button>
                 </CardContent>
