@@ -10,6 +10,8 @@ const links = [
   { href: "#workflow", label: "Workflow" },
   { href: "#features", label: "Features" },
   { href: "#proof", label: "Proof" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#faq", label: "FAQ" },
 ]
 
 export function LandingNav() {

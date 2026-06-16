@@ -1,9 +1,11 @@
 import { AIWorkflowSection } from "./AIWorkflowSection"
+import { FAQSection } from "./FAQSection"
 import { FeatureShowcase } from "./FeatureShowcase"
 import { LandingCTA } from "./LandingCTA"
 import { LandingFooter } from "./LandingFooter"
 import { LandingHero } from "./LandingHero"
 import { LandingNav } from "./LandingNav"
+import { PricingSection } from "./PricingSection"
 import { ProductDiscoveryPreview } from "./ProductDiscoveryPreview"
 import { TestimonialsSection } from "./TestimonialsSection"
 import { TrustMetricsSection } from "./TrustMetricsSection"
@@ -17,11 +19,12 @@ export function LandingPage() {
       <main>
         <LandingHero />
         <ProductDiscoveryPreview />
-        <AIWorkflowSection />
+        <TrustMetricsSection />
         <FeatureShowcase />
         <WorkflowComparison />
-        <TrustMetricsSection />
         <TestimonialsSection />
+        <PricingSection />
+        <FAQSection />
         <LandingCTA />
       </main>
       <LandingFooter />
