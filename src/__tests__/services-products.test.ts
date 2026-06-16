@@ -115,9 +115,10 @@ describe('Products Service', () => {
   describe('listenToProducts', () => {
     it('subscribes to products collection', () => {
       const { listenToCollection } = vi.mocked(require('../lib/firestore-service'))
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
       const callback = vi.fn()
       const unsubscribe = listenToProducts(callback)
-      expect(listenToCollection).toHaveBeenCalled()
+      expect(listenToCollection).toHaveBeenCalledWith('copilot_products', expect.any(Function))
       expect(typeof unsubscribe).toBe('function')
     })
   })

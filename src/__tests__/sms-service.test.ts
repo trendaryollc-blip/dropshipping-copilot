@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Mock twilio
 vi.mock('twilio', () => {
-  const mockCreate = vi.fn()
-  return {
-    default: vi.fn(() => ({
-      messages: { create: mockCreate },
-    })),
-  }
+  const mockTwilio = vi.fn((sid: string, token: string) => ({
+    messages: {
+      create: vi.fn().mockResolvedValue({ sid: 'SM123' }),
+    },
+  }))
+  return { default: mockTwilio }
 })
 
 // Will be set/restored per test
@@ -22,13 +23,7 @@ describe('SMS Service', () => {
 
   describe('sendSMS', () => {
     it('sends an SMS successfully', async () => {
-      const twilio = await import('twilio')
-      const mockCreate = vi.fn().mockResolvedValue({ sid: 'SM123' })
-      ;(twilio.default as any).mockReturnValue({ messages: { create: mockCreate } })
-
-      // Fresh import to pick up env vars
-      const { default: sms } = await import('@/lib/sms-service')
-      const result = await sms.sendSMS({ to: '+15559876543', body: 'Test message' })
+      const result = await SMSService.sendSMS({ to: '+15559876543', body: 'Test message' })
       expect(result.success).toBe(true)
       expect(result.messageId).toBe('SM123')
     })
@@ -37,52 +32,45 @@ describe('SMS Service', () => {
       delete process.env.TWILIO_ACCOUNT_SID
       delete process.env.TWILIO_AUTH_TOKEN
 
-      const { default: sms } = await import('@/lib/sms-service')
-      const result = await sms.sendSMS({ to: '+15559876543', body: 'Test' })
+      const result = await SMSService.sendSMS({ to: '+15559876543', body: 'Test message' })
       expect(result.success).toBe(false)
       expect(result.error).toContain('not configured')
     })
 
     it('handles Twilio API errors', async () => {
-      // We're testing that the sendSMS handles the Stripe mock returning errors gracefully
-      const result = await SMSService.sendSMS({ to: '+15559876543', body: 'Test' })
-      expect(result).toHaveProperty('success')
+      // Mock Twilio to throw an error
+      const twilio = await import('twilio')
+      ;(twilio.default as any).mockReturnValue({
+        messages: {
+          create: vi.fn().mockRejectedValue(new Error('Twilio error'))
+        }
+      })
+
+      const result = await SMSService.sendSMS({ to: '+15559876543', body: 'Test message' })
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('Twilio error')
     })
   })
 
   describe('sendOrderStatusUpdate', () => {
-    it('sends order status SMS', async () => {
-      const result = await SMSService.sendOrderStatusUpdate('+15559876543', {
-        orderId: 'ORD-001',
-        status: 'shipped',
-        trackingNumber: 'TRK123',
-      })
-      expect(result).toHaveProperty('success')
-    })
-
-    it('sends order status without tracking number', async () => {
-      const result = await SMSService.sendOrderStatusUpdate('+15559876543', {
-        orderId: 'ORD-002',
-        status: 'processing',
-      })
-      expect(result).toHaveProperty('success')
+    it('sends order status update', async () => {
+      const result = await SMSService.sendOrderStatusUpdate('+15559876543', 'ORD-001', 'shipped')
+      expect(result.success).toBe(true)
+      expect(result.messageId).toBe('SM123')
     })
   })
 
-  describe('sendLowStockAlert', () => {
-    it('sends low stock alert', async () => {
-      const result = await SMSService.sendLowStockAlert('+15559876543', {
-        name: 'Test Product',
-        currentStock: 3,
-      })
-      expect(result).toHaveProperty('success')
+  describe('edge cases', () => {
+    it('handles invalid phone numbers', async () => {
+      const result = await SMSService.sendSMS({ to: 'invalid', body: 'Test' })
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('invalid')
     })
-  })
 
-  describe('sendVerificationCode', () => {
-    it('sends verification code', async () => {
-      const result = await SMSService.sendVerificationCode('+15559876543', '123456')
-      expect(result).toHaveProperty('success')
+    it('handles empty message', async () => {
+      const result = await SMSService.sendSMS({ to: '+15559876543', body: '' })
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('empty')
     })
   })
 })

@@ -145,6 +145,7 @@ describe('Suppliers Service', () => {
   describe('listeners', () => {
     it('subscribes to suppliers collection', () => {
       const { listenToCollection } = vi.mocked(require('@/lib/firestore-service'))
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
       const unsub = listenToSuppliers(vi.fn())
       expect(listenToCollection).toHaveBeenCalledWith('copilot_suppliers', expect.any(Function), undefined)
       expect(typeof unsub).toBe('function')
@@ -152,6 +153,7 @@ describe('Suppliers Service', () => {
 
     it('subscribes to a single supplier', () => {
       const { listenToCollection } = vi.mocked(require('@/lib/firestore-service'))
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
       listenToSupplier('s1', vi.fn())
       expect(listenToCollection).toHaveBeenCalledWith('copilot_suppliers', expect.any(Function), undefined)
     })

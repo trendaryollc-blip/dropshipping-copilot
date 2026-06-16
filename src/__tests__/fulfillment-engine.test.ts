@@ -7,25 +7,25 @@ vi.mock('@/lib/firestore-service', () => ({
 
 vi.mock('@/lib/email-service', () => ({
   EmailService: {
-    sendOrderConfirmation: vi.fn(),
+    sendOrderConfirmation: vi.fn().mockResolvedValue({ success: true }),
   },
 }))
 
 vi.mock('@/lib/sms-service', () => ({
   SMSService: {
-    sendOrderStatusUpdate: vi.fn(),
+    sendOrderStatusUpdate: vi.fn().mockResolvedValue({ success: true }),
   },
 }))
 
 vi.mock('@/lib/webhook-service', () => ({
   webhookService: {
-    sendWebhook: vi.fn(),
+    sendWebhook: vi.fn().mockResolvedValue({ success: true }),
   },
 }))
 
 vi.mock('@/lib/integrations/trendaryo-api', () => ({
   createTrendaryoAPI: vi.fn(() => ({
-    updateOrderStatus: vi.fn(),
+    updateOrderStatus: vi.fn().mockResolvedValue({ success: true }),
   })),
 }))
 
@@ -49,17 +49,11 @@ describe('Fulfillment Engine', () => {
   describe('processOrder', () => {
     it('successfully processes a complete order', async () => {
       const { updateDocument } = await import('@/lib/firestore-service')
-      const { EmailService } = await import('@/lib/email-service')
-      const { SMSService } = await import('@/lib/sms-service')
-
       vi.mocked(updateDocument).mockResolvedValue(undefined)
-      vi.mocked(EmailService.sendOrderConfirmation).mockResolvedValue(undefined as any)
-      vi.mocked(SMSService.sendOrderStatusUpdate).mockResolvedValue({ success: true })
 
       const result = await fulfillmentEngine.processOrder(mockOrder)
 
       expect(result.success).toBe(true)
-      // Should update status to processing first
       expect(updateDocument).toHaveBeenCalledWith(
         'copilot_orders/ORD-001',
         expect.objectContaining({ status: 'processing' })
@@ -88,7 +82,7 @@ describe('Fulfillment Engine', () => {
 
       const result = await fulfillmentEngine.processOrder(mockOrder)
       expect(result.success).toBe(false)
-      expect(result.error).toBeDefined()
+      expect(result.error).toContain('Firestore write failed')
     })
   })
 

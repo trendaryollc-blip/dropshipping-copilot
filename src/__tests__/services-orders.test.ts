@@ -187,18 +187,20 @@ describe('Orders Service', () => {
   describe('listenToOrders', () => {
     it('subscribes to orders collection', () => {
       const { listenToCollection } = vi.mocked(require('@/lib/firestore-service'))
-      const cb = vi.fn()
-      const unsub = listenToOrders(cb)
-      expect(listenToCollection).toHaveBeenCalledWith('copilot_orders', expect.any(Function), undefined)
-      expect(typeof unsub).toBe('function')
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
+      const callback = vi.fn()
+      const unsubscribe = listenToOrders(callback)
+      expect(listenToCollection).toHaveBeenCalledWith('copilot_orders', expect.any(Function))
+      expect(typeof unsubscribe).toBe('function')
     })
-  })
 
-  describe('listenToPendingOrders', () => {
     it('subscribes with pending filter', () => {
       const { listenToCollection } = vi.mocked(require('@/lib/firestore-service'))
-      listenToPendingOrders(vi.fn())
-      expect(listenToCollection).toHaveBeenCalledWith('copilot_orders', expect.any(Function), undefined)
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
+      const callback = vi.fn()
+      const unsubscribe = listenToPendingOrders(callback)
+      expect(listenToCollection).toHaveBeenCalledWith('copilot_orders', expect.any(Function))
+      expect(typeof unsubscribe).toBe('function')
     })
   })
 

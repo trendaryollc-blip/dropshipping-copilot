@@ -158,6 +158,7 @@ describe('Users Service', () => {
   describe('listeners', () => {
     it('subscribes to users collection', () => {
       const { listenToCollection } = vi.mocked(require('@/lib/firestore-service'))
+      vi.mocked(listenToCollection).mockReturnValue(() => {})
       expect(typeof listenToUsers(vi.fn())).toBe('function')
       expect(listenToCollection).toHaveBeenCalledWith('copilot_users', expect.any(Function), undefined)
     })
