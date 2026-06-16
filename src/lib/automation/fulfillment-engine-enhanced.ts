@@ -200,28 +200,26 @@ export class EnhancedFulfillmentEngine extends AutomationBase {
       notificationTasks.push(
         this.withRecovery(
           async () => {
-            await EmailService.sendOrderConfirmation(order.customerEmail, {
+            await EmailService.sendOrderConfirmation(order.customerEmail || '', {
               orderId: order.id,
               total: order.total,
               items: order.items.map(i => ({
                 name: i.productName || `Product ${i.productId}`,
                 quantity: i.quantity
-              })),
-              trackingNumber: trackingNumber
+              }))
             })
-            this.logInfo(`Order confirmation email sent to ${order.customerEmail}`)
+            this.logInfo(`Order confirmation email sent to ${order.customerEmail || ''}`)
           },
           async (emailError) => {
             this.logWarning(`Email failed, will retry: ${emailError.message}`)
             await new Promise(resolve => setTimeout(resolve, 1000))
-            await EmailService.sendOrderConfirmation(order.customerEmail, {
+            await EmailService.sendOrderConfirmation(order.customerEmail || '', {
               orderId: order.id,
               total: order.total,
               items: order.items.map(i => ({
                 name: i.productName || `Product ${i.productId}`,
                 quantity: i.quantity
-              })),
-              trackingNumber: trackingNumber
+              }))
             })
           }
         )

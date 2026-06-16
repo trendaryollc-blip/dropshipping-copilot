@@ -114,15 +114,25 @@ export class AutomationBase {
   /**
    * Update progress for bulk operations
    */
-  protected updateProgress(current: number, total: number, status: string, data?: { itemsProcessed?: number; itemsFailed?: number }): void {
+  protected updateProgress(current: number, status: string): void
+  protected updateProgress(current: number, total: number, status: string, data?: { itemsProcessed?: number; itemsFailed?: number }): void
+  protected updateProgress(
+    current: number,
+    totalOrStatus: number | string,
+    statusOrData?: string | { itemsProcessed?: number; itemsFailed?: number },
+    data?: { itemsProcessed?: number; itemsFailed?: number }
+  ): void {
+    const total = typeof totalOrStatus === 'number' ? totalOrStatus : 0
+    const status = typeof totalOrStatus === 'string' ? totalOrStatus : (statusOrData as string | undefined) || ''
+    const progressData = typeof totalOrStatus === 'number' ? data : (statusOrData as { itemsProcessed?: number; itemsFailed?: number } | undefined)
     const percentage = total > 0 ? Math.round((current / total) * 100) : 0
 
-    if (data?.itemsProcessed) {
-      this.itemsProcessed = data.itemsProcessed
+    if (progressData?.itemsProcessed) {
+      this.itemsProcessed = progressData.itemsProcessed
     }
 
-    if (data?.itemsFailed) {
-      this.itemsFailed = data.itemsFailed
+    if (progressData?.itemsFailed) {
+      this.itemsFailed = progressData.itemsFailed
     }
 
     const progressUpdate: ProgressUpdate = {
@@ -138,8 +148,7 @@ export class AutomationBase {
 
     this.progress.push(progressUpdate)
 
-    // Log progress at key milestones
-    if (percentage % 10 === 0 || current === total) {
+    if (total > 0 && (percentage % 10 === 0 || current === total)) {
       this.logInfo(`Progress: ${percentage}% - ${status} (${current}/${total} items)`)
     }
   }
