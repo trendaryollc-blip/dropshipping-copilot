@@ -8,6 +8,7 @@ import {
   getProductsBySupplier,
   getProductsByNiche
 } from '@/lib/services/products-service'
+import { searchProducts, getTrendingProducts } from '@/lib/services/product-search-service'
 import type { Product } from '@/types'
 
 // GET /api/products - Get all products or filtered products
@@ -42,9 +43,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(products)
     }
 
-    // getProducts function has been removed
-    // Return empty array or implement alternative logic
-    return NextResponse.json([])
+    const query = searchParams.get('q') || searchParams.get('search') || ''
+    const nicheSearch = searchParams.get('niche') || undefined
+
+    // If there's a search query, use AI-powered real product search
+    if (query) {
+      const results = await searchProducts(query, nicheSearch)
+      return NextResponse.json(results)
+    }
+
+    // Check if we should return trending products
+    const trending = searchParams.get('trending')
+    if (trending === 'true') {
+      const trendingProducts = await getTrendingProducts(20)
+      return NextResponse.json(trendingProducts)
+    }
+
+    // If no query, Firestore will return mock data or real data depending on config
+    // Return empty - the store will handle loading from Firestore
+    const allProducts = await getProductsByStatus('active')
+    return NextResponse.json(allProducts)
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json(
