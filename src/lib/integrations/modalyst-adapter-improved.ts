@@ -1,4 +1,4 @@
-/**
+/**e all the changes 
  * Modalyst Integration Adapter - IMPROVED VERSION
  *
  * This is an improved version of the Modalyst adapter that extends the BaseAdapter
