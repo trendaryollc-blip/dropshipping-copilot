@@ -2,7 +2,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { nanoid } from "nanoid"
-import { products as initialProducts, orders as initialOrders, stores as initialStores } from "@/lib/mock-data"
+import { orders as initialOrders, stores as initialStores } from "@/lib/mock-data"
 import { getCollection } from "@/lib/firestore-service"
 import type { Product, Order, ProductStatus, Store, StoreStatus, AutomationRule, AutomationStatus } from "@/types"
 
@@ -28,7 +28,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-  products: initialProducts,
+  products: [],
   orders: initialOrders,
   stores: initialStores,
   automationRules: [],
@@ -42,6 +42,9 @@ export const useAppStore = create<AppState>()(
       if (fsProducts && fsProducts.length > 0) {
         set({ products: fsProducts, isLoadedFromFirestore: true })
         console.log('[AppStore] Loaded products from Firestore')
+      } else {
+        set({ products: [], isLoadedFromFirestore: true })
+        console.log('[AppStore] No products in Firestore, starting with empty product list')
       }
 
       // Load orders from Firestore
@@ -49,10 +52,13 @@ export const useAppStore = create<AppState>()(
       if (fsOrders && fsOrders.length > 0) {
         set({ orders: fsOrders })
         console.log('[AppStore] Loaded orders from Firestore')
+      } else {
+        set({ orders: [] })
+        console.log('[AppStore] No orders in Firestore')
       }
-
     } catch (error) {
-      console.warn('[AppStore] Could not load from Firestore, using mock data', error)
+      console.warn('[AppStore] Could not load from Firestore', error)
+      set({ products: [], orders: [], isLoadedFromFirestore: true })
     }
   },
   updateProductStatus: (id, status) =>
