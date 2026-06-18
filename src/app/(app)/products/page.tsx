@@ -71,19 +71,6 @@ export default function ProductsPage() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                setLoading(true)
-                fetch(`/api/products?q=${encodeURIComponent(search)}`)
-                  .then(res => res.json())
-                  .then(data => {
-                    if (Array.isArray(data)) {
-                      useAppStore.setState({ products: data })
-                    }
-                  })
-                  .finally(() => setLoading(false))
-              }
-            }}
             className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 pr-20 text-sm backdrop-blur-sm"
           />
           <Button
