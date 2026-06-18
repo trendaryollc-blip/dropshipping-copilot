@@ -71,8 +71,38 @@ export default function ProductsPage() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 text-sm backdrop-blur-sm"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setLoading(true)
+                fetch(`/api/products?q=${encodeURIComponent(search)}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    if (Array.isArray(data)) {
+                      useAppStore.setState({ products: data })
+                    }
+                  })
+                  .finally(() => setLoading(false))
+              }
+            }}
+            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 pr-20 text-sm backdrop-blur-sm"
           />
+          <Button
+            size="sm"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 rounded-xl text-xs"
+            onClick={() => {
+              setLoading(true)
+              fetch(`/api/products?q=${encodeURIComponent(search)}`)
+                .then(res => res.json())
+                .then(data => {
+                  if (Array.isArray(data)) {
+                    useAppStore.setState({ products: data })
+                  }
+                })
+                .finally(() => setLoading(false))
+            }}
+          >
+            Search
+          </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {["all", "active", "draft", "archived"].map((s) => (

@@ -67,41 +67,32 @@ export default function SuppliersPage() {
 
       {/* ═══ Filters ═══ */}
       <section className="space-y-3 animate-in delay-1">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            placeholder="Search suppliers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
-          />
-        </div>
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            placeholder="Search suppliers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
+            <Input
+              placeholder="Search suppliers..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const first = filtered[0]
+                  if (first) router.push(`/suppliers/${first.id}`)
+                }
+              }}
+              className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 pr-20 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
+            />
+            <Button
+              size="sm"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 rounded-xl text-xs"
+              onClick={() => {
                 const first = filtered[0]
                 if (first) router.push(`/suppliers/${first.id}`)
-              }
-            }}
-            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 pr-20 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
-          />
-          <Button
-            size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 rounded-xl text-xs"
-            onClick={() => {
-              const first = filtered[0]
-              if (first) router.push(`/suppliers/${first.id}`)
-            }}
-          >
-            Search
-          </Button>
-        </div>
+              }}
+            >
+              Search
+            </Button>
+          </div>
 
         {CATEGORIES.map((c) => (
           <button
