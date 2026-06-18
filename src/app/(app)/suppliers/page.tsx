@@ -76,35 +76,61 @@ export default function SuppliersPage() {
             className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
-                category === c
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
-                  : "bg-card/50 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-foreground hover:bg-card/70"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-          <span className="self-center text-xs text-muted-foreground/30">|</span>
-          {COUNTRIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCountry(c)}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
-                country === c
-                  ? "bg-foreground text-background border-foreground shadow-sm"
-                  : "bg-card/50 text-muted-foreground border-border/50 hover:text-foreground hover:bg-card/70"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+      <div className="flex flex-wrap gap-2 items-center">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
+          <Input
+            placeholder="Search suppliers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const first = filtered[0]
+                if (first) router.push(`/suppliers/${first.id}`)
+              }
+            }}
+            className="h-10 rounded-2xl border-border/50 bg-card/50 pl-9 pr-20 text-sm backdrop-blur-sm transition-all duration-300 focus:border-primary/30 focus:bg-card/70"
+          />
+          <Button
+            size="sm"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 rounded-xl text-xs"
+            onClick={() => {
+              const first = filtered[0]
+              if (first) router.push(`/suppliers/${first.id}`)
+            }}
+          >
+            Search
+          </Button>
         </div>
+
+        {CATEGORIES.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCategory(c)}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
+              category === c
+                ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                : "bg-card/50 text-muted-foreground border-border/50 hover:border-primary/30 hover:text-foreground hover:bg-card/70"
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+        <span className="self-center text-xs text-muted-foreground/30">|</span>
+        {COUNTRIES.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCountry(c)}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 border ${
+              country === c
+                ? "bg-foreground text-background border-foreground shadow-sm"
+                : "bg-card/50 text-muted-foreground border-border/50 hover:text-foreground hover:bg-card/70"
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
       </section>
 
       {/* ═══ Supplier Grid ═══ */}

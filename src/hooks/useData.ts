@@ -1,21 +1,11 @@
 /**
- * Unified data hook — fetches from Firestore API when configured,
- * falls back to mock data when not.
+ * Unified data hook — fetches from API.
+ * Production mode: no mock fallback.
  */
 import { useState, useEffect } from 'react'
-import { products, suppliers, orders, dashboardStats, recentActivity, learnArticles } from '@/lib/mock-data'
 import type { Product, Supplier, Order, DashboardStats, ActivityItem, LearnArticle } from '@/types'
 
 type DataType = 'products' | 'suppliers' | 'orders' | 'stats' | 'activity' | 'articles'
-
-const mockData: Record<DataType, unknown[]> = {
-  products: products as unknown[],
-  suppliers: suppliers as unknown[],
-  orders: orders as unknown[],
-  stats: [dashboardStats] as unknown[],
-  activity: recentActivity as unknown[],
-  articles: learnArticles as unknown[],
-}
 
 async function fetchFromApi(endpoint: string): Promise<unknown[]> {
   try {
@@ -23,8 +13,9 @@ async function fetchFromApi(endpoint: string): Promise<unknown[]> {
     if (!res.ok) throw new Error(`API error: ${res.status}`)
     const data = await res.json()
     return Array.isArray(data) ? data : [data]
-  } catch {
-    return [] // Will trigger mock fallback
+  } catch (error) {
+    console.error(`[useData] Failed to load ${endpoint}:`, error)
+    return []
   }
 }
 
@@ -38,9 +29,6 @@ export function useData<T>(type: DataType): { data: T[]; loading: boolean; error
     setLoading(true)
 
     async function load() {
-      // Try API first
-      let result: unknown[] | null = null
-
       const apiMap: Record<string, string> = {
         products: '/api/products',
         suppliers: '/api/suppliers',
@@ -48,18 +36,20 @@ export function useData<T>(type: DataType): { data: T[]; loading: boolean; error
       }
 
       const endpoint = apiMap[type]
-      if (endpoint) {
-        result = await fetchFromApi(endpoint)
+      if (!endpoint) {
+        if (!cancelled) {
+          setData([])
+          setLoading(false)
+        }
+        return
       }
 
-      // Fall back to mock data
-      if (!result || result.length === 0) {
-        result = mockData[type] || []
-      }
+      const result = await fetchFromApi(endpoint)
 
       if (!cancelled) {
         setData(result as T[])
         setLoading(false)
+        setError(null)
       }
     }
 
@@ -88,7 +78,7 @@ export function useOrders() {
 
 export function useStats() {
   const { data } = useData<DashboardStats>('stats')
-  return { stats: data[0] || dashboardStats }
+  return { stats: data[0] || null }
 }
 
 export function useActivity() {
